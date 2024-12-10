@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
 import PropTypes from 'prop-types';
 
-const MapComponent = ({ trucks }) => {
+const MapComponent = ({ trucks, truckPositions }) => {
   return (
     <MapContainer center={[-13.5, -76]} zoom={6} style={{ height: '100%', width: '100%' }}>
       <TileLayer
@@ -22,14 +22,13 @@ const MapComponent = ({ trucks }) => {
               color="blue"
             />))
           }
-          <Marker
-            position={[
-              truck.tramos[0].origen.latitud,
-              truck.tramos[0].origen.longitud,
-            ]}
-          >
-            <Popup>{`Truck: ${truck.camion.codigo}`}</Popup>
-          </Marker>
+
+          {Object.entries(truckPositions).map(([truckId, position]) => (
+            <Marker key={truckId} position={[position.lat, position.lng]}>
+              <Popup>{`Camión ${truckId} en movimiento`}</Popup>
+            </Marker>
+          ))}
+
         </React.Fragment>
       ))}
     </MapContainer>
@@ -76,6 +75,13 @@ MapComponent.propTypes = {
           seDejaraElPaquete: PropTypes.bool,
         }).isRequired
       ).isRequired,
+    }).isRequired
+  ).isRequired,
+
+  truckPositions: PropTypes.objectOf(
+    PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
     }).isRequired
   ).isRequired,
 };

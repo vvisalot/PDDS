@@ -14,6 +14,8 @@ const Simulador = () => {
     const [isFetching, setIsFetching] = useState(false);
     const [dtpValue, setDtpValue] = useState("");
 
+    const [truckPositions, setTruckPositions] = useState({});
+
     const fetchTrucks = async () => {
         try {
             const response = await axios.get("http://localhost:8080/simulacion"); // Replace with your API endpoint
@@ -45,8 +47,6 @@ const Simulador = () => {
         }
     };
 
-
-
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
     const simulateSingleTruck = async (truckData) => {
@@ -67,12 +67,15 @@ const Simulador = () => {
                 const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
                 const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
+                setTruckPositions((prevPositions) => ({
+                    ...prevPositions,
+                    [truckData.camion.codigo]: { lat, lng },
+                }))
+
                 console.log(`[${dayjs(startTime).add(step * stepDuration, 'ms').format('HH:mm:ss')}] Camión ${truckData.camion.codigo}: Latitud ${lat.toFixed(8)}, Longitud ${lng.toFixed(8)}`);
 
-                // Simular tiempo entre pasos (medio segundo)
-                if (step < totalSteps) {
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
-                }
+                if (step < totalSteps) await new Promise((resolve) => setTimeout(resolve, 1000)); // Cada paso espera 1 segundo
+
             }
 
             console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
@@ -126,7 +129,6 @@ const Simulador = () => {
         return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
     }
 
-
     const TabItems = [
         {
             key: '1',
@@ -177,7 +179,7 @@ const Simulador = () => {
 
             {/* Mapa */}
             <div style={{ flex: "1 1 auto", padding: '5px' }}>
-                <MapComponent trucks={trucks} />
+                <MapComponent trucks={trucks} truckPositions={truckPositions} />
             </div >
 
         </div >
