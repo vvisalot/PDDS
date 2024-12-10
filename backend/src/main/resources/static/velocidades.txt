@@ -1,0 +1,8 @@
+Información de velocidades promedio
+
+
+Costa - Costa = 70 Km/h
+Costa - Sierra = 50 Km/h
+Sierra - Sierra = 60 Km/h
+Sierra - Selva = 55 Km/h
+Selva - Selva = 65 Km/h
