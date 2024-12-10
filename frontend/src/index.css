@@ -1,0 +1,80 @@
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Asegura que el padding y border no aumenten el tamaño total */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Evita scroll innecesario */
+}
+
+/* Configuración de fuentes */
+html {
+  font-size: 16px; /* Tamaño base de fuente */
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  background-color: #ffffff; /* Fondo blanco */
+  color: #000000; /* Texto en color negro */
+}
+
+/* Tamaños de fuente */
+.text-base {
+  font-size: 16px;
+}
+
+.text-lg {
+  font-size: 20px;
+}
+
+.text-sm {
+  font-size: 14px;
+}
+
+.text-xl {
+  font-size: 24px;
+}
+
+/* Colores personalizados */
+:root {
+  --primary: #646cff;
+  --secondary: #535bf2;
+  --background: #ffffff;
+  --light-background: #ffffff;
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+}
+
+.bg-light {
+  background-color: var(--light-background);
+}
+
+.bg-dark {
+  background-color: var(--background);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-secondary {
+  color: var(--secondary);
+}
+
+/* Estilo para el contenedor principal si usas React */
+#root {
+  width: 100%;
+  height: 100%;
+}

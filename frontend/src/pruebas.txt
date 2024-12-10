@@ -1,0 +1,4829 @@
+[
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C011",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "439a1c49-2ff3-4007-b360-68602a293133",
+                    "fechaHoraPedido": "2024-11-01T05:23:00",
+                    "destino": {
+                        "latitud": -9.722084882,
+                        "longitud": -77.45614687
+                    },
+                    "cantidadEntregada": 12,
+                    "cantidadTotal": 12,
+                    "idCliente": "602538"
+                },
+                {
+                    "codigo": "b60d5701-0aa9-429a-9c40-6a2aa902a822",
+                    "fechaHoraPedido": "2024-11-01T05:43:00",
+                    "destino": {
+                        "latitud": -9.03687544,
+                        "longitud": -75.5086237
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "926131"
+                },
+                {
+                    "codigo": "4d3096ce-e9ab-4169-a09e-dfb320911a18",
+                    "fechaHoraPedido": "2024-11-01T06:46:00",
+                    "destino": {
+                        "latitud": -2.44719667,
+                        "longitud": -72.66825135
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 10,
+                    "idCliente": "459344"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -9.722084882,
+                    "longitud": -77.45614687
+                },
+                "distancia": 248.79918240286977,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T08:33:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.722084882,
+                    "longitud": -77.45614687
+                },
+                "destino": {
+                    "latitud": -9.29838119,
+                    "longitud": -76.00028442
+                },
+                "distancia": 166.46538292224892,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T09:33:00",
+                "tiempoLlegada": "2024-11-01T12:52:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.29838119,
+                    "longitud": -76.00028442
+                },
+                "destino": {
+                    "latitud": -9.03687544,
+                    "longitud": -75.5086237
+                },
+                "distancia": 61.30653120958601,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T13:52:00",
+                "tiempoLlegada": "2024-11-01T14:58:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.03687544,
+                    "longitud": -75.5086237
+                },
+                "destino": {
+                    "latitud": -5.06369292,
+                    "longitud": -73.856386
+                },
+                "distancia": 477.9288412656649,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-01T15:58:00",
+                "tiempoLlegada": "2024-11-01T23:19:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.06369292,
+                    "longitud": -73.856386
+                },
+                "destino": {
+                    "latitud": -3.74934598,
+                    "longitud": -73.24436621
+                },
+                "distancia": 161.1309371789118,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T00:19:00",
+                "tiempoLlegada": "2024-11-02T02:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -3.74934598,
+                    "longitud": -73.24436621
+                },
+                "destino": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "distancia": 158.29241994602933,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T03:47:00",
+                "tiempoLlegada": "2024-11-02T06:13:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "destino": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "distancia": 540.5293534040275,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T07:13:00",
+                "tiempoLlegada": "2024-11-02T15:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "destino": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "distancia": 198.9953416756509,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T08:13:00",
+                "tiempoLlegada": "2024-11-02T11:16:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 163.00261993252124,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T09:13:00",
+                "tiempoLlegada": "2024-11-02T12:10:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T10:13:00",
+                "tiempoLlegada": "2024-11-02T11:56:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 57.40750102036891
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C012",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 20,
+            "paquetes": [
+                {
+                    "codigo": "98237b9b-7fa7-45e0-a8d5-272ca7c6f33b",
+                    "fechaHoraPedido": "2024-11-01T10:00:00",
+                    "destino": {
+                        "latitud": -8.39290941,
+                        "longitud": -78.00901572
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 8,
+                    "idCliente": "913644"
+                },
+                {
+                    "codigo": "2f69d572-7e04-48d6-976e-423d8183ac8b",
+                    "fechaHoraPedido": "2024-11-01T07:58:00",
+                    "destino": {
+                        "latitud": -5.06369292,
+                        "longitud": -73.856386
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "460413"
+                },
+                {
+                    "codigo": "4d3096ce-e9ab-4169-a09e-dfb320911a18",
+                    "fechaHoraPedido": "2024-11-01T06:46:00",
+                    "destino": {
+                        "latitud": -2.44719667,
+                        "longitud": -72.66825135
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 10,
+                    "idCliente": "459344"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -8.39290941,
+                    "longitud": -78.00901572
+                },
+                "distancia": 116.48157785891462,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T06:39:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.39290941,
+                    "longitud": -78.00901572
+                },
+                "destino": {
+                    "latitud": -6.86553233,
+                    "longitud": -78.14556339
+                },
+                "distancia": 170.50197388081145,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T07:39:00",
+                "tiempoLlegada": "2024-11-01T11:03:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.86553233,
+                    "longitud": -78.14556339
+                },
+                "destino": {
+                    "latitud": -6.48771702,
+                    "longitud": -76.35981815
+                },
+                "distancia": 201.64361704828315,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T12:03:00",
+                "tiempoLlegada": "2024-11-01T15:42:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.48771702,
+                    "longitud": -76.35981815
+                },
+                "destino": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "distancia": 71.67297849093629,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-01T16:42:00",
+                "tiempoLlegada": "2024-11-01T17:48:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "destino": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "distancia": 540.5293534040275,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-01T18:48:00",
+                "tiempoLlegada": "2024-11-02T03:06:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "destino": {
+                    "latitud": -4.50661633,
+                    "longitud": -73.5754598
+                },
+                "distancia": 250.15448572665315,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T04:06:00",
+                "tiempoLlegada": "2024-11-02T07:56:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -4.50661633,
+                    "longitud": -73.5754598
+                },
+                "destino": {
+                    "latitud": -5.06369292,
+                    "longitud": -73.856386
+                },
+                "distancia": 69.32573750656769,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T08:56:00",
+                "tiempoLlegada": "2024-11-02T09:59:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.06369292,
+                    "longitud": -73.856386
+                },
+                "destino": {
+                    "latitud": -3.74934598,
+                    "longitud": -73.24436621
+                },
+                "distancia": 161.1309371789118,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T10:59:00",
+                "tiempoLlegada": "2024-11-02T13:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -3.74934598,
+                    "longitud": -73.24436621
+                },
+                "destino": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "distancia": 158.29241994602933,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T14:27:00",
+                "tiempoLlegada": "2024-11-02T16:53:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "destino": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "distancia": 540.5293534040275,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T17:53:00",
+                "tiempoLlegada": "2024-11-03T02:11:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "destino": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "distancia": 198.9953416756509,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T18:53:00",
+                "tiempoLlegada": "2024-11-02T21:56:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 163.00261993252124,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T19:53:00",
+                "tiempoLlegada": "2024-11-02T22:50:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T20:53:00",
+                "tiempoLlegada": "2024-11-02T22:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 65.13039109205617
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C001",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "90ab98f0-da02-463d-9426-c07d976cedc6",
+                    "fechaHoraPedido": "2024-11-01T07:27:00",
+                    "destino": {
+                        "latitud": -11.77521628,
+                        "longitud": -75.50052527
+                    },
+                    "cantidadEntregada": 21,
+                    "cantidadTotal": 21,
+                    "idCliente": "742968"
+                },
+                {
+                    "codigo": "118a8503-09ff-4ddc-8c3e-f4293606b4a6",
+                    "fechaHoraPedido": "2024-11-01T05:03:00",
+                    "destino": {
+                        "latitud": -11.25390265,
+                        "longitud": -74.63700127
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "990525"
+                },
+                {
+                    "codigo": "0e88729c-c889-49e4-9d44-272e18ee0042",
+                    "fechaHoraPedido": "2024-11-01T08:20:00",
+                    "destino": {
+                        "latitud": -8.38324295,
+                        "longitud": -74.53224034
+                    },
+                    "cantidadEntregada": 5,
+                    "cantidadTotal": 13,
+                    "idCliente": "915726"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -11.77521628,
+                    "longitud": -75.50052527
+                },
+                "distancia": 169.16161222831323,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T08:22:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -11.77521628,
+                    "longitud": -75.50052527
+                },
+                "destino": {
+                    "latitud": -11.25390265,
+                    "longitud": -74.63700127
+                },
+                "distancia": 110.51023207475754,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T09:22:00",
+                "tiempoLlegada": "2024-11-01T11:12:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -11.25390265,
+                    "longitud": -74.63700127
+                },
+                "destino": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "distancia": 211.52297649503336,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T12:12:00",
+                "tiempoLlegada": "2024-11-01T15:43:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "destino": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "distancia": 120.57628205070397,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T16:43:00",
+                "tiempoLlegada": "2024-11-01T18:54:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "destino": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "distancia": 232.61901356405636,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T19:54:00",
+                "tiempoLlegada": "2024-11-02T00:07:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "destino": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "distancia": 221.65768994358046,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T20:54:00",
+                "tiempoLlegada": "2024-11-02T01:19:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 64.16476722042316,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T21:54:00",
+                "tiempoLlegada": "2024-11-01T22:48:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 35.10120830637666
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C002",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "a5f1f04e-d627-42f9-8d2e-c5db240fc346",
+                    "fechaHoraPedido": "2024-11-01T09:01:00",
+                    "destino": {
+                        "latitud": -13.28333829,
+                        "longitud": -75.31914965
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 7,
+                    "idCliente": "938679"
+                },
+                {
+                    "codigo": "68611951-b88a-4afe-a44a-06f71bd0ade4",
+                    "fechaHoraPedido": "2024-11-01T08:49:00",
+                    "destino": {
+                        "latitud": -13.160270337,
+                        "longitud": -74.225776072
+                    },
+                    "cantidadEntregada": 18,
+                    "cantidadTotal": 18,
+                    "idCliente": "859439"
+                },
+                {
+                    "codigo": "0e88729c-c889-49e4-9d44-272e18ee0042",
+                    "fechaHoraPedido": "2024-11-01T08:20:00",
+                    "destino": {
+                        "latitud": -8.38324295,
+                        "longitud": -74.53224034
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 13,
+                    "idCliente": "915726"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -13.28333829,
+                    "longitud": -75.31914965
+                },
+                "distancia": 231.0875781430873,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T09:37:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.28333829,
+                    "longitud": -75.31914965
+                },
+                "destino": {
+                    "latitud": -13.160270337,
+                    "longitud": -74.225776072
+                },
+                "distancia": 119.14318440151703,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T10:37:00",
+                "tiempoLlegada": "2024-11-01T12:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.160270337,
+                    "longitud": -74.225776072
+                },
+                "destino": {
+                    "latitud": -11.25390265,
+                    "longitud": -74.63700127
+                },
+                "distancia": 216.63803329123323,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T13:36:00",
+                "tiempoLlegada": "2024-11-01T17:12:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.25390265,
+                    "longitud": -74.63700127
+                },
+                "destino": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "distancia": 211.52297649503336,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T18:12:00",
+                "tiempoLlegada": "2024-11-01T21:43:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "destino": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "distancia": 120.57628205070397,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T22:43:00",
+                "tiempoLlegada": "2024-11-02T00:54:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "destino": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "distancia": 232.61901356405636,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T01:54:00",
+                "tiempoLlegada": "2024-11-02T06:07:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "destino": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "distancia": 221.65768994358046,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T02:54:00",
+                "tiempoLlegada": "2024-11-02T07:19:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 64.16476722042316,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T03:54:00",
+                "tiempoLlegada": "2024-11-02T04:48:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 40.09424405163869
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C003",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "8d263d46-c4fc-45e3-af8d-84f38194b91a",
+                    "fechaHoraPedido": "2024-11-01T09:16:00",
+                    "destino": {
+                        "latitud": -13.07775016,
+                        "longitud": -76.38742903
+                    },
+                    "cantidadEntregada": 3,
+                    "cantidadTotal": 3,
+                    "idCliente": "852809"
+                },
+                {
+                    "codigo": "0819b19a-c9af-4836-a0a7-10f48d1b9b33",
+                    "fechaHoraPedido": "2024-11-01T09:47:00",
+                    "destino": {
+                        "latitud": -13.70989392,
+                        "longitud": -76.20320928
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "815890"
+                },
+                {
+                    "codigo": "a5f1f04e-d627-42f9-8d2e-c5db240fc346",
+                    "fechaHoraPedido": "2024-11-01T09:01:00",
+                    "destino": {
+                        "latitud": -13.28333829,
+                        "longitud": -75.31914965
+                    },
+                    "cantidadEntregada": 3,
+                    "cantidadTotal": 7,
+                    "idCliente": "938679"
+                },
+                {
+                    "codigo": "cc43d21c-2693-4b1d-8371-37c52e89e541",
+                    "fechaHoraPedido": "2024-11-01T09:11:00",
+                    "destino": {
+                        "latitud": -12.939913448,
+                        "longitud": -74.247891213
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 6,
+                    "idCliente": "632598"
+                },
+                {
+                    "codigo": "e46579cb-9e1d-494d-b557-0aaca5b046f0",
+                    "fechaHoraPedido": "2024-11-01T10:37:00",
+                    "destino": {
+                        "latitud": -12.06171144,
+                        "longitud": -75.2876197
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 8,
+                    "idCliente": "607195"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -13.07775016,
+                    "longitud": -76.38742903
+                },
+                "distancia": 134.294555380562,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T06:55:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.07775016,
+                    "longitud": -76.38742903
+                },
+                "destino": {
+                    "latitud": -13.70989392,
+                    "longitud": -76.20320928
+                },
+                "distancia": 73.06118171219624,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T07:55:00",
+                "tiempoLlegada": "2024-11-01T08:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.70989392,
+                    "longitud": -76.20320928
+                },
+                "destino": {
+                    "latitud": -13.28333829,
+                    "longitud": -75.31914965
+                },
+                "distancia": 106.7085946311035,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T09:57:00",
+                "tiempoLlegada": "2024-11-01T12:05:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.28333829,
+                    "longitud": -75.31914965
+                },
+                "destino": {
+                    "latitud": -12.939913448,
+                    "longitud": -74.247891213
+                },
+                "distancia": 122.13608006583345,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T13:05:00",
+                "tiempoLlegada": "2024-11-01T15:07:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -12.939913448,
+                    "longitud": -74.247891213
+                },
+                "destino": {
+                    "latitud": -12.06171144,
+                    "longitud": -75.2876197
+                },
+                "distancia": 149.24997301954303,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T16:07:00",
+                "tiempoLlegada": "2024-11-01T18:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -12.06171144,
+                    "longitud": -75.2876197
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 189.53393143473374,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T19:36:00",
+                "tiempoLlegada": "2024-11-01T23:23:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 24.200854850378526
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C004",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 11,
+            "paquetes": [
+                {
+                    "codigo": "cfb5c931-ee74-49a4-b629-70271d81560b",
+                    "fechaHoraPedido": "2024-11-01T10:55:00",
+                    "destino": {
+                        "latitud": -14.53374904,
+                        "longitud": -75.18513226
+                    },
+                    "cantidadEntregada": 11,
+                    "cantidadTotal": 11,
+                    "idCliente": "049315"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -13.28333829,
+                    "longitud": -75.31914965
+                },
+                "distancia": 231.0875781430873,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T09:37:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -13.28333829,
+                    "longitud": -75.31914965
+                },
+                "destino": {
+                    "latitud": -14.53374904,
+                    "longitud": -75.18513226
+                },
+                "distancia": 139.789720792018,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T10:37:00",
+                "tiempoLlegada": "2024-11-01T13:24:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.53374904,
+                    "longitud": -75.18513226
+                },
+                "destino": {
+                    "latitud": -12.45973429,
+                    "longitud": -75.91868825
+                },
+                "distancia": 243.87623042255703,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T14:24:00",
+                "tiempoLlegada": "2024-11-01T17:53:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -12.45973429,
+                    "longitud": -75.91868825
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 129.27707226643264,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T15:24:00",
+                "tiempoLlegada": "2024-11-01T17:14:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 21.079068912673243
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C017",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "22ce1b40-0450-40b0-85f0-71a44710bf94",
+                    "fechaHoraPedido": "2024-11-01T06:29:00",
+                    "destino": {
+                        "latitud": -17.19380361,
+                        "longitud": -70.93469733
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "524964"
+                },
+                {
+                    "codigo": "ee9eaa73-c794-4eee-934d-472410a2d710",
+                    "fechaHoraPedido": "2024-11-01T05:26:00",
+                    "destino": {
+                        "latitud": -14.90852428,
+                        "longitud": -70.19534289
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 2,
+                    "idCliente": "596456"
+                },
+                {
+                    "codigo": "50555f2f-da36-4c60-9d5f-db2a51463651",
+                    "fechaHoraPedido": "2024-11-01T06:13:00",
+                    "destino": {
+                        "latitud": -13.687855135,
+                        "longitud": -71.625581633
+                    },
+                    "cantidadEntregada": 18,
+                    "cantidadTotal": 18,
+                    "idCliente": "413165"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -17.19380361,
+                    "longitud": -70.93469733
+                },
+                "distancia": 109.2033125610935,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T06:33:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -17.19380361,
+                    "longitud": -70.93469733
+                },
+                "destino": {
+                    "latitud": -15.36467853,
+                    "longitud": -70.36754564
+                },
+                "distancia": 212.2061904199867,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T07:33:00",
+                "tiempoLlegada": "2024-11-01T11:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -15.36467853,
+                    "longitud": -70.36754564
+                },
+                "destino": {
+                    "latitud": -14.90852428,
+                    "longitud": -70.19534289
+                },
+                "distancia": 53.98492332728213,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T12:47:00",
+                "tiempoLlegada": "2024-11-01T13:40:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.90852428,
+                    "longitud": -70.19534289
+                },
+                "destino": {
+                    "latitud": -13.687855135,
+                    "longitud": -71.625581633
+                },
+                "distancia": 205.35737518607357,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T14:40:00",
+                "tiempoLlegada": "2024-11-01T18:05:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.687855135,
+                    "longitud": -71.625581633
+                },
+                "destino": {
+                    "latitud": -15.63674194,
+                    "longitud": -71.60198249
+                },
+                "distancia": 216.72119284323236,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T19:05:00",
+                "tiempoLlegada": "2024-11-01T23:25:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -15.63674194,
+                    "longitud": -71.60198249
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 85.02253184068584,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T20:05:00",
+                "tiempoLlegada": "2024-11-01T21:17:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 26.22460568176779
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C018",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "5880caca-86b6-4043-ba55-7931bdd95d3b",
+                    "fechaHoraPedido": "2024-11-01T09:31:00",
+                    "destino": {
+                        "latitud": -15.84061229,
+                        "longitud": -70.02800689
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 9,
+                    "idCliente": "741988"
+                },
+                {
+                    "codigo": "c85b573f-41eb-4fbb-a916-43066d849537",
+                    "fechaHoraPedido": "2024-11-01T10:23:00",
+                    "destino": {
+                        "latitud": -14.21694329,
+                        "longitud": -71.43203327
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 14,
+                    "idCliente": "921724"
+                },
+                {
+                    "codigo": "d77ca28e-0d86-4eeb-9f94-d3adbe42aef2",
+                    "fechaHoraPedido": "2024-11-01T06:52:00",
+                    "destino": {
+                        "latitud": -13.6373465,
+                        "longitud": -72.87887764
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "769431"
+                },
+                {
+                    "codigo": "9859984c-9798-45cf-9177-84b3b4513149",
+                    "fechaHoraPedido": "2024-11-01T07:42:00",
+                    "destino": {
+                        "latitud": -12.86332266,
+                        "longitud": -72.69287733
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 9,
+                    "idCliente": "294563"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -15.84061229,
+                    "longitud": -70.02800689
+                },
+                "distancia": 172.7334626490692,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T08:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -15.84061229,
+                    "longitud": -70.02800689
+                },
+                "destino": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "distancia": 235.22099084208642,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T09:27:00",
+                "tiempoLlegada": "2024-11-01T13:22:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "destino": {
+                    "latitud": -13.6373465,
+                    "longitud": -72.87887764
+                },
+                "distancia": 168.92831228476757,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T14:22:00",
+                "tiempoLlegada": "2024-11-01T17:10:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.6373465,
+                    "longitud": -72.87887764
+                },
+                "destino": {
+                    "latitud": -12.86332266,
+                    "longitud": -72.69287733
+                },
+                "distancia": 88.39058914100676,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T18:10:00",
+                "tiempoLlegada": "2024-11-01T19:38:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -12.86332266,
+                    "longitud": -72.69287733
+                },
+                "destino": {
+                    "latitud": -14.45016903,
+                    "longitud": -72.08208239
+                },
+                "distancia": 188.38692278559867,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T20:38:00",
+                "tiempoLlegada": "2024-11-01T23:46:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -14.45016903,
+                    "longitud": -72.08208239
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 224.41721624455406,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T21:38:00",
+                "tiempoLlegada": "2024-11-02T02:07:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 32.91992020008118
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C019",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 6,
+            "paquetes": [
+                {
+                    "codigo": "c85b573f-41eb-4fbb-a916-43066d849537",
+                    "fechaHoraPedido": "2024-11-01T10:23:00",
+                    "destino": {
+                        "latitud": -14.21694329,
+                        "longitud": -71.43203327
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 14,
+                    "idCliente": "921724"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "distancia": 242.87408322278887,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T05:00:00",
+                "tiempoLlegada": "2024-11-01T09:51:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 242.87408322278887,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T10:51:00",
+                "tiempoLlegada": "2024-11-01T15:42:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 17.572444993367334
+    }
+]
+
+
+[
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C013",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "6bff1c4d-e375-4ea1-8bb8-d9dbf4d1750d",
+                    "fechaHoraPedido": "2024-11-01T12:39:00",
+                    "destino": {
+                        "latitud": -7.22728914,
+                        "longitud": -79.42963328
+                    },
+                    "cantidadEntregada": 12,
+                    "cantidadTotal": 12,
+                    "idCliente": "588508"
+                },
+                {
+                    "codigo": "00fefa9b-a4db-4cf7-b142-11fcb60d7b29",
+                    "fechaHoraPedido": "2024-11-01T11:29:00",
+                    "destino": {
+                        "latitud": -8.60439329,
+                        "longitud": -77.14935042
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 6,
+                    "idCliente": "384252"
+                },
+                {
+                    "codigo": "f0a6e6bd-3a52-4cee-8a0f-821f564791d0",
+                    "fechaHoraPedido": "2024-11-01T14:03:00",
+                    "destino": {
+                        "latitud": -6.936411259,
+                        "longitud": -76.771851596
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "995750"
+                },
+                {
+                    "codigo": "827e670f-3da3-48bb-a520-658405c9d80a",
+                    "fechaHoraPedido": "2024-11-01T11:10:00",
+                    "destino": {
+                        "latitud": -6.42183785,
+                        "longitud": -76.5161846
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 2,
+                    "idCliente": "554923"
+                },
+                {
+                    "codigo": "8c162627-8a85-40b6-88a5-cbb649dbea22",
+                    "fechaHoraPedido": "2024-11-01T14:57:00",
+                    "destino": {
+                        "latitud": -5.895268749,
+                        "longitud": -76.104405351
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 21,
+                    "idCliente": "509588"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -7.22728914,
+                    "longitud": -79.42963328
+                },
+                "distancia": 107.8182184742373,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T12:32:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.22728914,
+                    "longitud": -79.42963328
+                },
+                "destino": {
+                    "latitud": -8.55458704,
+                    "longitud": -77.6312206
+                },
+                "distancia": 247.0152969380432,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T13:32:00",
+                "tiempoLlegada": "2024-11-01T17:03:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -8.55458704,
+                    "longitud": -77.6312206
+                },
+                "destino": {
+                    "latitud": -8.60439329,
+                    "longitud": -77.14935042
+                },
+                "distancia": 53.27059642791568,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T18:03:00",
+                "tiempoLlegada": "2024-11-01T19:06:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.60439329,
+                    "longitud": -77.14935042
+                },
+                "destino": {
+                    "latitud": -6.936411259,
+                    "longitud": -76.771851596
+                },
+                "distancia": 190.07679007299004,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T20:06:00",
+                "tiempoLlegada": "2024-11-01T23:33:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.936411259,
+                    "longitud": -76.771851596
+                },
+                "destino": {
+                    "latitud": -6.42183785,
+                    "longitud": -76.5161846
+                },
+                "distancia": 63.805612277435614,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T00:33:00",
+                "tiempoLlegada": "2024-11-02T01:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.42183785,
+                    "longitud": -76.5161846
+                },
+                "destino": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "distancia": 74.16663612635857,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T02:31:00",
+                "tiempoLlegada": "2024-11-02T03:39:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "destino": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "distancia": 198.9953416756509,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T04:39:00",
+                "tiempoLlegada": "2024-11-02T07:42:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 163.00261993252124,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T05:39:00",
+                "tiempoLlegada": "2024-11-02T08:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T06:39:00",
+                "tiempoLlegada": "2024-11-02T08:22:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 34.223679574905404
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C014",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 25,
+            "paquetes": [
+                {
+                    "codigo": "f75c069f-0424-45eb-9a2b-6aaf8836aba5",
+                    "fechaHoraPedido": "2024-11-01T16:53:00",
+                    "destino": {
+                        "latitud": -6.70410837,
+                        "longitud": -79.90620927
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 8,
+                    "idCliente": "497419"
+                },
+                {
+                    "codigo": "3e41cb32-5f13-4df9-bba9-fb3d7bbdbce5",
+                    "fechaHoraPedido": "2024-11-01T16:56:00",
+                    "destino": {
+                        "latitud": -9.03786568,
+                        "longitud": -76.9526168
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 2,
+                    "idCliente": "176518"
+                },
+                {
+                    "codigo": "8c162627-8a85-40b6-88a5-cbb649dbea22",
+                    "fechaHoraPedido": "2024-11-01T14:57:00",
+                    "destino": {
+                        "latitud": -5.895268749,
+                        "longitud": -76.104405351
+                    },
+                    "cantidadEntregada": 15,
+                    "cantidadTotal": 21,
+                    "idCliente": "509588"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -6.70410837,
+                    "longitud": -79.90620927
+                },
+                "distancia": 184.0166500830458,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T13:37:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.70410837,
+                    "longitud": -79.90620927
+                },
+                "destino": {
+                    "latitud": -8.14536716,
+                    "longitud": -78.17327133
+                },
+                "distancia": 249.38386395240724,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T14:37:00",
+                "tiempoLlegada": "2024-11-01T18:10:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -8.14536716,
+                    "longitud": -78.17327133
+                },
+                "destino": {
+                    "latitud": -9.03786568,
+                    "longitud": -76.9526168
+                },
+                "distancia": 166.9133729428329,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T19:10:00",
+                "tiempoLlegada": "2024-11-01T22:30:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.03786568,
+                    "longitud": -76.9526168
+                },
+                "destino": {
+                    "latitud": -6.9206416,
+                    "longitud": -76.33030096
+                },
+                "distancia": 245.19442842447796,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T23:30:00",
+                "tiempoLlegada": "2024-11-02T03:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.9206416,
+                    "longitud": -76.33030096
+                },
+                "destino": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "distancia": 116.716611250541,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T04:57:00",
+                "tiempoLlegada": "2024-11-02T06:44:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.895268749,
+                    "longitud": -76.104405351
+                },
+                "destino": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "distancia": 198.9953416756509,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T07:44:00",
+                "tiempoLlegada": "2024-11-02T10:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 163.00261993252124,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T08:44:00",
+                "tiempoLlegada": "2024-11-02T11:41:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T09:44:00",
+                "tiempoLlegada": "2024-11-02T11:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 36.29404987658072
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C005",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "0158a454-77d8-4b1b-ba6c-2fe4f771a0bf",
+                    "fechaHoraPedido": "2024-11-01T11:59:00",
+                    "destino": {
+                        "latitud": -13.07775016,
+                        "longitud": -76.38742903
+                    },
+                    "cantidadEntregada": 18,
+                    "cantidadTotal": 18,
+                    "idCliente": "105775"
+                },
+                {
+                    "codigo": "c27ecac4-8d80-4829-bdb4-fb0bc15c2446",
+                    "fechaHoraPedido": "2024-11-01T11:20:00",
+                    "destino": {
+                        "latitud": -10.1292297,
+                        "longitud": -76.20446278
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 6,
+                    "idCliente": "462838"
+                },
+                {
+                    "codigo": "64bb8efa-81d1-4491-9452-a7becfee0770",
+                    "fechaHoraPedido": "2024-11-01T12:19:00",
+                    "destino": {
+                        "latitud": -8.38324295,
+                        "longitud": -74.53224034
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 12,
+                    "idCliente": "736358"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -13.07775016,
+                    "longitud": -76.38742903
+                },
+                "distancia": 134.294555380562,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T12:55:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -13.07775016,
+                    "longitud": -76.38742903
+                },
+                "destino": {
+                    "latitud": -11.16104266,
+                    "longitud": -75.99307889
+                },
+                "distancia": 217.3970039932398,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T13:55:00",
+                "tiempoLlegada": "2024-11-01T18:15:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.16104266,
+                    "longitud": -75.99307889
+                },
+                "destino": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "distancia": 117.03471216395661,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T19:15:00",
+                "tiempoLlegada": "2024-11-01T21:12:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "destino": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "distancia": 159.2916897730002,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T22:12:00",
+                "tiempoLlegada": "2024-11-02T00:51:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "destino": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "distancia": 120.57628205070397,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T01:51:00",
+                "tiempoLlegada": "2024-11-02T04:02:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "destino": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "distancia": 232.61901356405636,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T05:02:00",
+                "tiempoLlegada": "2024-11-02T09:15:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "destino": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "distancia": 221.65768994358046,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T06:02:00",
+                "tiempoLlegada": "2024-11-02T10:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 64.16476722042316,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T07:02:00",
+                "tiempoLlegada": "2024-11-02T07:56:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 37.2226296794217
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C006",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "ac84309a-3476-4ad7-a689-bd57c462506a",
+                    "fechaHoraPedido": "2024-11-01T13:32:00",
+                    "destino": {
+                        "latitud": -10.75402494,
+                        "longitud": -77.76079584
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 16,
+                    "idCliente": "816019"
+                },
+                {
+                    "codigo": "47fb2bd5-858f-4e04-a65e-8faf49864f0c",
+                    "fechaHoraPedido": "2024-11-01T13:02:00",
+                    "destino": {
+                        "latitud": -10.15206613,
+                        "longitud": -77.1567994
+                    },
+                    "cantidadEntregada": 14,
+                    "cantidadTotal": 14,
+                    "idCliente": "979266"
+                },
+                {
+                    "codigo": "d1d775e9-c2b3-4d86-8aa2-7687efe1758f",
+                    "fechaHoraPedido": "2024-11-01T13:05:00",
+                    "destino": {
+                        "latitud": -10.57428264,
+                        "longitud": -75.40462179
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 2,
+                    "idCliente": "999153"
+                },
+                {
+                    "codigo": "64bb8efa-81d1-4491-9452-a7becfee0770",
+                    "fechaHoraPedido": "2024-11-01T12:19:00",
+                    "destino": {
+                        "latitud": -8.38324295,
+                        "longitud": -74.53224034
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 12,
+                    "idCliente": "736358"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -10.75402494,
+                    "longitud": -77.76079584
+                },
+                "distancia": 164.23261231964355,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T13:20:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.75402494,
+                    "longitud": -77.76079584
+                },
+                "destino": {
+                    "latitud": -10.15206613,
+                    "longitud": -77.1567994
+                },
+                "distancia": 94.03396826341954,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T14:20:00",
+                "tiempoLlegada": "2024-11-01T15:40:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.15206613,
+                    "longitud": -77.1567994
+                },
+                "destino": {
+                    "latitud": -10.57428264,
+                    "longitud": -75.40462179
+                },
+                "distancia": 197.3208316613038,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T16:40:00",
+                "tiempoLlegada": "2024-11-01T20:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.57428264,
+                    "longitud": -75.40462179
+                },
+                "destino": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "distancia": 141.28757771494813,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T21:36:00",
+                "tiempoLlegada": "2024-11-01T23:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.37935836,
+                    "longitud": -74.96594262
+                },
+                "destino": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "distancia": 120.57628205070397,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T00:57:00",
+                "tiempoLlegada": "2024-11-02T03:08:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.38324295,
+                    "longitud": -74.53224034
+                },
+                "destino": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "distancia": 232.61901356405636,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T04:08:00",
+                "tiempoLlegada": "2024-11-02T08:21:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.89747595,
+                    "longitud": -75.99429652
+                },
+                "destino": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "distancia": 221.65768994358046,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T05:08:00",
+                "tiempoLlegada": "2024-11-02T09:33:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 64.16476722042316,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T06:08:00",
+                "tiempoLlegada": "2024-11-02T07:02:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 37.34148809388047
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C007",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "ac84309a-3476-4ad7-a689-bd57c462506a",
+                    "fechaHoraPedido": "2024-11-01T13:32:00",
+                    "destino": {
+                        "latitud": -10.75402494,
+                        "longitud": -77.76079584
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 16,
+                    "idCliente": "816019"
+                },
+                {
+                    "codigo": "607012c2-8fff-41e0-ae5a-5d84ad1efdca",
+                    "fechaHoraPedido": "2024-11-01T15:17:00",
+                    "destino": {
+                        "latitud": -10.40346472,
+                        "longitud": -77.39679143
+                    },
+                    "cantidadEntregada": 7,
+                    "cantidadTotal": 12,
+                    "idCliente": "434174"
+                },
+                {
+                    "codigo": "3542e0a6-9324-4b87-96cd-72e84c60621f",
+                    "fechaHoraPedido": "2024-11-01T13:56:00",
+                    "destino": {
+                        "latitud": -10.1292297,
+                        "longitud": -76.20446278
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 8,
+                    "idCliente": "455177"
+                },
+                {
+                    "codigo": "1bc1a75d-da77-4ea0-a9b2-e9fcf39e0cc7",
+                    "fechaHoraPedido": "2024-11-01T13:43:00",
+                    "destino": {
+                        "latitud": -10.57428264,
+                        "longitud": -75.40462179
+                    },
+                    "cantidadEntregada": 7,
+                    "cantidadTotal": 7,
+                    "idCliente": "652011"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -10.75402494,
+                    "longitud": -77.76079584
+                },
+                "distancia": 164.23261231964355,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T13:20:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.75402494,
+                    "longitud": -77.76079584
+                },
+                "destino": {
+                    "latitud": -10.40346472,
+                    "longitud": -77.39679143
+                },
+                "distancia": 55.70027464290595,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T14:20:00",
+                "tiempoLlegada": "2024-11-01T15:07:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.40346472,
+                    "longitud": -77.39679143
+                },
+                "destino": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "distancia": 133.97447154747752,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T16:07:00",
+                "tiempoLlegada": "2024-11-01T18:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "destino": {
+                    "latitud": -10.57428264,
+                    "longitud": -75.40462179
+                },
+                "distancia": 100.51660648810231,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T19:47:00",
+                "tiempoLlegada": "2024-11-01T21:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.57428264,
+                    "longitud": -75.40462179
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 241.2531380257404,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T22:27:00",
+                "tiempoLlegada": "2024-11-02T03:16:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 23.14679011196015
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C008",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "607012c2-8fff-41e0-ae5a-5d84ad1efdca",
+                    "fechaHoraPedido": "2024-11-01T15:17:00",
+                    "destino": {
+                        "latitud": -10.40346472,
+                        "longitud": -77.39679143
+                    },
+                    "cantidadEntregada": 5,
+                    "cantidadTotal": 12,
+                    "idCliente": "434174"
+                },
+                {
+                    "codigo": "45f1dba5-9bcc-4bc6-9209-5843aefaaa10",
+                    "fechaHoraPedido": "2024-11-01T16:36:00",
+                    "destino": {
+                        "latitud": -14.8275594,
+                        "longitud": -74.93704615
+                    },
+                    "cantidadEntregada": 12,
+                    "cantidadTotal": 12,
+                    "idCliente": "092736"
+                },
+                {
+                    "codigo": "a3835104-248b-4219-af49-32eafc195e5a",
+                    "fechaHoraPedido": "2024-11-01T15:27:00",
+                    "destino": {
+                        "latitud": -10.07805837,
+                        "longitud": -76.63161342
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "407210"
+                },
+                {
+                    "codigo": "6cdf4b49-5b45-4bdd-a53c-171445ef803a",
+                    "fechaHoraPedido": "2024-11-01T15:42:00",
+                    "destino": {
+                        "latitud": -10.07805837,
+                        "longitud": -76.63161342
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 9,
+                    "idCliente": "361432"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -10.40346472,
+                    "longitud": -77.39679143
+                },
+                "distancia": 186.95092039388442,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T13:40:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.40346472,
+                    "longitud": -77.39679143
+                },
+                "destino": {
+                    "latitud": -11.84476441,
+                    "longitud": -76.38606378
+                },
+                "distancia": 194.53804317561034,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T14:40:00",
+                "tiempoLlegada": "2024-11-01T17:26:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.84476441,
+                    "longitud": -76.38606378
+                },
+                "destino": {
+                    "latitud": -13.6044208,
+                    "longitud": -75.35306965
+                },
+                "distancia": 225.47093633480202,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T18:26:00",
+                "tiempoLlegada": "2024-11-01T22:56:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -13.6044208,
+                    "longitud": -75.35306965
+                },
+                "destino": {
+                    "latitud": -14.8275594,
+                    "longitud": -74.93704615
+                },
+                "distancia": 143.20845706526086,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T23:56:00",
+                "tiempoLlegada": "2024-11-02T02:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.8275594,
+                    "longitud": -74.93704615
+                },
+                "destino": {
+                    "latitud": -13.07775016,
+                    "longitud": -76.38742903
+                },
+                "distancia": 249.70510359889983,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T03:47:00",
+                "tiempoLlegada": "2024-11-02T07:21:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -13.07775016,
+                    "longitud": -76.38742903
+                },
+                "destino": {
+                    "latitud": -11.16104266,
+                    "longitud": -75.99307889
+                },
+                "distancia": 217.3970039932398,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T08:21:00",
+                "tiempoLlegada": "2024-11-02T12:41:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.16104266,
+                    "longitud": -75.99307889
+                },
+                "destino": {
+                    "latitud": -10.07805837,
+                    "longitud": -76.63161342
+                },
+                "distancia": 139.18128103179487,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T13:41:00",
+                "tiempoLlegada": "2024-11-02T16:00:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.07805837,
+                    "longitud": -76.63161342
+                },
+                "destino": {
+                    "latitud": -9.85874366,
+                    "longitud": -76.60839481
+                },
+                "distancia": 24.518895022156403,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T17:00:00",
+                "tiempoLlegada": "2024-11-02T17:24:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.85874366,
+                    "longitud": -76.60839481
+                },
+                "destino": {
+                    "latitud": -10.07805837,
+                    "longitud": -76.63161342
+                },
+                "distancia": 24.518895022156403,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T18:24:00",
+                "tiempoLlegada": "2024-11-02T18:48:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -10.07805837,
+                    "longitud": -76.63161342
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 223.10343248257013,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T19:48:00",
+                "tiempoLlegada": "2024-11-03T00:15:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 38.799707867509625
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C009",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 2,
+            "paquetes": [
+                {
+                    "codigo": "0a3857aa-f452-4984-83fe-64d7943698b7",
+                    "fechaHoraPedido": "2024-11-01T16:40:00",
+                    "destino": {
+                        "latitud": -9.92954506,
+                        "longitud": -76.23964566
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 2,
+                    "idCliente": "009809"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "distancia": 231.40109625026437,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T15:37:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "destino": {
+                    "latitud": -9.92954506,
+                    "longitud": -76.23964566
+                },
+                "distancia": 22.535633695584107,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T16:37:00",
+                "tiempoLlegada": "2024-11-01T16:59:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.92954506,
+                    "longitud": -76.23964566
+                },
+                "destino": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "distancia": 203.69176524397747,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T17:59:00",
+                "tiempoLlegada": "2024-11-01T22:03:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -11.495407273,
+                    "longitud": -77.207186976
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 64.16476722042316,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T18:59:00",
+                "tiempoLlegada": "2024-11-01T19:53:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 17.98456549313145
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C020",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "428aaa3d-e49b-4a80-8f94-770291d6f275",
+                    "fechaHoraPedido": "2024-11-01T15:57:00",
+                    "destino": {
+                        "latitud": -15.77213819,
+                        "longitud": -73.36540868
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 9,
+                    "idCliente": "676825"
+                },
+                {
+                    "codigo": "536e0017-df6c-45f7-9260-8721f0a0341b",
+                    "fechaHoraPedido": "2024-11-01T15:20:00",
+                    "destino": {
+                        "latitud": -14.10538044,
+                        "longitud": -72.70764095
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 2,
+                    "idCliente": "714969"
+                },
+                {
+                    "codigo": "4d5dfff7-1a3e-41f2-bbd3-943d9a011ef0",
+                    "fechaHoraPedido": "2024-11-01T14:23:00",
+                    "destino": {
+                        "latitud": -14.21694329,
+                        "longitud": -71.43203327
+                    },
+                    "cantidadEntregada": 12,
+                    "cantidadTotal": 12,
+                    "idCliente": "684021"
+                },
+                {
+                    "codigo": "9af23689-47c4-43a6-bfcc-6d9274241bf9",
+                    "fechaHoraPedido": "2024-11-01T11:06:00",
+                    "destino": {
+                        "latitud": -15.2041154,
+                        "longitud": -69.76143802
+                    },
+                    "cantidadEntregada": 7,
+                    "cantidadTotal": 7,
+                    "idCliente": "650087"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -15.77213819,
+                    "longitud": -73.36540868
+                },
+                "distancia": 207.40263880438175,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T13:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -15.77213819,
+                    "longitud": -73.36540868
+                },
+                "destino": {
+                    "latitud": -14.10538044,
+                    "longitud": -72.70764095
+                },
+                "distancia": 198.34984241809778,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T14:57:00",
+                "tiempoLlegada": "2024-11-01T18:55:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.10538044,
+                    "longitud": -72.70764095
+                },
+                "destino": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "distancia": 138.08889604264255,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T19:55:00",
+                "tiempoLlegada": "2024-11-01T22:13:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "destino": {
+                    "latitud": -15.2041154,
+                    "longitud": -69.76143802
+                },
+                "distancia": 210.5475740263626,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T23:13:00",
+                "tiempoLlegada": "2024-11-02T02:43:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -15.2041154,
+                    "longitud": -69.76143802
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 231.81075802151975,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T03:43:00",
+                "tiempoLlegada": "2024-11-02T08:21:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 28.012929843768763
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C021",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 12,
+            "paquetes": [
+                {
+                    "codigo": "a3269e5f-3156-49e6-bd20-05b158b21dc1",
+                    "fechaHoraPedido": "2024-11-01T16:17:00",
+                    "destino": {
+                        "latitud": -14.90852428,
+                        "longitud": -70.19534289
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "209086"
+                },
+                {
+                    "codigo": "68e603fb-a6d8-4266-99da-895a16d99e9a",
+                    "fechaHoraPedido": "2024-11-01T16:10:00",
+                    "destino": {
+                        "latitud": -14.10538044,
+                        "longitud": -72.70764095
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 8,
+                    "idCliente": "632900"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -14.90852428,
+                    "longitud": -70.19534289
+                },
+                "distancia": 219.30742868917181,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T11:00:00",
+                "tiempoLlegada": "2024-11-01T15:23:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.90852428,
+                    "longitud": -70.19534289
+                },
+                "destino": {
+                    "latitud": -13.94619465,
+                    "longitud": -72.1744466
+                },
+                "distancia": 238.4776728453222,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T16:23:00",
+                "tiempoLlegada": "2024-11-01T20:21:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -13.94619465,
+                    "longitud": -72.1744466
+                },
+                "destino": {
+                    "latitud": -14.10538044,
+                    "longitud": -72.70764095
+                },
+                "distancia": 60.182769710128404,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T21:21:00",
+                "tiempoLlegada": "2024-11-01T22:21:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.10538044,
+                    "longitud": -72.70764095
+                },
+                "destino": {
+                    "latitud": -15.63674194,
+                    "longitud": -71.60198249
+                },
+                "distancia": 207.63828178115043,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T23:21:00",
+                "tiempoLlegada": "2024-11-02T03:30:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -15.63674194,
+                    "longitud": -71.60198249
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 85.02253184068584,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T00:21:00",
+                "tiempoLlegada": "2024-11-02T01:33:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 24.098569083068462
+    }
+]
+
+
+[
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "B008",
+            "tipo": "B",
+            "capacidad": 45,
+            "cargaActual": 45,
+            "paquetes": [
+                {
+                    "codigo": "882de421-b7ea-44ae-804c-099c18dc17a6",
+                    "fechaHoraPedido": "2024-11-01T20:34:00",
+                    "destino": {
+                        "latitud": -9.10103564,
+                        "longitud": -77.01682676
+                    },
+                    "cantidadEntregada": 21,
+                    "cantidadTotal": 21,
+                    "idCliente": "633302"
+                },
+                {
+                    "codigo": "60d28b7c-617e-4536-8aec-a01f55e9761f",
+                    "fechaHoraPedido": "2024-11-01T19:41:00",
+                    "destino": {
+                        "latitud": -3.5006804,
+                        "longitud": -80.27502228
+                    },
+                    "cantidadEntregada": 1,
+                    "cantidadTotal": 20,
+                    "idCliente": "043738"
+                },
+                {
+                    "codigo": "c8a4ebf9-4e29-4862-9578-c9a766c36583",
+                    "fechaHoraPedido": "2024-11-01T21:12:00",
+                    "destino": {
+                        "latitud": -6.22940827,
+                        "longitud": -77.8724339
+                    },
+                    "cantidadEntregada": 12,
+                    "cantidadTotal": 23,
+                    "idCliente": "363298"
+                },
+                {
+                    "codigo": "d62860b6-8350-4f97-a717-6808b65c8207",
+                    "fechaHoraPedido": "2024-11-01T19:59:00",
+                    "destino": {
+                        "latitud": -7.35052054,
+                        "longitud": -75.00906072
+                    },
+                    "cantidadEntregada": 11,
+                    "cantidadTotal": 11,
+                    "idCliente": "765080"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -9.10103564,
+                    "longitud": -77.01682676
+                },
+                "distancia": 247.0300641177009,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T20:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.10103564,
+                    "longitud": -77.01682676
+                },
+                "destino": {
+                    "latitud": -7.33606865,
+                    "longitud": -78.17047055
+                },
+                "distancia": 233.73945437771943,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T21:31:00",
+                "tiempoLlegada": "2024-11-02T02:11:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.33606865,
+                    "longitud": -78.17047055
+                },
+                "destino": {
+                    "latitud": -5.70880322,
+                    "longitud": -78.80782547
+                },
+                "distancia": 194.15998458478597,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T03:11:00",
+                "tiempoLlegada": "2024-11-02T06:25:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.70880322,
+                    "longitud": -78.80782547
+                },
+                "destino": {
+                    "latitud": -4.64022578,
+                    "longitud": -79.71523023
+                },
+                "distancia": 155.6140805544593,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T07:25:00",
+                "tiempoLlegada": "2024-11-02T10:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -4.64022578,
+                    "longitud": -79.71523023
+                },
+                "destino": {
+                    "latitud": -3.5006804,
+                    "longitud": -80.27502228
+                },
+                "distancia": 141.10550475656427,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T11:31:00",
+                "tiempoLlegada": "2024-11-02T13:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -3.5006804,
+                    "longitud": -80.27502228
+                },
+                "destino": {
+                    "latitud": -5.14625044,
+                    "longitud": -79.00497127
+                },
+                "distancia": 230.89086633649498,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T14:31:00",
+                "tiempoLlegada": "2024-11-02T19:08:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.14625044,
+                    "longitud": -79.00497127
+                },
+                "destino": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "distancia": 173.80708641304616,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T20:08:00",
+                "tiempoLlegada": "2024-11-02T23:17:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "destino": {
+                    "latitud": -6.9206416,
+                    "longitud": -76.33030096
+                },
+                "distancia": 186.8857388199244,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-03T00:17:00",
+                "tiempoLlegada": "2024-11-03T03:09:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.9206416,
+                    "longitud": -76.33030096
+                },
+                "destino": {
+                    "latitud": -7.35052054,
+                    "longitud": -75.00906072
+                },
+                "distancia": 153.41379174780678,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-03T04:09:00",
+                "tiempoLlegada": "2024-11-03T06:30:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.35052054,
+                    "longitud": -75.00906072
+                },
+                "destino": {
+                    "latitud": -7.1804106,
+                    "longitud": -76.72644242
+                },
+                "distancia": 190.3727084824741,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-03T07:30:00",
+                "tiempoLlegada": "2024-11-03T10:25:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.1804106,
+                    "longitud": -76.72644242
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 230.15226879169077,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-03T08:30:00",
+                "tiempoLlegada": "2024-11-03T12:41:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-03T09:30:00",
+                "tiempoLlegada": "2024-11-03T11:13:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 53.2683072822768
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "B009",
+            "tipo": "B",
+            "capacidad": 45,
+            "cargaActual": 20,
+            "paquetes": [
+                {
+                    "codigo": "c8a4ebf9-4e29-4862-9578-c9a766c36583",
+                    "fechaHoraPedido": "2024-11-01T21:12:00",
+                    "destino": {
+                        "latitud": -6.22940827,
+                        "longitud": -77.8724339
+                    },
+                    "cantidadEntregada": 11,
+                    "cantidadTotal": 23,
+                    "idCliente": "363298"
+                },
+                {
+                    "codigo": "cf79a0af-9a86-4760-8b8b-15fed377ced0",
+                    "fechaHoraPedido": "2024-11-01T21:27:00",
+                    "destino": {
+                        "latitud": -3.74934598,
+                        "longitud": -73.24436621
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 9,
+                    "idCliente": "958660"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -6.86553233,
+                    "longitud": -78.14556339
+                },
+                "distancia": 169.35685084098432,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T20:23:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.86553233,
+                    "longitud": -78.14556339
+                },
+                "destino": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "distancia": 76.90017990916203,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-01T21:23:00",
+                "tiempoLlegada": "2024-11-01T22:46:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.22940827,
+                    "longitud": -77.8724339
+                },
+                "destino": {
+                    "latitud": -4.8315686,
+                    "longitud": -76.5545112
+                },
+                "distancia": 213.1538769667855,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-01T23:46:00",
+                "tiempoLlegada": "2024-11-02T03:02:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -4.8315686,
+                    "longitud": -76.5545112
+                },
+                "destino": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "distancia": 506.21385451516636,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T04:02:00",
+                "tiempoLlegada": "2024-11-02T11:49:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -2.44719667,
+                    "longitud": -72.66825135
+                },
+                "destino": {
+                    "latitud": -3.74934598,
+                    "longitud": -73.24436621
+                },
+                "distancia": 158.29241994602933,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T12:49:00",
+                "tiempoLlegada": "2024-11-02T15:15:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -3.74934598,
+                    "longitud": -73.24436621
+                },
+                "destino": {
+                    "latitud": -5.06369292,
+                    "longitud": -73.856386
+                },
+                "distancia": 161.1309371789118,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T16:15:00",
+                "tiempoLlegada": "2024-11-02T18:43:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.06369292,
+                    "longitud": -73.856386
+                },
+                "destino": {
+                    "latitud": -9.03687544,
+                    "longitud": -75.5086237
+                },
+                "distancia": 477.9288412656649,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T17:15:00",
+                "tiempoLlegada": "2024-11-03T00:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -9.03687544,
+                    "longitud": -75.5086237
+                },
+                "destino": {
+                    "latitud": -8.60439329,
+                    "longitud": -77.14935042
+                },
+                "distancia": 186.58591213561598,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T18:15:00",
+                "tiempoLlegada": "2024-11-02T21:38:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -8.60439329,
+                    "longitud": -77.14935042
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 213.88574797142655,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T19:15:00",
+                "tiempoLlegada": "2024-11-02T23:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 57.291535950828646
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C015",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "2b34a525-c291-4a0e-bb36-2503ed01c638",
+                    "fechaHoraPedido": "2024-11-01T18:22:00",
+                    "destino": {
+                        "latitud": -7.22728914,
+                        "longitud": -79.42963328
+                    },
+                    "cantidadEntregada": 5,
+                    "cantidadTotal": 5,
+                    "idCliente": "556704"
+                },
+                {
+                    "codigo": "a25d1e5d-b277-4ddb-909e-1281d726b0ca",
+                    "fechaHoraPedido": "2024-11-01T17:03:00",
+                    "destino": {
+                        "latitud": -6.63922698,
+                        "longitud": -79.78803991
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "270762"
+                },
+                {
+                    "codigo": "c5f126cf-93bf-4ee4-8ce9-be48988cd1d3",
+                    "fechaHoraPedido": "2024-11-01T17:21:00",
+                    "destino": {
+                        "latitud": -5.55754525,
+                        "longitud": -80.82227528
+                    },
+                    "cantidadEntregada": 11,
+                    "cantidadTotal": 11,
+                    "idCliente": "542566"
+                },
+                {
+                    "codigo": "6de2c40f-0f1c-46d5-a046-103c8ff3a260",
+                    "fechaHoraPedido": "2024-11-01T17:57:00",
+                    "destino": {
+                        "latitud": -5.70880322,
+                        "longitud": -78.80782547
+                    },
+                    "cantidadEntregada": 1,
+                    "cantidadTotal": 1,
+                    "idCliente": "259652"
+                },
+                {
+                    "codigo": "21e562e4-ebc1-49ea-8dc8-04ca3c329ad3",
+                    "fechaHoraPedido": "2024-11-01T19:08:00",
+                    "destino": {
+                        "latitud": -7.33606865,
+                        "longitud": -78.17047055
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 20,
+                    "idCliente": "880187"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -7.22728914,
+                    "longitud": -79.42963328
+                },
+                "distancia": 107.8182184742373,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T18:32:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.22728914,
+                    "longitud": -79.42963328
+                },
+                "destino": {
+                    "latitud": -6.63922698,
+                    "longitud": -79.78803991
+                },
+                "distancia": 76.42574162963807,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T19:32:00",
+                "tiempoLlegada": "2024-11-01T20:37:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.63922698,
+                    "longitud": -79.78803991
+                },
+                "destino": {
+                    "latitud": -5.55754525,
+                    "longitud": -80.82227528
+                },
+                "distancia": 165.9590615693853,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T21:37:00",
+                "tiempoLlegada": "2024-11-01T23:59:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.55754525,
+                    "longitud": -80.82227528
+                },
+                "destino": {
+                    "latitud": -5.70880322,
+                    "longitud": -78.80782547
+                },
+                "distancia": 223.54829069690732,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T00:59:00",
+                "tiempoLlegada": "2024-11-02T05:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.70880322,
+                    "longitud": -78.80782547
+                },
+                "destino": {
+                    "latitud": -7.33606865,
+                    "longitud": -78.17047055
+                },
+                "distancia": 194.15998458478597,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T06:27:00",
+                "tiempoLlegada": "2024-11-02T09:41:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.33606865,
+                    "longitud": -78.17047055
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 127.99118582332322,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T10:41:00",
+                "tiempoLlegada": "2024-11-02T13:14:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 24.829513299568852
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C016",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "60d28b7c-617e-4536-8aec-a01f55e9761f",
+                    "fechaHoraPedido": "2024-11-01T19:41:00",
+                    "destino": {
+                        "latitud": -3.5006804,
+                        "longitud": -80.27502228
+                    },
+                    "cantidadEntregada": 19,
+                    "cantidadTotal": 20,
+                    "idCliente": "043738"
+                },
+                {
+                    "codigo": "21e562e4-ebc1-49ea-8dc8-04ca3c329ad3",
+                    "fechaHoraPedido": "2024-11-01T19:08:00",
+                    "destino": {
+                        "latitud": -7.33606865,
+                        "longitud": -78.17047055
+                    },
+                    "cantidadEntregada": 11,
+                    "cantidadTotal": 20,
+                    "idCliente": "880187"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -6.63922698,
+                    "longitud": -79.78803991
+                },
+                "distancia": 183.9073792377176,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T19:37:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.63922698,
+                    "longitud": -79.78803991
+                },
+                "destino": {
+                    "latitud": -4.64022578,
+                    "longitud": -79.71523023
+                },
+                "distancia": 222.42474634897002,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T20:37:00",
+                "tiempoLlegada": "2024-11-01T23:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -4.64022578,
+                    "longitud": -79.71523023
+                },
+                "destino": {
+                    "latitud": -3.5006804,
+                    "longitud": -80.27502228
+                },
+                "distancia": 141.10550475656427,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T00:47:00",
+                "tiempoLlegada": "2024-11-02T02:47:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -3.5006804,
+                    "longitud": -80.27502228
+                },
+                "destino": {
+                    "latitud": -5.14625044,
+                    "longitud": -79.00497127
+                },
+                "distancia": 230.89086633649498,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T03:47:00",
+                "tiempoLlegada": "2024-11-02T08:24:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -5.14625044,
+                    "longitud": -79.00497127
+                },
+                "destino": {
+                    "latitud": -7.15706855,
+                    "longitud": -78.51752139
+                },
+                "distancia": 229.9946399803973,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T09:24:00",
+                "tiempoLlegada": "2024-11-02T13:13:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.15706855,
+                    "longitud": -78.51752139
+                },
+                "destino": {
+                    "latitud": -7.33606865,
+                    "longitud": -78.17047055
+                },
+                "distancia": 43.14718544522641,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T14:13:00",
+                "tiempoLlegada": "2024-11-02T14:56:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.33606865,
+                    "longitud": -78.17047055
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 127.99118582332322,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T15:56:00",
+                "tiempoLlegada": "2024-11-02T18:29:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 26.11036609308873
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C010",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 17,
+            "paquetes": [
+                {
+                    "codigo": "bd2f374c-d12b-4e3a-b9f4-e8071ca477fd",
+                    "fechaHoraPedido": "2024-11-01T21:53:00",
+                    "destino": {
+                        "latitud": -11.51659417,
+                        "longitud": -75.90003919
+                    },
+                    "cantidadEntregada": 16,
+                    "cantidadTotal": 16,
+                    "idCliente": "549791"
+                },
+                {
+                    "codigo": "c15ec825-75a9-4701-b250-3ebf12315d00",
+                    "fechaHoraPedido": "2024-11-01T17:41:00",
+                    "destino": {
+                        "latitud": -12.06171144,
+                        "longitud": -75.2876197
+                    },
+                    "cantidadEntregada": 1,
+                    "cantidadTotal": 1,
+                    "idCliente": "720231"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -11.51659417,
+                    "longitud": -75.90003919
+                },
+                "distancia": 136.4046158334781,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T19:43:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -11.51659417,
+                    "longitud": -75.90003919
+                },
+                "destino": {
+                    "latitud": -12.06171144,
+                    "longitud": -75.2876197
+                },
+                "distancia": 90.0988604613606,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T20:43:00",
+                "tiempoLlegada": "2024-11-01T22:13:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -12.06171144,
+                    "longitud": -75.2876197
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 189.53393143473374,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T23:13:00",
+                "tiempoLlegada": "2024-11-02T03:00:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 15.81109724841492
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C022",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "f642c6c9-c516-49e6-a4b8-95d68778cd2a",
+                    "fechaHoraPedido": "2024-11-01T18:14:00",
+                    "destino": {
+                        "latitud": -14.45016903,
+                        "longitud": -72.08208239
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "091257"
+                },
+                {
+                    "codigo": "d99d7bde-fafe-4d42-bdb0-243e8f069899",
+                    "fechaHoraPedido": "2024-11-01T17:56:00",
+                    "destino": {
+                        "latitud": -14.10538044,
+                        "longitud": -72.70764095
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 9,
+                    "idCliente": "468954"
+                },
+                {
+                    "codigo": "10123d2e-bba8-4692-8c4e-613d2d574b25",
+                    "fechaHoraPedido": "2024-11-01T17:39:00",
+                    "destino": {
+                        "latitud": -15.01697752,
+                        "longitud": -73.78089374
+                    },
+                    "cantidadEntregada": 11,
+                    "cantidadTotal": 11,
+                    "idCliente": "170218"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -14.45016903,
+                    "longitud": -72.08208239
+                },
+                "distancia": 224.41721624455406,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T21:29:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.45016903,
+                    "longitud": -72.08208239
+                },
+                "destino": {
+                    "latitud": -14.10538044,
+                    "longitud": -72.70764095
+                },
+                "distancia": 77.54996650696374,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-01T22:29:00",
+                "tiempoLlegada": "2024-11-01T23:46:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.10538044,
+                    "longitud": -72.70764095
+                },
+                "destino": {
+                    "latitud": -15.01697752,
+                    "longitud": -73.78089374
+                },
+                "distancia": 153.6761755390418,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T00:46:00",
+                "tiempoLlegada": "2024-11-02T03:19:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -15.01697752,
+                    "longitud": -73.78089374
+                },
+                "destino": {
+                    "latitud": -15.63674194,
+                    "longitud": -71.60198249
+                },
+                "distancia": 243.61496533006834,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T04:19:00",
+                "tiempoLlegada": "2024-11-02T09:11:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -15.63674194,
+                    "longitud": -71.60198249
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 85.02253184068584,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T05:19:00",
+                "tiempoLlegada": "2024-11-02T06:31:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 25.515927167642072
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C023",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 8,
+            "paquetes": [
+                {
+                    "codigo": "a0e6db5f-6de3-42aa-b851-79fe52753c72",
+                    "fechaHoraPedido": "2024-11-01T18:35:00",
+                    "destino": {
+                        "latitud": -14.79311928,
+                        "longitud": -71.41288314
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 8,
+                    "idCliente": "980637"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -14.79311928,
+                    "longitud": -71.41288314
+                },
+                "distancia": 179.03940814436527,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T17:00:00",
+                "tiempoLlegada": "2024-11-01T20:34:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.79311928,
+                    "longitud": -71.41288314
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 179.03940814436527,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T21:34:00",
+                "tiempoLlegada": "2024-11-02T01:08:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 13.742364488661917
+    }
+]
+
+
+[
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "A005",
+            "tipo": "A",
+            "capacidad": 90,
+            "cargaActual": 24,
+            "paquetes": [
+                {
+                    "codigo": "1fc5e9f6-a534-4a91-945a-58363d275c29",
+                    "fechaHoraPedido": "2024-11-02T03:55:00",
+                    "destino": {
+                        "latitud": -7.22728914,
+                        "longitud": -79.42963328
+                    },
+                    "cantidadEntregada": 5,
+                    "cantidadTotal": 5,
+                    "idCliente": "075213"
+                },
+                {
+                    "codigo": "114fa551-a030-4f28-9b61-ad74ca8ba307",
+                    "fechaHoraPedido": "2024-11-02T02:17:00",
+                    "destino": {
+                        "latitud": -6.77150465,
+                        "longitud": -79.83866166
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 6,
+                    "idCliente": "901415"
+                },
+                {
+                    "codigo": "3fc05bd9-556c-429d-bf48-9116ecefbbec",
+                    "fechaHoraPedido": "2024-11-02T04:34:00",
+                    "destino": {
+                        "latitud": -9.722084882,
+                        "longitud": -77.45614687
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "140966"
+                },
+                {
+                    "codigo": "2918ac4a-7059-4915-9ffd-a41a2850d2dc",
+                    "fechaHoraPedido": "2024-11-02T01:38:00",
+                    "destino": {
+                        "latitud": -5.90432416,
+                        "longitud": -77.79809916
+                    },
+                    "cantidadEntregada": 3,
+                    "cantidadTotal": 12,
+                    "idCliente": "885801"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -7.22728914,
+                    "longitud": -79.42963328
+                },
+                "distancia": 107.8182184742373,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T23:00:00",
+                "tiempoLlegada": "2024-11-02T00:32:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.22728914,
+                    "longitud": -79.42963328
+                },
+                "destino": {
+                    "latitud": -6.77150465,
+                    "longitud": -79.83866166
+                },
+                "distancia": 67.87067243091535,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T01:32:00",
+                "tiempoLlegada": "2024-11-02T02:30:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -6.77150465,
+                    "longitud": -79.83866166
+                },
+                "destino": {
+                    "latitud": -8.14536716,
+                    "longitud": -78.17327133
+                },
+                "distancia": 238.85304606869545,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T03:30:00",
+                "tiempoLlegada": "2024-11-02T06:54:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -8.14536716,
+                    "longitud": -78.17327133
+                },
+                "destino": {
+                    "latitud": -9.722084882,
+                    "longitud": -77.45614687
+                },
+                "distancia": 192.20551214184476,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T07:54:00",
+                "tiempoLlegada": "2024-11-02T10:38:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.722084882,
+                    "longitud": -77.45614687
+                },
+                "destino": {
+                    "latitud": -7.62374351,
+                    "longitud": -78.04600251
+                },
+                "distancia": 242.16544667388504,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T11:38:00",
+                "tiempoLlegada": "2024-11-02T16:28:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.62374351,
+                    "longitud": -78.04600251
+                },
+                "destino": {
+                    "latitud": -5.90432416,
+                    "longitud": -77.79809916
+                },
+                "distancia": 193.14023244857864,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T17:28:00",
+                "tiempoLlegada": "2024-11-02T20:58:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.90432416,
+                    "longitud": -77.79809916
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 196.92462234505135,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T21:58:00",
+                "tiempoLlegada": "2024-11-03T01:32:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T22:58:00",
+                "tiempoLlegada": "2024-11-03T00:41:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 33.64398980857816
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "B010",
+            "tipo": "B",
+            "capacidad": 45,
+            "cargaActual": 45,
+            "paquetes": [
+                {
+                    "codigo": "c9529a01-6cb0-44e2-8fa9-a9a0e384c01b",
+                    "fechaHoraPedido": "2024-11-02T01:18:00",
+                    "destino": {
+                        "latitud": -7.71379065,
+                        "longitud": -79.10751502
+                    },
+                    "cantidadEntregada": 12,
+                    "cantidadTotal": 12,
+                    "idCliente": "585624"
+                },
+                {
+                    "codigo": "d9a44968-5512-4144-b39e-9dd497675bb7",
+                    "fechaHoraPedido": "2024-11-02T00:59:00",
+                    "destino": {
+                        "latitud": -7.00044888,
+                        "longitud": -78.85143349
+                    },
+                    "cantidadEntregada": 14,
+                    "cantidadTotal": 14,
+                    "idCliente": "998297"
+                },
+                {
+                    "codigo": "1710eb65-cd2f-4f23-8e19-dcfe889d3164",
+                    "fechaHoraPedido": "2024-11-02T00:36:00",
+                    "destino": {
+                        "latitud": -8.60439329,
+                        "longitud": -77.14935042
+                    },
+                    "cantidadEntregada": 10,
+                    "cantidadTotal": 10,
+                    "idCliente": "244769"
+                },
+                {
+                    "codigo": "2918ac4a-7059-4915-9ffd-a41a2850d2dc",
+                    "fechaHoraPedido": "2024-11-02T01:38:00",
+                    "destino": {
+                        "latitud": -5.90432416,
+                        "longitud": -77.79809916
+                    },
+                    "cantidadEntregada": 9,
+                    "cantidadTotal": 12,
+                    "idCliente": "885801"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "destino": {
+                    "latitud": -7.71379065,
+                    "longitud": -79.10751502
+                },
+                "distancia": 45.09620452416942,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T23:00:00",
+                "tiempoLlegada": "2024-11-01T23:38:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.71379065,
+                    "longitud": -79.10751502
+                },
+                "destino": {
+                    "latitud": -7.00044888,
+                    "longitud": -78.85143349
+                },
+                "distancia": 84.19725308849142,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T00:38:00",
+                "tiempoLlegada": "2024-11-02T02:19:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -7.00044888,
+                    "longitud": -78.85143349
+                },
+                "destino": {
+                    "latitud": -8.27593502,
+                    "longitud": -77.29632102
+                },
+                "distancia": 222.45679365640484,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T03:19:00",
+                "tiempoLlegada": "2024-11-02T07:45:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -8.27593502,
+                    "longitud": -77.29632102
+                },
+                "destino": {
+                    "latitud": -8.60439329,
+                    "longitud": -77.14935042
+                },
+                "distancia": 39.94046645494251,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T08:45:00",
+                "tiempoLlegada": "2024-11-02T09:32:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -8.60439329,
+                    "longitud": -77.14935042
+                },
+                "destino": {
+                    "latitud": -6.39590702,
+                    "longitud": -77.4821999
+                },
+                "distancia": 248.29851016709227,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T10:32:00",
+                "tiempoLlegada": "2024-11-02T15:02:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -6.39590702,
+                    "longitud": -77.4821999
+                },
+                "destino": {
+                    "latitud": -5.90432416,
+                    "longitud": -77.79809916
+                },
+                "distancia": 64.86582906155654,
+                "velocidad": 65.0,
+                "tiempoSalida": "2024-11-02T16:02:00",
+                "tiempoLlegada": "2024-11-02T17:01:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -5.90432416,
+                    "longitud": -77.79809916
+                },
+                "destino": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "distancia": 196.92462234505135,
+                "velocidad": 55.0,
+                "tiempoSalida": "2024-11-02T18:01:00",
+                "tiempoLlegada": "2024-11-02T21:35:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -7.36612935,
+                    "longitud": -78.80462726
+                },
+                "destino": {
+                    "latitud": -8.11176389,
+                    "longitud": -79.02868652
+                },
+                "distancia": 86.50810563679205,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T19:01:00",
+                "tiempoLlegada": "2024-11-02T20:44:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 29.709795539063407
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "B001",
+            "tipo": "B",
+            "capacidad": 45,
+            "cargaActual": 31,
+            "paquetes": [
+                {
+                    "codigo": "651f2ab6-3f03-45a5-b1ec-d09a47f1b836",
+                    "fechaHoraPedido": "2024-11-02T02:56:00",
+                    "destino": {
+                        "latitud": -12.0679591,
+                        "longitud": -75.21005132
+                    },
+                    "cantidadEntregada": 17,
+                    "cantidadTotal": 17,
+                    "idCliente": "262960"
+                },
+                {
+                    "codigo": "c23d6799-73c3-4755-be66-2be61524267c",
+                    "fechaHoraPedido": "2024-11-02T04:18:00",
+                    "destino": {
+                        "latitud": -9.85874366,
+                        "longitud": -76.60839481
+                    },
+                    "cantidadEntregada": 14,
+                    "cantidadTotal": 14,
+                    "idCliente": "922982"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "destino": {
+                    "latitud": -12.0679591,
+                    "longitud": -75.21005132
+                },
+                "distancia": 197.9736561892936,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T23:00:00",
+                "tiempoLlegada": "2024-11-02T02:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -12.0679591,
+                    "longitud": -75.21005132
+                },
+                "destino": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "distancia": 241.3411836943364,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T03:57:00",
+                "tiempoLlegada": "2024-11-02T07:58:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -10.1292297,
+                    "longitud": -76.20446278
+                },
+                "destino": {
+                    "latitud": -9.85874366,
+                    "longitud": -76.60839481
+                },
+                "distancia": 53.49035246736145,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T08:58:00",
+                "tiempoLlegada": "2024-11-02T09:51:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -9.85874366,
+                    "longitud": -76.60839481
+                },
+                "destino": {
+                    "latitud": -12.04591952,
+                    "longitud": -77.03049615
+                },
+                "distancia": 247.52932667329378,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T10:51:00",
+                "tiempoLlegada": "2024-11-02T15:48:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 22.77450512674592
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "B011",
+            "tipo": "B",
+            "capacidad": 45,
+            "cargaActual": 8,
+            "paquetes": [
+                {
+                    "codigo": "61ad2f42-b2fb-4752-a66e-2ad74bf020a7",
+                    "fechaHoraPedido": "2024-11-02T03:47:00",
+                    "destino": {
+                        "latitud": -16.24426815,
+                        "longitud": -69.09257008
+                    },
+                    "cantidadEntregada": 8,
+                    "cantidadTotal": 10,
+                    "idCliente": "341642"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -16.21332269,
+                    "longitud": -69.45923452
+                },
+                "distancia": 222.70185517979596,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T23:00:00",
+                "tiempoLlegada": "2024-11-02T03:27:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -16.21332269,
+                    "longitud": -69.45923452
+                },
+                "destino": {
+                    "latitud": -16.24426815,
+                    "longitud": -69.09257008
+                },
+                "distancia": 39.29756251922112,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T04:27:00",
+                "tiempoLlegada": "2024-11-02T05:06:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -16.24426815,
+                    "longitud": -69.09257008
+                },
+                "destino": {
+                    "latitud": -16.67392404,
+                    "longitud": -70.97005505
+                },
+                "distancia": 205.8320373090363,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T06:06:00",
+                "tiempoLlegada": "2024-11-02T10:12:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -16.67392404,
+                    "longitud": -70.97005505
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 67.7370199726606,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T07:06:00",
+                "tiempoLlegada": "2024-11-02T08:04:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 18.27762139906803
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C019",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "ae9256bf-0996-4b31-93cb-055ee9f302fe",
+                    "fechaHoraPedido": "2024-11-02T02:07:00",
+                    "destino": {
+                        "latitud": -15.77213819,
+                        "longitud": -73.36540868
+                    },
+                    "cantidadEntregada": 18,
+                    "cantidadTotal": 18,
+                    "idCliente": "750122"
+                },
+                {
+                    "codigo": "c85b573f-41eb-4fbb-a916-43066d849537",
+                    "fechaHoraPedido": "2024-11-01T10:23:00",
+                    "destino": {
+                        "latitud": -14.21694329,
+                        "longitud": -71.43203327
+                    },
+                    "cantidadEntregada": 6,
+                    "cantidadTotal": 14,
+                    "idCliente": "921724"
+                },
+                {
+                    "codigo": "e7582f73-1f54-445b-a880-bffe8ab64506",
+                    "fechaHoraPedido": "2024-11-02T00:18:00",
+                    "destino": {
+                        "latitud": -12.86332266,
+                        "longitud": -72.69287733
+                    },
+                    "cantidadEntregada": 7,
+                    "cantidadTotal": 7,
+                    "idCliente": "381162"
+                },
+                {
+                    "codigo": "f3cc1875-2672-4684-a965-1d27fa9df823",
+                    "fechaHoraPedido": "2024-11-02T00:06:00",
+                    "destino": {
+                        "latitud": -14.32301928,
+                        "longitud": -69.46661477
+                    },
+                    "cantidadEntregada": 4,
+                    "cantidadTotal": 4,
+                    "idCliente": "274328"
+                },
+                {
+                    "codigo": "022f4b8c-c461-4b3f-8d72-62e4cf0b51bc",
+                    "fechaHoraPedido": "2024-11-02T00:19:00",
+                    "destino": {
+                        "latitud": -14.32301928,
+                        "longitud": -69.46661477
+                    },
+                    "cantidadEntregada": 1,
+                    "cantidadTotal": 1,
+                    "idCliente": "051907"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -15.77213819,
+                    "longitud": -73.36540868
+                },
+                "distancia": 207.40263880438175,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-01T23:00:00",
+                "tiempoLlegada": "2024-11-02T01:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -15.77213819,
+                    "longitud": -73.36540868
+                },
+                "destino": {
+                    "latitud": -14.79311928,
+                    "longitud": -71.41288314
+                },
+                "distancia": 236.0331252767276,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T02:57:00",
+                "tiempoLlegada": "2024-11-02T07:40:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -14.79311928,
+                    "longitud": -71.41288314
+                },
+                "destino": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "distancia": 64.1010050672511,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T08:40:00",
+                "tiempoLlegada": "2024-11-02T09:44:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "destino": {
+                    "latitud": -12.86332266,
+                    "longitud": -72.69287733
+                },
+                "distancia": 203.05758485725474,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T10:44:00",
+                "tiempoLlegada": "2024-11-02T14:07:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -12.86332266,
+                    "longitud": -72.69287733
+                },
+                "destino": {
+                    "latitud": -14.272991125,
+                    "longitud": -71.226499142
+                },
+                "distancia": 222.91621838101094,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T15:07:00",
+                "tiempoLlegada": "2024-11-02T18:49:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -14.272991125,
+                    "longitud": -71.226499142
+                },
+                "destino": {
+                    "latitud": -14.32301928,
+                    "longitud": -69.46661477
+                },
+                "distancia": 189.70969427401738,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T19:49:00",
+                "tiempoLlegada": "2024-11-02T22:58:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.32301928,
+                    "longitud": -69.46661477
+                },
+                "destino": {
+                    "latitud": -14.91416004,
+                    "longitud": -69.86856039
+                },
+                "distancia": 78.68288970558162,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T23:58:00",
+                "tiempoLlegada": "2024-11-03T01:16:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -14.91416004,
+                    "longitud": -69.86856039
+                },
+                "destino": {
+                    "latitud": -14.32301928,
+                    "longitud": -69.46661477
+                },
+                "distancia": 78.68288970558162,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-03T02:16:00",
+                "tiempoLlegada": "2024-11-03T03:34:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.32301928,
+                    "longitud": -69.46661477
+                },
+                "destino": {
+                    "latitud": -15.36467853,
+                    "longitud": -70.36754564
+                },
+                "distancia": 150.97277658267635,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-03T04:34:00",
+                "tiempoLlegada": "2024-11-03T07:04:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -15.36467853,
+                    "longitud": -70.36754564
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 169.90064394573898,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-03T05:34:00",
+                "tiempoLlegada": "2024-11-03T08:57:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 40.46451368936087
+    },
+    {
+        "colapso": false,
+        "camion": {
+            "codigo": "C024",
+            "tipo": "C",
+            "capacidad": 30,
+            "cargaActual": 30,
+            "paquetes": [
+                {
+                    "codigo": "d357382d-65d2-4345-835d-7eeb68cc1bfd",
+                    "fechaHoraPedido": "2024-11-02T03:31:00",
+                    "destino": {
+                        "latitud": -15.27887321,
+                        "longitud": -73.34436311
+                    },
+                    "cantidadEntregada": 21,
+                    "cantidadTotal": 21,
+                    "idCliente": "341629"
+                },
+                {
+                    "codigo": "6059862c-69d8-4e31-82eb-c9c096247c36",
+                    "fechaHoraPedido": "2024-11-02T02:28:00",
+                    "destino": {
+                        "latitud": -14.272991125,
+                        "longitud": -71.226499142
+                    },
+                    "cantidadEntregada": 7,
+                    "cantidadTotal": 7,
+                    "idCliente": "541790"
+                },
+                {
+                    "codigo": "61ad2f42-b2fb-4752-a66e-2ad74bf020a7",
+                    "fechaHoraPedido": "2024-11-02T03:47:00",
+                    "destino": {
+                        "latitud": -16.24426815,
+                        "longitud": -69.09257008
+                    },
+                    "cantidadEntregada": 2,
+                    "cantidadTotal": 10,
+                    "idCliente": "341642"
+                }
+            ]
+        },
+        "tramos": [
+            {
+                "origen": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "destino": {
+                    "latitud": -15.27887321,
+                    "longitud": -73.34436311
+                },
+                "distancia": 229.96906992140575,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-01T23:00:00",
+                "tiempoLlegada": "2024-11-02T03:35:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -15.27887321,
+                    "longitud": -73.34436311
+                },
+                "destino": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "distancia": 237.12360511117274,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T04:35:00",
+                "tiempoLlegada": "2024-11-02T08:32:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -14.21694329,
+                    "longitud": -71.43203327
+                },
+                "destino": {
+                    "latitud": -14.272991125,
+                    "longitud": -71.226499142
+                },
+                "distancia": 23.011644258095522,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T09:32:00",
+                "tiempoLlegada": "2024-11-02T09:55:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -14.272991125,
+                    "longitud": -71.226499142
+                },
+                "destino": {
+                    "latitud": -15.36071216,
+                    "longitud": -69.49989614
+                },
+                "distancia": 221.53251428871238,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T10:55:00",
+                "tiempoLlegada": "2024-11-02T14:36:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -15.36071216,
+                    "longitud": -69.49989614
+                },
+                "destino": {
+                    "latitud": -16.24426815,
+                    "longitud": -69.09257008
+                },
+                "distancia": 107.47884285441782,
+                "velocidad": 60.0,
+                "tiempoSalida": "2024-11-02T15:36:00",
+                "tiempoLlegada": "2024-11-02T17:23:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": true
+            },
+            {
+                "origen": {
+                    "latitud": -16.24426815,
+                    "longitud": -69.09257008
+                },
+                "destino": {
+                    "latitud": -16.67392404,
+                    "longitud": -70.97005505
+                },
+                "distancia": 205.8320373090363,
+                "velocidad": 50.0,
+                "tiempoSalida": "2024-11-02T18:23:00",
+                "tiempoLlegada": "2024-11-02T22:29:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            },
+            {
+                "origen": {
+                    "latitud": -16.67392404,
+                    "longitud": -70.97005505
+                },
+                "destino": {
+                    "latitud": -16.39881421,
+                    "longitud": -71.537019649
+                },
+                "distancia": 67.7370199726606,
+                "velocidad": 70.0,
+                "tiempoSalida": "2024-11-02T19:23:00",
+                "tiempoLlegada": "2024-11-02T20:21:00",
+                "tiempoEspera": 1,
+                "seDejaraElPaquete": false
+            }
+        ],
+        "tiempoTotal": 29.587116427119845
+    }
+]
+
+
+
