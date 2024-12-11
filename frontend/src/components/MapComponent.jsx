@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import * as Papa from "papaparse";
+import Papa from "papaparse";
 import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck,  FaWarehouse } from 'react-icons/fa';
