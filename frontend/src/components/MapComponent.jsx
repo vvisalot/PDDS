@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
 import PropTypes from 'prop-types';
 
-const MapComponent = ({ trucks, truckPositions }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
     const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
 
     const handleTruckClick = (truckCode) => {
@@ -19,6 +19,7 @@ const MapComponent = ({ trucks, truckPositions }) => {
 
             {/* Renderizar las rutas de los camiones si tienen posición actual */}
             {trucks.map((truck) => {
+                if (completedTrucks.has(truck.camion.codigo)) return null;
                 const truckPosition = truckPositions[truck.camion.codigo];
                 if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
@@ -109,6 +110,8 @@ MapComponent.propTypes = {
             lng: PropTypes.number.isRequired,
         }).isRequired
     ).isRequired,
+
+    completedTrucks: PropTypes.instanceOf(Set).isRequired,
 };
 
 export default MapComponent;

@@ -20,6 +20,7 @@ const Simulador = () => {
     const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
     const startTimeRef = useRef(null); // Tiempo real de inicio
     const velocidad = 6; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
+    const [completedTrucks, setCompletedTrucks] = useState(new Set());
 
     // Actualiza el tiempo simulado
     const updateSimulatedTime = () => {
@@ -112,7 +113,11 @@ const Simulador = () => {
                 await new Promise((resolve) => setTimeout(resolve, 9000));
             }
         }
-        console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+        if (!isCancelledRef.current) {
+            console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+            // Actualizar estado para marcar que el camión terminó su ruta
+            setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
+        }
     };
 
 
@@ -221,7 +226,7 @@ const Simulador = () => {
 
             {/* Mapa */}
             <div style={{ flex: "1 1 auto", padding: '5px' }}>
-                <MapComponent trucks={trucks} truckPositions={truckPositions} />
+                <MapComponent trucks={trucks} truckPositions={truckPositions} completedTrucks={completedTrucks}/>
             </div >
 
         </div >
