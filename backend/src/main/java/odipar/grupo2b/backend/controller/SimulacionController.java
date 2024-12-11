@@ -23,9 +23,9 @@ import odipar.grupo2b.backend.service.SimulacionDataService;
 import odipar.grupo2b.backend.utils.LeerDatos;
 import odipar.grupo2b.backend.utils.RelojSimulado;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://1inf54-981-2b.inf.pucp.edu.pe")
 @RestController
-@RequestMapping("/simulacion")
+@RequestMapping("/api/simulacion")
 public class SimulacionController {
     private final SimulacionDataService simulacionDataService;
 	private final AlgoritmoService algoritmoService;

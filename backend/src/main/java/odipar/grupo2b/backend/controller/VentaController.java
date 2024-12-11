@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://1inf54-981-2b.inf.pucp.edu.pe")
 @RestController
-@RequestMapping("/ventas")
+@RequestMapping("/api/ventas")
 public class VentaController {
     private final VentaService ventaService;
 
