@@ -1,11 +1,11 @@
 import { Button, ConfigProvider, DatePicker, Tabs, message } from "antd";
-import apiClient from "../service/axios.js";
 import locale from 'antd/locale/es_ES';
 //import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
+import apiClient from "../service/axios.js";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 
@@ -138,8 +138,8 @@ const Simulador = () => {
             setTrucks([]);
             setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss")); // Inicializar reloj simulado
 
-            const simulacionColapso = false; // Cambia este valor según sea necesario
-            const iteraciones = 5; // Cantidad de iteraciones en modo controlado
+            const iteraciones = 28; // Deberia venir del valor del dropdown (4,28,-1) con un useState
+            const simulacionColapso = iteraciones === -1; // Cambia este valor según sea necesario
 
             if (simulacionColapso) {
                 intervalRef.current = setInterval(fetchTrucks, 10000); // Cada 10 segundos
