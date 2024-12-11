@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import PropTypes from 'prop-types';
+import { FaWarehouse } from 'react-icons/fa';
+import { renderToStaticMarkup } from 'react-dom/server';
+import L from 'leaflet';
+import * as Papa from "papaparse";
+
+const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
+const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
+
+// Ícono personalizado para las oficinas
+const oficinaIcon = L.icon({
+  iconUrl: warehouseIconUrl, 
+  //iconUrl: 'oficina-icono.png',
+  iconSize: [15, 15],
+});
 
 const MapComponent = ({ trucks, truckPositions }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
@@ -10,12 +24,61 @@ const MapComponent = ({ trucks, truckPositions }) => {
     setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
   };
 
+
+  //oficinas
+  const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
+
+  // Cargar oficinas desde el archivo CSV
+  useEffect(() => {
+    const cargarCSV = async () => {
+      const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
+      const csvText = await response.text();
+
+      // Parsear el CSV con PapaParse
+      Papa.parse(csvText, {
+        header: true, // Primera fila como nombres de columna
+        skipEmptyLines: true,
+        complete: (result) => {
+          const datos = result.data.map((fila) => ({
+            id: fila.id,
+            departamento: fila.departamento,
+            ciudad: fila.ciudad,
+            lat: parseFloat(fila.lat), // Convertir a número
+            lng: parseFloat(fila.lng), // Convertir a número
+            region: fila.region,
+            ubigeo: fila.ubigeo,
+          }));
+          setOficinas(datos); // Actualizar el estado
+        },
+      });
+    };
+
+    cargarCSV();
+  }, []);
+
   return (
     <MapContainer center={[-13.5, -76]} zoom={6} style={{ height: '100%', width: '100%' }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; OpenStreetMap contributors"
       />
+
+      {/* Renderizar marcadores de oficinas */}
+      {oficinas.map((oficina) => (
+        <Marker
+          key={oficina.id}
+          position={[oficina.lat, oficina.lng]}
+          icon={oficinaIcon}
+        >
+          <Popup>
+            <div style={{ textAlign: 'center' }}>
+              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
 
       {/* Renderizar las rutas de los camiones */}
       {trucks.map((truck) => (
