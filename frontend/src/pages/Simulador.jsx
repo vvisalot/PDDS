@@ -108,7 +108,7 @@ const Simulador = () => {
 
             // console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
 
-            if (tramo.tiempoEspera > 0) {
+            if (tramo.seDejaraElPaquete && tramo.tiempoEspera > 0) {
                 console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante 1 segundo.`);
                 await new Promise((resolve) => setTimeout(resolve, 9000));
             }
