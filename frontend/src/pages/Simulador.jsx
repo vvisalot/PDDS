@@ -20,6 +20,7 @@ const Simulador = () => {
     const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
     const startTimeRef = useRef(null); // Tiempo real de inicio
     const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
+    const [completedTrucks, setCompletedTrucks] = useState(new Set());
 
     
     // Actualiza el tiempo simulado
@@ -216,13 +217,22 @@ const simulateTruckRoute = async (truckData) => {
             if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
         }
 
-        if (tramo.tiempoEspera > 0) {
+        if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
             console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
             await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
         }
     }
 
-    console.log(`--- FIN DE LA RUTA PARA EL CAMIóN ${truckData.camion.codigo} ---`);
+    if (!isCancelledRef.current) {
+        console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+        // Actualizar estado para marcar que el camión terminó su ruta
+        setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
+        setTruckPositions((prevPositions) => {
+            const newPositions = { ...prevPositions };
+            delete newPositions[truckData.camion.codigo];
+            return newPositions;
+        });
+    }
 };
 
     const handleStart = async () => {
@@ -331,7 +341,7 @@ const simulateTruckRoute = async (truckData) => {
 
             {/* Mapa */}
             <div style={{ flex: "1 1 auto", padding: '5px' }}>
-                <MapComponent trucks={trucks} truckPositions={truckPositions} />
+                <MapComponent trucks={trucks} truckPositions={truckPositions} completedTrucks={completedTrucks}/>
             </div >
 
         </div >
