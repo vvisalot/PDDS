@@ -1,5 +1,5 @@
 import { Button, ConfigProvider, DatePicker, Tabs, message } from "antd";
-import apiClient from "./service/axios.js";
+import apiClient from "../service/axios.js";
 import locale from 'antd/locale/es_ES';
 //import axios from "axios";
 import { useEffect, useRef, useState } from "react";
