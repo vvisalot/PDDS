@@ -73,7 +73,8 @@ const Simulador = () => {
 
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
-    /*
+    const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
+
     const simulateTruckRoute = async (truckData) => {
         if (isCancelledRef.current) return;
 
@@ -84,156 +85,55 @@ const Simulador = () => {
 
             const startTime = dayjs(tramo.tiempoSalida);
             const endTime = dayjs(tramo.tiempoLlegada);
-            const totalDuration = endTime.diff(startTime, 'second'); // Duración en segundos
+            const totalDuration = endTime.diff(startTime, 'second'); 
 
-            while (true) {
+            while (dayjs(simulatedTime).isBefore(startTime)) {
                 if (isCancelledRef.current) break;
-
-                const currentSimulatedTime = dayjs(simulatedTime);
-                if (currentSimulatedTime.isAfter(endTime)) break;
-
-                const elapsedTime = currentSimulatedTime.diff(startTime, 'second'); // Tiempo transcurrido en segundos
-                const ratio = elapsedTime / totalDuration;
-                
-                if (ratio >= 1) break;
-
-                setTruckPositions((prevPositions) => {
-                    const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
-                    const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
-                
-                    if (isValidLatLng(lat, lng)) {
-                        return {
-                            ...prevPositions,
-                            [truckData.camion.codigo]: { lat, lng },
-                        };
-                    } else {
-                        console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
-                        return prevPositions;
-                    }
-                });
-                
-
-                await new Promise((resolve) => setTimeout(resolve, 500)); // Controla la frecuencia de actualización
+                await new Promise((resolve) => setTimeout(resolve, 1000)); 
             }
 
-            if (tramo.tiempoEspera > 0) {
+            if (totalDuration === 0) continue;
+
+            const steps = Math.max(1, Math.floor(totalDuration / 10)); 
+            const stepDuration = totalDuration / steps;
+            const realStepDuration = (stepDuration / 3600) * 10000 / velocidad; 
+
+            for (let step = 0; step <= steps; step++) {
+                if (isCancelledRef.current) break;
+
+                const ratio = step / steps;
+                const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
+                const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
+
+                if (isValidLatLng(lat, lng)) {
+                    setTruckPositions((prevPositions) => ({
+                        ...prevPositions,
+                        [truckData.camion.codigo]: { lat, lng },
+                    }));
+                } else {
+                    console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
+                }
+
+                if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
+            }
+
+            if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
                 console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
                 await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
             }
         }
 
-        console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+        if (!isCancelledRef.current) {
+            console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+            // Actualizar estado para marcar que el camión terminó su ruta
+            setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
+            setTruckPositions((prevPositions) => {
+                const newPositions = { ...prevPositions };
+                delete newPositions[truckData.camion.codigo];
+                return newPositions;
+            });
+        }
     };
-
-*/
-
-/*
-const simulateTruckRoute = async (truckData) => {
-    if (isCancelledRef.current) return;
-
-    console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
-
-    for (const tramo of truckData.tramos) {
-        if (isCancelledRef.current) break;
-
-        // const startTime = dayjs(tramo.tiempoSalida).toDate();
-        // const endTime = dayjs(tramo.tiempoLlegada).toDate();
-        // const duration = endTime - startTime;
-
-        const totalSteps = 20; // Número fijo de pasos por tramo
-        // const stepDuration = duration / totalSteps;
-
-        // console.log(`Tramo desde ${tramo.origen.latitud},${tramo.origen.longitud} hacia ${tramo.destino.latitud},${tramo.destino.longitud}`);
-
-        for (let step = 0; step <= totalSteps; step++) {
-            if (isCancelledRef.current) break;
-
-            const ratio = step / totalSteps;
-            const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
-            const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
-
-            setTruckPositions((prevPositions) => ({
-                ...prevPositions,
-                [truckData.camion.codigo]: { lat, lng },
-            }));
-
-            // console.log(`[${dayjs(startTime).add(step * stepDuration, 'ms').format('HH:mm:ss')}] Camión ${truckData.camion.codigo}: Latitud ${lat.toFixed(8)}, Longitud ${lng.toFixed(8)}`);
-
-            if (step < totalSteps) await new Promise((resolve) => setTimeout(resolve, 1000)); // Cada paso dura 500ms
-        }
-
-        // console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
-
-        if (tramo.tiempoEspera > 0) {
-            console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante 1 segundo.`);
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-    }
-    console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
-};
-*/
-
-const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
-
-const simulateTruckRoute = async (truckData) => {
-    if (isCancelledRef.current) return;
-
-    console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
-
-    for (const tramo of truckData.tramos) {
-        if (isCancelledRef.current) break;
-
-        const startTime = dayjs(tramo.tiempoSalida);
-        const endTime = dayjs(tramo.tiempoLlegada);
-        const totalDuration = endTime.diff(startTime, 'second'); 
-
-        while (dayjs(simulatedTime).isBefore(startTime)) {
-            if (isCancelledRef.current) break;
-            await new Promise((resolve) => setTimeout(resolve, 1000)); 
-        }
-
-        if (totalDuration === 0) continue;
-
-        const steps = Math.max(1, Math.floor(totalDuration / 10)); 
-        const stepDuration = totalDuration / steps;
-        const realStepDuration = (stepDuration / 3600) * 10000 / velocidad; 
-
-        for (let step = 0; step <= steps; step++) {
-            if (isCancelledRef.current) break;
-
-            const ratio = step / steps;
-            const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
-            const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
-
-            if (isValidLatLng(lat, lng)) {
-                setTruckPositions((prevPositions) => ({
-                    ...prevPositions,
-                    [truckData.camion.codigo]: { lat, lng },
-                }));
-            } else {
-                console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
-            }
-
-            if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
-        }
-
-        if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
-            console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
-            await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
-        }
-    }
-
-    if (!isCancelledRef.current) {
-        console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
-        // Actualizar estado para marcar que el camión terminó su ruta
-        setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
-        setTruckPositions((prevPositions) => {
-            const newPositions = { ...prevPositions };
-            delete newPositions[truckData.camion.codigo];
-            return newPositions;
-        });
-    }
-};
 
     const handleStart = async () => {
         if (!dtpValue) {
