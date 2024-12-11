@@ -17,6 +17,20 @@ const oficinaIcon = L.icon({
   iconSize: [15, 15],
 });
 
+// Ícono personalizado para oficinas principales (verde oscuro)
+const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
+const oficinaPrincipalIconUrl = `data:image/svg+xml;base64,${btoa(oficinaPrincipalIconMarkup)}`;
+const oficinaPrincipalIcon = L.icon({
+  iconUrl: oficinaPrincipalIconUrl,
+  iconSize: [21, 21],
+});
+// Definir las oficinas principales como variables independientes
+const oficinasPrincipales = [
+  { id: '130101', departamento: 'LA LIBERTAD', ciudad: 'TRUJILLO', lat: -8.11176389, lng: -79.02868652, region: 'COSTA', ubigeo: 54 },
+  { id: '150101', departamento: 'LIMA', ciudad: 'LIMA', lat: -12.04591952, lng: -77.03049615, region: 'COSTA', ubigeo: 100 },
+  { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
+];
+
 const MapComponent = ({ trucks, truckPositions }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
 
@@ -33,7 +47,10 @@ const MapComponent = ({ trucks, truckPositions }) => {
     const cargarCSV = async () => {
       const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
-
+  
+      // Lista de ubigeos de oficinas principales
+      const ubigeosPrincipales = [130101, 150101, 40101];
+  
       // Parsear el CSV con PapaParse
       Papa.parse(csvText, {
         header: true, // Primera fila como nombres de columna
@@ -46,13 +63,14 @@ const MapComponent = ({ trucks, truckPositions }) => {
             lat: parseFloat(fila.lat), // Convertir a número
             lng: parseFloat(fila.lng), // Convertir a número
             region: fila.region,
-            ubigeo: fila.ubigeo,
+            ubigeo: parseInt(fila.ubigeo.trim()), // Convertir a número
+            esPrincipal: ubigeosPrincipales.includes(parseInt(fila.ubigeo.trim())), // Validar si es oficina principal
           }));
           setOficinas(datos); // Actualizar el estado
         },
       });
     };
-
+  
     cargarCSV();
   }, []);
 
@@ -63,7 +81,7 @@ const MapComponent = ({ trucks, truckPositions }) => {
         attribution="&copy; OpenStreetMap contributors"
       />
 
-      {/* Renderizar marcadores de oficinas */}
+      {/* Renderizar marcadores de oficinas normales */}
       {oficinas.map((oficina) => (
         <Marker
           key={oficina.id}
@@ -80,22 +98,22 @@ const MapComponent = ({ trucks, truckPositions }) => {
         </Marker>
       ))}
 
-      {/* Renderizar las rutas de los camiones */}
-      {trucks.map((truck) => (
-        <React.Fragment key={truck.camion.codigo}>
-          {Array.isArray(truck.tramos) &&
-            truck.tramos.map((tramo, index) => (
-              <Polyline
-                key={`${truck.camion.codigo}-${index}`}
-                positions={[
-                  [tramo.origen.latitud, tramo.origen.longitud],
-                  [tramo.destino.latitud, tramo.destino.longitud],
-                ]}
-                color={selectedTruck === truck.camion.codigo ? 'red' : 'blue'} // Destacar ruta seleccionada
-                weight={selectedTruck === truck.camion.codigo ? 5 : 3} // Grosor mayor para la ruta seleccionada
-              />
-            ))}
-        </React.Fragment>
+      {/* Renderizar marcadores de oficinas principales */}
+      {oficinasPrincipales.map((oficina) => (
+        <Marker
+          key={oficina.id}
+          position={[oficina.lat, oficina.lng]}
+          icon={oficinaPrincipalIcon}
+        >
+          <Popup>
+            <div style={{ textAlign: 'center' }}>
+              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+              <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
+              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+            </div>
+          </Popup>
+        </Marker>
       ))}
 
       {/* Renderizar los marcadores de posición actual */}
