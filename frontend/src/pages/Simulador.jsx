@@ -7,7 +7,7 @@ import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
-
+///
 const Simulador = () => {
     const [trucks, setTrucks] = useState([]);
     const [truckPositions, setTruckPositions] = useState({});
@@ -137,7 +137,7 @@ const Simulador = () => {
 
     const handleStart = async () => {
         if (!dtpValue) {
-            message.error("Debe seleccionar una fecha y hora antes de iniciar")
+            message.error("Debe seleccionar una fecha y hora antes de iniciar");
             return;
         }
 
@@ -145,10 +145,10 @@ const Simulador = () => {
 
         try {
             await axios.get("http://localhost:8080/simulacion/reset");
-            console.log("Reset completado")
+            console.log("Reset completado");
 
             await axios.get(`http://localhost:8080/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
-            console.log("Reloj configurado")
+            console.log("Reloj configurado");
 
             setTrucks([]);
             setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));

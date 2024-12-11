@@ -1,7 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import * as Papa from "papaparse";
 import PropTypes from 'prop-types';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { FaTruck,  FaWarehouse } from 'react-icons/fa';
+
+const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
+const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
+const truckIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkblue" />);
+const truckIconUrl = `data:image/svg+xml;base64,${btoa(truckIconMarkup)}`;
+
+// Ícono personalizado para las oficinas
+const oficinaIcon = L.icon({
+  iconUrl: warehouseIconUrl, 
+  //iconUrl: 'oficina-icono.png',
+  iconSize: [15, 15],
+});
+// Ícono personalizado para los camiones
+const camionIcon = L.icon({
+  iconUrl: truckIconUrl, 
+  //iconUrl: 'oficina-icono.png',
+  iconSize: [15, 15],
+});
+
+// Ícono personalizado para oficinas principales (verde oscuro)
+const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
+const oficinaPrincipalIconUrl = `data:image/svg+xml;base64,${btoa(oficinaPrincipalIconMarkup)}`;
+const oficinaPrincipalIcon = L.icon({
+  iconUrl: oficinaPrincipalIconUrl,
+  iconSize: [21, 21],
+});
+// Definir las oficinas principales como variables independientes
+const oficinasPrincipales = [
+  { id: '130101', departamento: 'LA LIBERTAD', ciudad: 'TRUJILLO', lat: -8.11176389, lng: -79.02868652, region: 'COSTA', ubigeo: 54 },
+  { id: '150101', departamento: 'LIMA', ciudad: 'LIMA', lat: -12.04591952, lng: -77.03049615, region: 'COSTA', ubigeo: 100 },
+  { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
+];
 
 const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
     const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
@@ -10,15 +46,86 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
         setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
     };
 
-    return (
-        <MapContainer center={[-13.5, -76]} zoom={6} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
-            />
 
-            {/* Renderizar las rutas de los camiones si tienen posición actual */}
-            {trucks.map((truck) => {
+  //oficinas
+  const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
+
+  // Cargar oficinas desde el archivo CSV
+  useEffect(() => {
+    const cargarCSV = async () => {
+      const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
+      const csvText = await response.text();
+  
+      // Lista de ubigeos de oficinas principales
+      const ubigeosPrincipales = [130101, 150101, 40101];
+  
+      // Parsear el CSV con PapaParse
+      Papa.parse(csvText, {
+        header: true, // Primera fila como nombres de columna
+        skipEmptyLines: true,
+        complete: (result) => {
+          const datos = result.data.map((fila) => ({
+            id: fila.id,
+            departamento: fila.departamento,
+            ciudad: fila.ciudad,
+            lat: parseFloat(fila.lat), // Convertir a número
+            lng: parseFloat(fila.lng), // Convertir a número
+            region: fila.region,
+            ubigeo: parseInt(fila.ubigeo.trim()), // Convertir a número
+            esPrincipal: ubigeosPrincipales.includes(parseInt(fila.ubigeo.trim())), // Validar si es oficina principal
+          }));
+          setOficinas(datos); // Actualizar el estado
+        },
+      });
+    };
+  
+    cargarCSV();
+  }, []);
+
+  return (
+    <MapContainer center={[-13.5, -76]} zoom={6} style={{ height: '100%', width: '100%' }}>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap contributors"
+      />
+
+      {/* Renderizar marcadores de oficinas principales */}
+      {oficinasPrincipales.map((oficina) => (
+        <Marker
+          key={oficina.id}
+          position={[oficina.lat, oficina.lng]}
+          icon={oficinaPrincipalIcon}
+        >
+          <Popup>
+            <div style={{ textAlign: 'center' }}>
+              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+              <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
+              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+
+      {/* Renderizar marcadores de oficinas normales */}
+      {oficinas.map((oficina) => (
+        <Marker
+          key={oficina.id}
+          position={[oficina.lat, oficina.lng]}
+          icon={oficinaIcon}
+        >
+          <Popup>
+            <div style={{ textAlign: 'center' }}>
+              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+
+      {/* Renderizar las rutas de los camiones */}
+      {trucks.map((truck) => {
                 if (completedTrucks.has(truck.camion.codigo)) return null;
                 const truckPosition = truckPositions[truck.camion.codigo];
                 if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
@@ -41,24 +148,25 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
                 );
             })}
 
-            {/* Renderizar los marcadores de posición actual */}
-            {truckPositions && Object.entries(truckPositions).map(([truckCode, position]) => (
-                <Marker
-                    key={truckCode}
-                    position={[position.lat, position.lng]}
-                    eventHandlers={{
-                        click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
-                    }}
-                >
-                    <Popup>
-                        <p>Camión: {truckCode}</p>
-                        <p>Latitud: {position.lat.toFixed(6)}</p>
-                        <p>Longitud: {position.lng.toFixed(6)}</p>
-                    </Popup>
-                </Marker>
-            ))}
-        </MapContainer>
-    );
+      {/* Renderizar los marcadores de posición actual */}
+      {truckPositions && Object.entries(truckPositions).map(([truckCode, position]) => (
+        <Marker
+          key={truckCode}
+          position={[position.lat, position.lng]}
+          icon={camionIcon}
+          eventHandlers={{
+            click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
+          }}
+        >
+          <Popup>
+            <p>Camión: {truckCode}</p>
+            <p>Latitud: {position.lat.toFixed(6)}</p>
+            <p>Longitud: {position.lng.toFixed(6)}</p>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
 };
 
 MapComponent.propTypes = {
