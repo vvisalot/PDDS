@@ -32,6 +32,7 @@ node_modules/
 
 # Dependency directory
 .DS_Store
+MACOSX/
 
 # Editor directories and files
 .vscode/
