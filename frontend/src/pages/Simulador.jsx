@@ -172,6 +172,8 @@ const simulateTruckRoute = async (truckData) => {
 };
 */
 
+const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
+
 const simulateTruckRoute = async (truckData) => {
     if (isCancelledRef.current) return;
 
