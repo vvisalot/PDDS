@@ -1,6 +1,7 @@
 import { Button, ConfigProvider, DatePicker, Tabs, message } from "antd";
+import apiClient from "./service/axios.js";
 import locale from 'antd/locale/es_ES';
-import axios from "axios";
+//import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
@@ -48,7 +49,9 @@ const Simulador = () => {
 
     const fetchTrucks = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/simulacion"); // Replace with your API endpoint
+            //const response = await axios.get("http://localhost:8080/simulacion"); // Replace with your API endpoint
+            const response = await apiClient.get("/simulacion");
+
 
             if (response.data.some((truck) => truck.colapso)) {
                 handleStop("colapsada");
@@ -124,10 +127,12 @@ const Simulador = () => {
         isCancelledRef.current = false;
 
         try {
-            await axios.get("http://localhost:8080/simulacion/reset");
+            //await axios.get("http://localhost:8080/simulacion/reset");
+            await apiClient.get("/simulacion/reset");
             console.log("Reset completado");
 
-            await axios.get(`http://localhost:8080/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
+            //await axios.get(`http://localhost:8080/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
+            await apiClient.get(`/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
             console.log("Reloj configurado");
 
             setTrucks([]);
