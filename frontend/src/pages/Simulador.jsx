@@ -117,6 +117,11 @@ const Simulador = () => {
             console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
             // Actualizar estado para marcar que el camión terminó su ruta
             setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
+            setTruckPositions((prevPositions) => {
+                const newPositions = { ...prevPositions };
+                delete newPositions[truckData.camion.codigo];
+                return newPositions;
+            });
         }
     };
 
