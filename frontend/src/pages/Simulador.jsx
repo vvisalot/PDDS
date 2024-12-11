@@ -115,10 +115,9 @@ const Simulador = () => {
         console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
     };
 
-
     const handleStart = async () => {
         if (!dtpValue) {
-            message.error("Debe seleccionar una fecha y hora antes de iniciar")
+            message.error("Debe seleccionar una fecha y hora antes de iniciar");
             return;
         }
 
@@ -126,15 +125,40 @@ const Simulador = () => {
 
         try {
             await axios.get("http://localhost:8080/simulacion/reset");
-            console.log("Reset completado")
+            console.log("Reset completado");
 
             await axios.get(`http://localhost:8080/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
-            console.log("Reloj configurado")
+            console.log("Reloj configurado");
 
             setTrucks([]);
-            setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
-            fetchTrucks();
-            intervalRef.current = setInterval(fetchTrucks, 10000);
+            setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss")); // Inicializar reloj simulado
+
+            const simulacionColapso = false; // Cambia este valor según sea necesario
+            const iteraciones = 5; // Cantidad de iteraciones en modo controlado
+
+            if (simulacionColapso) {
+                intervalRef.current = setInterval(fetchTrucks, 10000); // Cada 10 segundos
+            } else {
+                // Modo limitado: iteramos un número fijo de veces
+                let contador = 0;
+
+                const ejecutarIteraciones = async () => {
+                    if (contador >= iteraciones || isCancelledRef.current) {
+                        console.log("Iteraciones completadas o simulación cancelada.");
+                        setIsFetching(false);
+                        return;
+                    }
+
+                    await fetchTrucks();
+                    contador++;
+                    console.log(`Iteración ${contador} de ${iteraciones}`);
+
+                    setTimeout(ejecutarIteraciones, 10000); // Cada 10 segundos
+                };
+
+                ejecutarIteraciones();
+            }
+
             setIsFetching(true);
         } catch (error) {
             console.error("Error starting simulation:", error);
