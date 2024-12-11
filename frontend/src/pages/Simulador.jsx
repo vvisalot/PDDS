@@ -7,7 +7,7 @@ import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
-
+///
 const Simulador = () => {
     const [trucks, setTrucks] = useState([]);
     const [truckPositions, setTruckPositions] = useState({});
