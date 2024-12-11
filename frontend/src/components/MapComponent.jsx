@@ -2,17 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import PropTypes from 'prop-types';
-import { FaWarehouse } from 'react-icons/fa';
+import { FaWarehouse, FaTruck  } from 'react-icons/fa';
 import { renderToStaticMarkup } from 'react-dom/server';
 import L from 'leaflet';
 import * as Papa from "papaparse";
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
+const truckIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkblue" />);
+const truckIconUrl = `data:image/svg+xml;base64,${btoa(truckIconMarkup)}`;
 
 // Ícono personalizado para las oficinas
 const oficinaIcon = L.icon({
   iconUrl: warehouseIconUrl, 
+  //iconUrl: 'oficina-icono.png',
+  iconSize: [15, 15],
+});
+// Ícono personalizado para los camiones
+const camionIcon = L.icon({
+  iconUrl: truckIconUrl, 
   //iconUrl: 'oficina-icono.png',
   iconSize: [15, 15],
 });
@@ -81,23 +89,6 @@ const MapComponent = ({ trucks, truckPositions }) => {
         attribution="&copy; OpenStreetMap contributors"
       />
 
-      {/* Renderizar marcadores de oficinas normales */}
-      {oficinas.map((oficina) => (
-        <Marker
-          key={oficina.id}
-          position={[oficina.lat, oficina.lng]}
-          icon={oficinaIcon}
-        >
-          <Popup>
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-
       {/* Renderizar marcadores de oficinas principales */}
       {oficinasPrincipales.map((oficina) => (
         <Marker
@@ -116,11 +107,47 @@ const MapComponent = ({ trucks, truckPositions }) => {
         </Marker>
       ))}
 
+      {/* Renderizar marcadores de oficinas normales */}
+      {oficinas.map((oficina) => (
+        <Marker
+          key={oficina.id}
+          position={[oficina.lat, oficina.lng]}
+          icon={oficinaIcon}
+        >
+          <Popup>
+            <div style={{ textAlign: 'center' }}>
+              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+
+      {/* Renderizar las rutas de los camiones */}
+      {trucks.map((truck) => (
+        <React.Fragment key={truck.camion.codigo}>
+          {Array.isArray(truck.tramos) &&
+            truck.tramos.map((tramo, index) => (
+              <Polyline
+                key={`${truck.camion.codigo}-${index}`}
+                positions={[
+                  [tramo.origen.latitud, tramo.origen.longitud],
+                  [tramo.destino.latitud, tramo.destino.longitud],
+                ]}
+                color={selectedTruck === truck.camion.codigo ? 'red' : 'blue'} // Destacar ruta seleccionada
+                weight={selectedTruck === truck.camion.codigo ? 5 : 3} // Grosor mayor para la ruta seleccionada
+              />
+            ))}
+        </React.Fragment>
+      ))}
+
       {/* Renderizar los marcadores de posición actual */}
       {truckPositions && Object.entries(truckPositions).map(([truckCode, position]) => (
         <Marker
           key={truckCode}
           position={[position.lat, position.lng]}
+          icon={camionIcon}
           eventHandlers={{
             click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
           }}
