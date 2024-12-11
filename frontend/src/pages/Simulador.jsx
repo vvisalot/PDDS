@@ -1,7 +1,7 @@
 import { Button, ConfigProvider, DatePicker, Tabs, message } from "antd";
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
@@ -10,38 +10,60 @@ import dayjs from "dayjs";
 
 const Simulador = () => {
     const [trucks, setTrucks] = useState([]);
+    const [truckPositions, setTruckPositions] = useState({});
     const intervalRef = useRef(null);
+    const isCancelledRef = useRef(false);
     const [isFetching, setIsFetching] = useState(false);
     const [dtpValue, setDtpValue] = useState("");
 
-    const [truckPositions, setTruckPositions] = useState({});
+    const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
+    const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
+    const startTimeRef = useRef(null); // Tiempo real de inicio
+    const velocidad = 6; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
+
+    // Actualiza el tiempo simulado
+    const updateSimulatedTime = () => {
+        if (!startTimeRef.current || !dtpValue) return;
+
+        const now = Date.now();
+        const elapsedRealTime = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
+        const elapsedSimulatedTime = elapsedRealTime * velocidad * 1 / 10; // Horas simuladas (relación ajustada)
+        const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
+        setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
+
+        animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
+    };
+
+    // Maneja el inicio y pausa del reloj simulado
+    useEffect(() => {
+        if (isFetching) {
+            startTimeRef.current = Date.now(); // Registra el inicio del tiempo real
+            animationFrameRef.current = requestAnimationFrame(updateSimulatedTime);
+        } else {
+            cancelAnimationFrame(animationFrameRef.current); // Detener la animación
+        }
+        return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
+    }, [isFetching, dtpValue]);
+
 
     const fetchTrucks = async () => {
         try {
             const response = await axios.get("http://localhost:8080/simulacion"); // Replace with your API endpoint
 
             if (response.data.some((truck) => truck.colapso)) {
-                message.error("La simulacion ha colapsado");
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-                setIsFetching(false);
-                return
+                handleStop("colapsada");
+                return;
             }
 
-            const selectedTruck = response.data[0]
-            console.log(response.data[0])
-            if (selectedTruck) simulateSingleTruck(selectedTruck)
-
+            for (const truck of response.data) simulateTruckRoute(truck)
 
             setTrucks((prevTrucks) => {
                 const trucksMap = new Map();
-
                 for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
                 for (const newTruck of response.data) trucksMap.set(newTruck.camion.codigo, newTruck);
                 return Array.from(trucksMap.values());
             });
 
-            simulateSingleTruck(response.data[0]);
         } catch (error) {
             console.error("Error fetching truck data:", error);
         }
@@ -49,20 +71,26 @@ const Simulador = () => {
 
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
-    const simulateSingleTruck = async (truckData) => {
-        console.log(`RUTA INICIADA PARA EL CAMION ${truckData.camion.codigo}`);
+    const simulateTruckRoute = async (truckData) => {
+        if (isCancelledRef.current) return;
+
+        console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
         for (const tramo of truckData.tramos) {
-            const startTime = dayjs(tramo.tiempoSalida).toDate();
-            const endTime = dayjs(tramo.tiempoLlegada).toDate();
-            const duration = endTime - startTime; // Duración en milisegundos
+            if (isCancelledRef.current) break;
 
-            const totalSteps = 10; // Número fijo de pasos para cada tramo
-            const stepDuration = duration / totalSteps; // Duración de cada paso
+            // const startTime = dayjs(tramo.tiempoSalida).toDate();
+            // const endTime = dayjs(tramo.tiempoLlegada).toDate();
+            // const duration = endTime - startTime;
 
-            console.log(`Tramo desde ${tramo.origen.latitud},${tramo.origen.longitud} hacia ${tramo.destino.latitud},${tramo.destino.longitud}`);
+            const totalSteps = 20; // Número fijo de pasos por tramo
+            // const stepDuration = duration / totalSteps;
+
+            // console.log(`Tramo desde ${tramo.origen.latitud},${tramo.origen.longitud} hacia ${tramo.destino.latitud},${tramo.destino.longitud}`);
 
             for (let step = 0; step <= totalSteps; step++) {
+                if (isCancelledRef.current) break;
+
                 const ratio = step / totalSteps;
                 const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
                 const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
@@ -70,20 +98,18 @@ const Simulador = () => {
                 setTruckPositions((prevPositions) => ({
                     ...prevPositions,
                     [truckData.camion.codigo]: { lat, lng },
-                }))
+                }));
 
-                console.log(`[${dayjs(startTime).add(step * stepDuration, 'ms').format('HH:mm:ss')}] Camión ${truckData.camion.codigo}: Latitud ${lat.toFixed(8)}, Longitud ${lng.toFixed(8)}`);
+                // console.log(`[${dayjs(startTime).add(step * stepDuration, 'ms').format('HH:mm:ss')}] Camión ${truckData.camion.codigo}: Latitud ${lat.toFixed(8)}, Longitud ${lng.toFixed(8)}`);
 
-                if (step < totalSteps) await new Promise((resolve) => setTimeout(resolve, 1000)); // Cada paso espera 1 segundo
-
+                if (step < totalSteps) await new Promise((resolve) => setTimeout(resolve, 1000)); // Cada paso dura 500ms
             }
 
-            console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
+            // console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
 
-            // Simular tiempo de espera (2 segundos en lugar de tiempo real)
             if (tramo.tiempoEspera > 0) {
-                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante 2 segundos.`);
-                await new Promise((resolve) => setTimeout(resolve, 2000)); // Espera simulada
+                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante 1 segundo.`);
+                await new Promise((resolve) => setTimeout(resolve, 9000));
             }
         }
         console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
@@ -96,6 +122,8 @@ const Simulador = () => {
             return;
         }
 
+        isCancelledRef.current = false;
+
         try {
             await axios.get("http://localhost:8080/simulacion/reset");
             console.log("Reset completado")
@@ -104,6 +132,7 @@ const Simulador = () => {
             console.log("Reloj configurado")
 
             setTrucks([]);
+            setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
             fetchTrucks();
             intervalRef.current = setInterval(fetchTrucks, 10000);
             setIsFetching(true);
@@ -113,14 +142,22 @@ const Simulador = () => {
     };
 
 
-    const handleStop = () => {
+    const handleStop = (reason = "detenida") => {
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
+        isCancelledRef.current = true;
         setIsFetching(false);
         setTrucks([]);
-        message.info("Simulación detenida.");
+        setTruckPositions({});
+        console.log(`Simulación ${reason}.`);
+
+        if (reason === "detenida") {
+            message.info("Simulación detenida por el usuario")
+        } else if (reason === "colapsada") {
+            message.error("La simulación ha colapsado")
+        }
     };
 
     const disabledDate = (current) => {
@@ -164,6 +201,11 @@ const Simulador = () => {
                 >
                     {isFetching ? "Parar" : "Iniciar"}
                 </Button>
+
+                <div style={{ marginTop: '20px', fontSize: '18px' }}>
+                    <strong>Reloj simulado:</strong> {simulatedTime || "No iniciado"}
+
+                </div>
 
                 {/*Tablas de camiones y rutas*/}
                 <Tabs
