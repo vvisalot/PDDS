@@ -19,15 +19,16 @@ const Simulador = () => {
     const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
     const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
     const startTimeRef = useRef(null); // Tiempo real de inicio
-    const velocidad = 6; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
+    const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
 
+    
     // Actualiza el tiempo simulado
     const updateSimulatedTime = () => {
         if (!startTimeRef.current || !dtpValue) return;
 
         const now = Date.now();
         const elapsedRealTime = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
-        const elapsedSimulatedTime = elapsedRealTime * velocidad * 1 / 10; // Horas simuladas (relación ajustada)
+        const elapsedSimulatedTime = elapsedRealTime * velocidad *(1 / 10); // Horas simuladas (relación ajustada)
         const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
         setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 
@@ -71,6 +72,7 @@ const Simulador = () => {
 
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
+    /*
     const simulateTruckRoute = async (truckData) => {
         if (isCancelledRef.current) return;
 
@@ -79,42 +81,147 @@ const Simulador = () => {
         for (const tramo of truckData.tramos) {
             if (isCancelledRef.current) break;
 
-            // const startTime = dayjs(tramo.tiempoSalida).toDate();
-            // const endTime = dayjs(tramo.tiempoLlegada).toDate();
-            // const duration = endTime - startTime;
+            const startTime = dayjs(tramo.tiempoSalida);
+            const endTime = dayjs(tramo.tiempoLlegada);
+            const totalDuration = endTime.diff(startTime, 'second'); // Duración en segundos
 
-            const totalSteps = 20; // Número fijo de pasos por tramo
-            // const stepDuration = duration / totalSteps;
-
-            // console.log(`Tramo desde ${tramo.origen.latitud},${tramo.origen.longitud} hacia ${tramo.destino.latitud},${tramo.destino.longitud}`);
-
-            for (let step = 0; step <= totalSteps; step++) {
+            while (true) {
                 if (isCancelledRef.current) break;
 
-                const ratio = step / totalSteps;
-                const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
-                const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
+                const currentSimulatedTime = dayjs(simulatedTime);
+                if (currentSimulatedTime.isAfter(endTime)) break;
 
+                const elapsedTime = currentSimulatedTime.diff(startTime, 'second'); // Tiempo transcurrido en segundos
+                const ratio = elapsedTime / totalDuration;
+                
+                if (ratio >= 1) break;
+
+                setTruckPositions((prevPositions) => {
+                    const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
+                    const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
+                
+                    if (isValidLatLng(lat, lng)) {
+                        return {
+                            ...prevPositions,
+                            [truckData.camion.codigo]: { lat, lng },
+                        };
+                    } else {
+                        console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
+                        return prevPositions;
+                    }
+                });
+                
+
+                await new Promise((resolve) => setTimeout(resolve, 500)); // Controla la frecuencia de actualización
+            }
+
+            if (tramo.tiempoEspera > 0) {
+                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
+                await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
+            }
+        }
+
+        console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+    };
+
+*/
+
+/*
+const simulateTruckRoute = async (truckData) => {
+    if (isCancelledRef.current) return;
+
+    console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
+
+    for (const tramo of truckData.tramos) {
+        if (isCancelledRef.current) break;
+
+        // const startTime = dayjs(tramo.tiempoSalida).toDate();
+        // const endTime = dayjs(tramo.tiempoLlegada).toDate();
+        // const duration = endTime - startTime;
+
+        const totalSteps = 20; // Número fijo de pasos por tramo
+        // const stepDuration = duration / totalSteps;
+
+        // console.log(`Tramo desde ${tramo.origen.latitud},${tramo.origen.longitud} hacia ${tramo.destino.latitud},${tramo.destino.longitud}`);
+
+        for (let step = 0; step <= totalSteps; step++) {
+            if (isCancelledRef.current) break;
+
+            const ratio = step / totalSteps;
+            const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
+            const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
+
+            setTruckPositions((prevPositions) => ({
+                ...prevPositions,
+                [truckData.camion.codigo]: { lat, lng },
+            }));
+
+            // console.log(`[${dayjs(startTime).add(step * stepDuration, 'ms').format('HH:mm:ss')}] Camión ${truckData.camion.codigo}: Latitud ${lat.toFixed(8)}, Longitud ${lng.toFixed(8)}`);
+
+            if (step < totalSteps) await new Promise((resolve) => setTimeout(resolve, 1000)); // Cada paso dura 500ms
+        }
+
+        // console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
+
+        if (tramo.tiempoEspera > 0) {
+            console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante 1 segundo.`);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+    }
+    console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+};
+*/
+
+const simulateTruckRoute = async (truckData) => {
+    if (isCancelledRef.current) return;
+
+    console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
+
+    for (const tramo of truckData.tramos) {
+        if (isCancelledRef.current) break;
+
+        const startTime = dayjs(tramo.tiempoSalida);
+        const endTime = dayjs(tramo.tiempoLlegada);
+        const totalDuration = endTime.diff(startTime, 'second'); 
+
+        while (dayjs(simulatedTime).isBefore(startTime)) {
+            if (isCancelledRef.current) break;
+            await new Promise((resolve) => setTimeout(resolve, 1000)); 
+        }
+
+        if (totalDuration === 0) continue;
+
+        const steps = Math.max(1, Math.floor(totalDuration / 10)); 
+        const stepDuration = totalDuration / steps;
+        const realStepDuration = (stepDuration / 3600) * 10000 / velocidad; 
+
+        for (let step = 0; step <= steps; step++) {
+            if (isCancelledRef.current) break;
+
+            const ratio = step / steps;
+            const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
+            const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
+
+            if (isValidLatLng(lat, lng)) {
                 setTruckPositions((prevPositions) => ({
                     ...prevPositions,
                     [truckData.camion.codigo]: { lat, lng },
                 }));
-
-                // console.log(`[${dayjs(startTime).add(step * stepDuration, 'ms').format('HH:mm:ss')}] Camión ${truckData.camion.codigo}: Latitud ${lat.toFixed(8)}, Longitud ${lng.toFixed(8)}`);
-
-                if (step < totalSteps) await new Promise((resolve) => setTimeout(resolve, 1000)); // Cada paso dura 500ms
+            } else {
+                console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
             }
 
-            // console.log(`Camión ${truckData.camion.codigo} llegó a su destino: ${tramo.destino.latitud},${tramo.destino.longitud}`);
-
-            if (tramo.tiempoEspera > 0) {
-                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante 1 segundo.`);
-                await new Promise((resolve) => setTimeout(resolve, 9000));
-            }
+            if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
         }
-        console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
-    };
 
+        if (tramo.tiempoEspera > 0) {
+            console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
+            await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
+        }
+    }
+
+    console.log(`--- FIN DE LA RUTA PARA EL CAMIóN ${truckData.camion.codigo} ---`);
+};
 
     const handleStart = async () => {
         if (!dtpValue) {
@@ -134,7 +241,7 @@ const Simulador = () => {
             setTrucks([]);
             setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
             fetchTrucks();
-            intervalRef.current = setInterval(fetchTrucks, 10000);
+            intervalRef.current = setInterval(fetchTrucks, 60000);
             setIsFetching(true);
         } catch (error) {
             console.error("Error starting simulation:", error);
@@ -186,6 +293,7 @@ const Simulador = () => {
                 <ConfigProvider locale={locale}>
                     <DatePicker
                         showTime
+                        defaultPickerValue={dayjs('2024-06-01', 'YYYY-MM-DD')} 
                         disabled={isFetching}
                         onChange={(value) => {
                             setDtpValue(value ? value.toISOString() : "")
