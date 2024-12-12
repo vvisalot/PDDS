@@ -150,6 +150,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
 
       {/* Renderizar los marcadores de posición actual */}
       {truckPositions && Object.entries(truckPositions).map(([truckCode, position]) => (
+        !completedTrucks.has(truckCode) && (
         <Marker
           key={truckCode}
           position={[position.lat, position.lng]}
@@ -164,6 +165,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
             <p>Longitud: {position.lng.toFixed(6)}</p>
           </Popup>
         </Marker>
+      )
       ))}
     </MapContainer>
   );
