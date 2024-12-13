@@ -29,7 +29,7 @@ const TablaPedidos = ({ data }) => {
     return (
         <Table
             dataSource={formattedData}
-            pagination={{ pageSize: 7 }}
+            pagination={{ pageSize: 4 }}
             columns={columnasPedidos}
         />
     )

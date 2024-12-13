@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
+import { FaTruck, FaBoxOpen } from 'react-icons/fa';
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
+import { icon } from "leaflet";
 ///
 const Simulador = () => {
     const [trucks, setTrucks] = useState([]);
@@ -221,6 +223,35 @@ const Simulador = () => {
         },
     ];
 
+    const calcularEstadisticas = () => {
+        let totalPedidos = 0;
+        let pedidosEntregados = 0;
+        let camionesIncompletos = 0;
+    
+        trucks.forEach((truck) => {
+            // Sumar pedidos totales
+            totalPedidos += truck.camion.paquetes.length;
+    
+            // Verificar si el camión completó todos sus tramos
+            const camiónCompleto = completedTrucks.has(truck.camion.codigo);
+    
+            if (camiónCompleto) {
+                // Incrementar los pedidos entregados solo si el camión completó sus tramos y entregó todos los paquetes
+                pedidosEntregados += truck.camion.paquetes.filter(
+                    (paquete) => paquete.cantidadEntregada === paquete.cantidadTotal
+                ).length;
+            } else {
+                // Incrementar camiones incompletos si el camión no ha terminado
+                camionesIncompletos++;
+            }
+        });
+    
+        return { totalPedidos, pedidosEntregados, camionesIncompletos };
+    };
+    
+    const { totalPedidos, pedidosEntregados, camionesIncompletos } = calcularEstadisticas();
+
+
     return (
         <div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
             <div style={{ flex: "0 0 35%", padding: "10px", borderRight: "1px solid #ddd" }}>
@@ -248,6 +279,22 @@ const Simulador = () => {
                 <div style={{ marginTop: '20px', fontSize: '18px' }}>
                     <strong>Reloj simulado:</strong> {simulatedTime || "No iniciado"}
 
+                </div>
+
+                {/* Estadísticas de la simulación */}
+                <div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
+                    <p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
+                        <strong>Total camiones en simulación:</strong> <span style={{ marginLeft: '13px' }}>{trucks.length}</span>
+                    </p>
+                    <p> <FaTruck size={17} color="red" style={{ marginRight: '8px' }} />
+                        <strong>Camiones incompletos:</strong> <span style={{ marginLeft: '60px' }}>{camionesIncompletos}</span>
+                    </p>
+                    <p> <FaBoxOpen size={17} color="darkgrey" style={{ marginRight: '8px' }} />
+                        <strong>Pedidos totales:</strong> <span style={{ marginLeft: '113px' }}>{totalPedidos}</span>
+                    </p>
+                    <p> <FaBoxOpen size={17} color="green" style={{ marginRight: '8px' }} />
+                        <strong>Pedidos entregados:</strong> <span style={{ marginLeft: '81px' }}>{pedidosEntregados}</span>
+                    </p>
                 </div>
 
                 {/*Tablas de camiones y rutas*/}

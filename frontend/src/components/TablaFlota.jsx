@@ -20,7 +20,7 @@ const TablaFlota = ({ data }) => {
         <Table
             dataSource={formattedData}
             columns={columnasFlota}
-            pagination={{ pageSize: 7 }}
+            pagination={{ pageSize: 4 }}
         />)
 };
 
