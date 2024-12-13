@@ -11,6 +11,8 @@ const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="g
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
 const truckIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkblue" />);
 const truckIconUrl = `data:image/svg+xml;base64,${btoa(truckIconMarkup)}`;
+const truckSelectedIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkred" />);
+const truckSelectedIconUrl = `data:image/svg+xml;base64,${btoa(truckSelectedIconMarkup)}`;
 
 // Ícono personalizado para las oficinas
 const oficinaIcon = L.icon({
@@ -22,6 +24,11 @@ const oficinaIcon = L.icon({
 const camionIcon = L.icon({
   iconUrl: truckIconUrl, 
   //iconUrl: 'oficina-icono.png',
+  iconSize: [15, 15],
+});
+// Ícono personalizado para los camiones seleccionados (rojo)
+const camionSeleccionadoIcon = L.icon({
+  iconUrl: truckSelectedIconUrl,
   iconSize: [15, 15],
 });
 
@@ -39,7 +46,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) => {
     const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
 
     const handleTruckClick = (truckCode) => {
@@ -149,24 +156,41 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
             })}
 
       {/* Renderizar los marcadores de posición actual */}
-      {truckPositions && Object.entries(truckPositions).map(([truckCode, position]) => (
-        !completedTrucks.has(truckCode) && (
-        <Marker
-          key={truckCode}
-          position={[position.lat, position.lng]}
-          icon={camionIcon}
-          eventHandlers={{
-            click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
-          }}
-        >
-          <Popup>
-            <p>Camión: {truckCode}</p>
-            <p>Latitud: {position.lat.toFixed(6)}</p>
-            <p>Longitud: {position.lng.toFixed(6)}</p>
-          </Popup>
-        </Marker>
-      )
-      ))}
+      {truckPositions &&
+        Object.entries(truckPositions).map(([truckCode, position]) => {
+          const truckData = trucks.find((truck) => truck.camion.codigo === truckCode); // Buscar datos del camión
+          const cargaActual = truckData?.camion.cargaActual || 0; // Obtener la carga actual, 0 si no existe
+          const capacidadRestante = truckData?.camion.capacidad - cargaActual || 0; // Calcular capacidad restante
+
+          return (
+            !completedTrucks.has(truckCode) && (
+              <Marker
+                key={truckCode}
+                position={[position.lat, position.lng]}
+                icon={selectedTruck === truckCode ? camionSeleccionadoIcon : camionIcon} // Cambiar ícono según el camión seleccionado
+                eventHandlers={{
+                  click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
+                  popupopen: () => setSelectedTruck(truckCode), // Actualizar estado al abrir el popup
+                  popupclose: () => setSelectedTruck(null), // Limpiar selección al cerrar el popup
+                }}
+              >
+                <Popup>
+                  <div style={{ textAlign: 'center' }}>
+                    <h3 style={{ margin: '0', color: '#333' }}>Camión: {truckCode}</h3>
+                    <p style={{ margin: '0', color: '#777' }}>Latitud: {position.lat.toFixed(6)}</p>
+                    <p style={{ margin: '0', color: '#777' }}>Longitud: {position.lng.toFixed(6)}</p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Carga Actual:</strong> {cargaActual} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Capacidad Restante:</strong> {capacidadRestante} kg
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            )
+          );
+        })}
     </MapContainer>
   );
 };
