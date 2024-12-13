@@ -2,10 +2,10 @@ import { Button, ConfigProvider, DatePicker, Tabs, message } from "antd";
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { FaBoxOpen, FaTruck } from 'react-icons/fa';
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
-import { FaTruck, FaBoxOpen } from 'react-icons/fa';
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import { icon } from "leaflet";
@@ -141,10 +141,12 @@ const Simulador = () => {
                 if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
             }
 
+            /*
             if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
                 console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
                 await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
             }
+            */
         }
 
         if (!isCancelledRef.current) {
