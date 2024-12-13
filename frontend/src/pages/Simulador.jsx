@@ -22,8 +22,8 @@ const Simulador = () => {
     const startTimeRef = useRef(null); // Tiempo real de inicio
     const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
     const [completedTrucks, setCompletedTrucks] = useState(new Set());
+    const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 
-    
     // Actualiza el tiempo simulado
     const updateSimulatedTime = () => {
         if (!startTimeRef.current || !dtpValue) return;
@@ -33,7 +33,7 @@ const Simulador = () => {
         const elapsedSimulatedTime = elapsedRealTime * velocidad *(1 / 10); // Horas simuladas (relación ajustada)
         const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
         setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
-
+        simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
         animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
     };
 
@@ -100,20 +100,19 @@ const Simulador = () => {
             const totalDuration = endTime.diff(startTime, 'second'); 
 
             console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
-
-            while (dayjs(simulatedTime).isBefore(startTime)) {
+            while (dayjs(simulatedTimeRef.current).isBefore(startTime)) {
                 console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
                 if (isCancelledRef.current) break;
-                await new Promise((resolve) => setTimeout(resolve, 1000)); 
+                await new Promise((resolve) => setTimeout(resolve, 1000));
             }
 
             if (totalDuration === 0) continue;
 
-            const steps = Math.max(1, Math.floor(totalDuration / 1000)); 
+            const steps = Math.max(1, Math.floor(totalDuration / 1000));
             const stepDuration = totalDuration / steps;
             const realStepDuration = (stepDuration * 10) / 3600 * 1000;
 
-            console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
+            //console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
 
 
             for (let step = 0; step <= steps; step++) {
@@ -123,14 +122,14 @@ const Simulador = () => {
                 const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
                 const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
-                while (dayjs(simulatedTime).isBefore(startTime.add(step * stepDuration, 'second'))) {
+                while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
                     console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
                     if (isCancelledRef.current) break;
                     await new Promise((resolve) => setTimeout(resolve, 1000));
                 }
 
                 if (isValidLatLng(lat, lng)) {
-                    console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
+                    //console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
                     setTruckPositions((prevPositions) => ({
                         ...prevPositions,
                         [truckData.camion.codigo]: { lat, lng },
@@ -312,7 +311,7 @@ const Simulador = () => {
             {/* Mapa */}
             <div style={{ flex: "1 1 auto", padding: '5px' }}>
                 <MapComponent 
-                    trucks={trucks} truckPositions={truckPositions} completedTrucks={completedTrucks}
+                    trucks={trucks} truckPositions={truckPositions} completedTrucks={completedTrucks} simulatedTime={simulatedTime}
                 />
             </div >
 

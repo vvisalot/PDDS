@@ -30,7 +30,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, simulatedTime }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
@@ -40,18 +40,15 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
   };
 
   // Verificar si un tramo ha sido recorrido por un camión
-  const isTramoRecorrido = (truckCode, tramo) => {
-    if (!completedRoutes[truckCode]) return false;
-    return completedRoutes[truckCode].some(
-      (completedTramo) =>
-        completedTramo.origen.latitud === tramo.origen.latitud &&
-        completedTramo.origen.longitud === tramo.origen.longitud &&
-        completedTramo.destino.latitud === tramo.destino.latitud &&
-        completedTramo.destino.longitud === tramo.destino.longitud
-    );
-  };
+    const isTramoRecorrido = (truckCode, tramo) => {
+        if (!completedRoutes[truckCode]) return false;
+        const startTime = new Date(tramo.tiempoSalida).getTime();
+        const endTime = new Date(tramo.tiempoLlegada).getTime();
+        const simulatedDate = new Date(simulatedTime).getTime();
+        return simulatedDate >= startTime && simulatedDate <= endTime;
+    };
 
-  useEffect(() => {
+    useEffect(() => {
     // Simulación de tramos recorridos: actualizar los tramos completados
     const interval = setInterval(() => {
       const updatedCompletedRoutes = { ...completedRoutes };
@@ -78,6 +75,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
                 )
               ) {
                 updatedCompletedRoutes[truck.camion.codigo].push(tramo);
+
               }
             }
           });
@@ -175,7 +173,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
                       {truck.tramos.map((tramo, index) => {
                         const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
                         const isSelected = selectedTruck === truck.camion.codigo;
-
+                        if (!isRecorrido && !isSelected) return null;
                         return (
                           <Polyline
                             key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
@@ -289,6 +287,8 @@ MapComponent.propTypes = {
     ).isRequired,
 
     completedTrucks: PropTypes.instanceOf(Set).isRequired,
+
+    simulatedTime: PropTypes.string.isRequired,
 };
 
 export default MapComponent;
