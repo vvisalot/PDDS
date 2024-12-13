@@ -14,31 +14,15 @@ const truckIconUrl = `data:image/svg+xml;base64,${btoa(truckIconMarkup)}`;
 const truckSelectedIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkred" />);
 const truckSelectedIconUrl = `data:image/svg+xml;base64,${btoa(truckSelectedIconMarkup)}`;
 
-// Ícono personalizado para las oficinas
-const oficinaIcon = L.icon({
-  iconUrl: warehouseIconUrl, 
-  //iconUrl: 'oficina-icono.png',
-  iconSize: [15, 15],
-});
-// Ícono personalizado para los camiones
-const camionIcon = L.icon({
-  iconUrl: truckIconUrl, 
-  //iconUrl: 'oficina-icono.png',
-  iconSize: [15, 15],
-});
-// Ícono personalizado para los camiones seleccionados (rojo)
-const camionSeleccionadoIcon = L.icon({
-  iconUrl: truckSelectedIconUrl,
-  iconSize: [15, 15],
-});
+const oficinaIcon = L.icon({ iconUrl: warehouseIconUrl, iconSize: [15, 15], }); //icono oficinas
+const camionIcon = L.icon({ iconUrl: truckIconUrl, iconSize: [15, 15], }); //icono camiones
+const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [15, 15], }); //icono camiones seleccionados
 
 // Ícono personalizado para oficinas principales (verde oscuro)
 const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
 const oficinaPrincipalIconUrl = `data:image/svg+xml;base64,${btoa(oficinaPrincipalIconMarkup)}`;
-const oficinaPrincipalIcon = L.icon({
-  iconUrl: oficinaPrincipalIconUrl,
-  iconSize: [21, 21],
-});
+const oficinaPrincipalIcon = L.icon({ iconUrl: oficinaPrincipalIconUrl, iconSize: [21, 21], });
+
 // Definir las oficinas principales como variables independientes
 const oficinasPrincipales = [
   { id: '130101', departamento: 'LA LIBERTAD', ciudad: 'TRUJILLO', lat: -8.11176389, lng: -79.02868652, region: 'COSTA', ubigeo: 54 },
@@ -47,15 +31,64 @@ const oficinasPrincipales = [
 ];
 
 const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) => {
-    const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
-
-    const handleTruckClick = (truckCode) => {
-        setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
-    };
-
-
-  //oficinas
+  const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
+  const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
+
+  const handleTruckClick = (truckCode) => {
+    setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
+  };
+
+  // Verificar si un tramo ha sido recorrido por un camión
+  const isTramoRecorrido = (truckCode, tramo) => {
+    if (!completedRoutes[truckCode]) return false;
+    return completedRoutes[truckCode].some(
+      (completedTramo) =>
+        completedTramo.origen.latitud === tramo.origen.latitud &&
+        completedTramo.origen.longitud === tramo.origen.longitud &&
+        completedTramo.destino.latitud === tramo.destino.latitud &&
+        completedTramo.destino.longitud === tramo.destino.longitud
+    );
+  };
+
+  useEffect(() => {
+    // Simulación de tramos recorridos: actualizar los tramos completados
+    const interval = setInterval(() => {
+      const updatedCompletedRoutes = { ...completedRoutes };
+
+      trucks.forEach((truck) => {
+        if (!completedTrucks.has(truck.camion.codigo)) {
+          const currentTime = new Date();
+          truck.tramos.forEach((tramo) => {
+            const startTime = new Date(tramo.tiempoSalida);
+            const endTime = new Date(tramo.tiempoLlegada);
+
+            if (currentTime > endTime) {
+              if (!updatedCompletedRoutes[truck.camion.codigo]) {
+                updatedCompletedRoutes[truck.camion.codigo] = [];
+              }
+
+              if (
+                !updatedCompletedRoutes[truck.camion.codigo].some(
+                  (completedTramo) =>
+                    completedTramo.origen.latitud === tramo.origen.latitud &&
+                    completedTramo.origen.longitud === tramo.origen.longitud &&
+                    completedTramo.destino.latitud === tramo.destino.latitud &&
+                    completedTramo.destino.longitud === tramo.destino.longitud
+                )
+              ) {
+                updatedCompletedRoutes[truck.camion.codigo].push(tramo);
+              }
+            }
+          });
+        }
+      });
+      setCompletedRoutes(updatedCompletedRoutes);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [trucks, completedRoutes, completedTrucks]);
+
 
   // Cargar oficinas desde el archivo CSV
   useEffect(() => {
@@ -135,22 +168,32 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
       {trucks.map((truck) => {
                 if (completedTrucks.has(truck.camion.codigo)) return null;
                 const truckPosition = truckPositions[truck.camion.codigo];
-                if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
+                //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
                 return (
                     <React.Fragment key={truck.camion.codigo}>
-                        {Array.isArray(truck.tramos) &&
-                            truck.tramos.map((tramo, index) => (
-                                <Polyline
-                                    key={`${truck.camion.codigo}-${index}`}
-                                    positions={[
-                                        [tramo.origen.latitud, tramo.origen.longitud],
-                                        [tramo.destino.latitud, tramo.destino.longitud],
-                                    ]}
-                                    color={selectedTruck === truck.camion.codigo ? 'red' : 'blue'} // Destacar ruta seleccionada
-                                    weight={selectedTruck === truck.camion.codigo ? 3 : 2} // Grosor reducido
-                                />
-                            ))}
+                      {truck.tramos.map((tramo, index) => {
+                        const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
+                        const isSelected = selectedTruck === truck.camion.codigo;
+
+                        return (
+                          <Polyline
+                            key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
+                            positions={[
+                              [tramo.origen.latitud, tramo.origen.longitud],
+                              [tramo.destino.latitud, tramo.destino.longitud],
+                            ]}
+                            color={
+                              isRecorrido
+                                ? 'blue' // Tramo recorrido
+                                : isSelected
+                                ? 'red' // Tramo del camión seleccionado
+                                : 'blue' // Tramo del camión no seleccionado
+                            }
+                            weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
+                          />
+                        );
+                      })}
                     </React.Fragment>
                 );
             })}
