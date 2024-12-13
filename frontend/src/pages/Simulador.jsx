@@ -227,30 +227,43 @@ const Simulador = () => {
     const calcularEstadisticas = () => {
         let totalPedidos = 0;
         let pedidosEntregados = 0;
-        let camionesIncompletos = 0;
+        let camionesEnMapa  = 0;
     
         trucks.forEach((truck) => {
-            // Sumar pedidos totales
-            totalPedidos += truck.camion.paquetes.length;
+            // Filtrar tramos activos según la hora simulada
+            const tramosActivos = truck.tramos.filter(
+                (tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
+            );
     
-            // Verificar si el camión completó todos sus tramos
-            const camiónCompleto = completedTrucks.has(truck.camion.codigo);
+            if (tramosActivos.length > 0) {
+                camionesEnMapa++; // Contar camión si tiene al menos un tramo activo
     
-            if (camiónCompleto) {
-                // Incrementar los pedidos entregados solo si el camión completó sus tramos y entregó todos los paquetes
-                pedidosEntregados += truck.camion.paquetes.filter(
-                    (paquete) => paquete.cantidadEntregada === paquete.cantidadTotal
-                ).length;
-            } else {
-                // Incrementar camiones incompletos si el camión no ha terminado
-                camionesIncompletos++;
+                // Contar pedidos totales y entregados solo para camiones en el mapa
+                totalPedidos += truck.camion.paquetes.length;
+    
+                // Verificar paquetes entregados en función del destino y tiempo
+                truck.camion.paquetes.forEach((paquete) => {
+                    const tramoCorrespondiente = truck.tramos.find(
+                        (tramo) =>
+                            tramo.destino.latitud === paquete.destino.latitud &&
+                            tramo.destino.longitud === paquete.destino.longitud
+                    );
+
+                    if (
+                        tramoCorrespondiente &&
+                        dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
+                        !completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
+                    ) {
+                        pedidosEntregados++;
+                    }
+                });
             }
         });
     
-        return { totalPedidos, pedidosEntregados, camionesIncompletos };
+        return { totalPedidos, pedidosEntregados, camionesEnMapa };
     };
     
-    const { totalPedidos, pedidosEntregados, camionesIncompletos } = calcularEstadisticas();
+    const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
 
 
     return (
@@ -284,13 +297,13 @@ const Simulador = () => {
 
                 {/* Estadísticas de la simulación */}
                 <div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
-                    <p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
+                    <p> <FaTruck size={17} color="orange" style={{ marginRight: '8px' }} />
                         <strong>Total camiones en simulación:</strong> <span style={{ marginLeft: '13px' }}>{trucks.length}</span>
                     </p>
-                    <p> <FaTruck size={17} color="red" style={{ marginRight: '8px' }} />
-                        <strong>Camiones incompletos:</strong> <span style={{ marginLeft: '60px' }}>{camionesIncompletos}</span>
+                    <p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
+                        <strong>Camiones en Mapa:</strong> <span style={{ marginLeft: '85px' }}>{camionesEnMapa}</span>
                     </p>
-                    <p> <FaBoxOpen size={17} color="darkgrey" style={{ marginRight: '8px' }} />
+                    <p> <FaBoxOpen size={17} color="lightblack" style={{ marginRight: '8px' }} />
                         <strong>Pedidos totales:</strong> <span style={{ marginLeft: '113px' }}>{totalPedidos}</span>
                     </p>
                     <p> <FaBoxOpen size={17} color="green" style={{ marginRight: '8px' }} />
