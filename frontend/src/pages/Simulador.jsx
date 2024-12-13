@@ -266,7 +266,6 @@ const Simulador = () => {
             <div style={{ flex: "1 1 auto", padding: '5px' }}>
                 <MapComponent 
                     trucks={trucks} truckPositions={truckPositions} completedTrucks={completedTrucks}
-                    cargaActual={trucks.cargaActual}
                 />
             </div >
 
