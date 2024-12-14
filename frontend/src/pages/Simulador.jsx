@@ -50,7 +50,7 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();	
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 7 && hours >= 0) {
+		if (days >= 7 && hours >= 0 && minutes >=0 && seconds >= 0) {
 			handleStop("tiempo máximo alcanzado");
 			return;
 		}
