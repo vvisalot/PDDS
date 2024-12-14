@@ -9,9 +9,11 @@ import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
 import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
-import dayjs from "dayjs";
+import dayjs from "dayjs";	
+import duration from 'dayjs/plugin/duration'; 
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
+dayjs.extend(duration); // Extender dayjs con plugin de duración
 const { Title } = Typography;
 
 const Simulador = () => {
@@ -21,6 +23,7 @@ const Simulador = () => {
 	const isCancelledRef = useRef(false);
 	const [isFetching, setIsFetching] = useState(false);
 	const [dtpValue, setDtpValue] = useState("");
+	const [elapsedTime, setElapsedTime] = useState("")
 	const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
 	const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
 	const startTimeRef = useRef(null); // Tiempo real de inicio
@@ -38,6 +41,20 @@ const Simulador = () => {
 		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
+
+	    // Calcular el tiempo transcurrido desde el inicio de la simulación
+		const simulatedElapsed = dayjs.duration(elapsedSimulatedTime, "hours");
+		const days = Math.floor(simulatedElapsed.asDays());
+		const hours = Math.floor(simulatedElapsed.asHours());
+		const minutes = simulatedElapsed.minutes();
+		const seconds = simulatedElapsed.seconds();	
+		setElapsedTime(`${days} días, ${hours % 24}  horas`);
+
+		if (days >= 7 && hours >= 0) {
+			handleStop("tiempo máximo alcanzado");
+			return;
+		}
+
 		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
 	};
 
@@ -208,6 +225,8 @@ const Simulador = () => {
 			message.info("Simulación detenida por el usuario")
 		} else if (reason === "colapsada") {
 			message.error("La simulación ha colapsado")
+		} else if (reason === "tiempo máximo alcanzado") {
+			message.info("Simulación detenida: Se alcanzó el tiempo máximo de 7 días");
 		}
 	};
 
@@ -325,8 +344,12 @@ const Simulador = () => {
 					</Button>
 
 					<div style={{ marginTop: '20px', fontSize: '18px' }}>
-						<strong>Reloj simulado:</strong> {simulatedTime || "No iniciado"}
+						<strong>Reloj simulado:</strong> {simulatedTime || "No iniciado"} 
 
+					</div>
+					
+					<div style={{ marginTop: '20px', fontSize: '18px' }}>
+					<strong>Tiempo transcurrido:</strong> {elapsedTime}
 					</div>
 
                     {/* Estadísticas de la simulación */}
