@@ -40,15 +40,15 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
   };
 
   // Verificar si un tramo ha sido recorrido por un camión
-    const isTramoRecorrido = (truckCode, tramo) => {
-        if (!completedRoutes[truckCode]) return false;
-        const startTime = new Date(tramo.tiempoSalida).getTime();
-        const endTime = new Date(tramo.tiempoLlegada).getTime();
-        const simulatedDate = new Date(simulatedTime).getTime();
-        return simulatedDate >= startTime && simulatedDate <= endTime;
-    };
+  const isTramoRecorrido = (truckCode, tramo) => {
+    if (!completedRoutes[truckCode]) return false;
+    const startTime = new Date(tramo.tiempoSalida).getTime();
+    const endTime = new Date(tramo.tiempoLlegada).getTime();
+    const simulatedDate = new Date(simulatedTime).getTime();
+    return simulatedDate >= startTime && simulatedDate <= endTime;
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     // Simulación de tramos recorridos: actualizar los tramos completados
     const interval = setInterval(() => {
       const updatedCompletedRoutes = { ...completedRoutes };
@@ -105,11 +105,11 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
             id: fila.id,
             departamento: fila.departamento,
             ciudad: fila.ciudad,
-            lat: parseFloat(fila.lat), // Convertir a número
-            lng: parseFloat(fila.lng), // Convertir a número
+            lat: Number.parseFloat(fila.lat), // Convertir a número
+            lng: Number.parseFloat(fila.lng), // Convertir a número
             region: fila.region,
-            ubigeo: parseInt(fila.ubigeo.trim()), // Convertir a número
-            esPrincipal: ubigeosPrincipales.includes(parseInt(fila.ubigeo.trim())), // Validar si es oficina principal
+            ubigeo: Number.parseInt(fila.ubigeo.trim()), // Convertir a número
+            esPrincipal: ubigeosPrincipales.includes(Number.parseInt(fila.ubigeo.trim())), // Validar si es oficina principal
           }));
           setOficinas(datos); // Actualizar el estado
         },
@@ -167,32 +167,32 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
         const truckPosition = truckPositions[truck.camion.codigo];
         //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
-                return (
-                    <React.Fragment key={truck.camion.codigo}>
-                      {truck.tramos.map((tramo, index) => {
-                        const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
-                        const isSelected = selectedTruck === truck.camion.codigo;
-                        if (!isRecorrido && !isSelected) return null;
-                        return (
-                          <Polyline
-                            key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
-                            positions={[
-                              [tramo.origen.latitud, tramo.origen.longitud],
-                              [tramo.destino.latitud, tramo.destino.longitud],
-                            ]}
-                            color={
-                              isRecorrido
-                                ? 'blue' // Tramo recorrido
-                                : isSelected
-                                ? 'red' // Tramo del camión seleccionado
-                                : 'blue' // Tramo del camión no seleccionado
-                            }
-                            weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
-                          />
-                        );
-                      })}
-                    </React.Fragment>
-                    );
+        return (
+          <React.Fragment key={truck.camion.codigo}>
+            {truck.tramos.map((tramo, index) => {
+              const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
+              const isSelected = selectedTruck === truck.camion.codigo;
+              if (!isRecorrido && !isSelected) return null;
+              return (
+                <Polyline
+                  key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
+                  positions={[
+                    [tramo.origen.latitud, tramo.origen.longitud],
+                    [tramo.destino.latitud, tramo.destino.longitud],
+                  ]}
+                  color={
+                    isRecorrido
+                      ? 'blue' // Tramo recorrido
+                      : isSelected
+                        ? 'red' // Tramo del camión seleccionado
+                        : 'blue' // Tramo del camión no seleccionado
+                  }
+                  weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
+                />
+              );
+            })}
+          </React.Fragment>
+        );
       })}
 
       {/* Renderizar los marcadores de posición actual */}
@@ -278,9 +278,9 @@ MapComponent.propTypes = {
     }).isRequired
   ).isRequired,
 
-    completedTrucks: PropTypes.instanceOf(Set).isRequired,
+  completedTrucks: PropTypes.instanceOf(Set).isRequired,
 
-    simulatedTime: PropTypes.string.isRequired,
+  simulatedTime: PropTypes.string.isRequired,
 };
 
 export default MapComponent;
