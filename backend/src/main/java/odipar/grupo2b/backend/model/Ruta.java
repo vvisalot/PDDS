@@ -12,7 +12,7 @@ public class Ruta {
     private final GrafoTramos grafoTramos = GrafoTramos.getInstance();
     private final MapaVelocidad mapaVelocidad = MapaVelocidad.getInstance();
     private Oficina puntoPartida;
-    private static final double TIEMPO_EN_OFICINA = 1;
+    private static final double TIEMPO_EN_OFICINA = 0;
     private static final double TIEMPO_DESCARGA = 1;
 
     public Ruta(Oficina puntoPartida) {

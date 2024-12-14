@@ -25,7 +25,7 @@ import odipar.grupo2b.backend.utils.RelojSimulado;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/simulacion")
+@RequestMapping("/api/simulacion")
 public class SimulacionController {
     private final SimulacionDataService simulacionDataService;
 	private final AlgoritmoService algoritmoService;

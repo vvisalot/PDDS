@@ -5,7 +5,7 @@ import L from 'leaflet';
 import Papa from "papaparse";
 import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { FaTruck,  FaWarehouse } from 'react-icons/fa';
+import { FaTruck, FaWarehouse } from 'react-icons/fa';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -53,11 +53,10 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
     const interval = setInterval(() => {
       const updatedCompletedRoutes = { ...completedRoutes };
 
-      trucks.forEach((truck) => {
+      for (const truck of trucks) {
         if (!completedTrucks.has(truck.camion.codigo)) {
           const currentTime = new Date();
-          truck.tramos.forEach((tramo) => {
-            const startTime = new Date(tramo.tiempoSalida);
+          for (const tramo of truck.tramos) {
             const endTime = new Date(tramo.tiempoLlegada);
 
             if (currentTime > endTime) {
@@ -78,9 +77,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
 
               }
             }
-          });
+          }
         }
-      });
+      }
       setCompletedRoutes(updatedCompletedRoutes);
     }, 10000);
 
@@ -93,10 +92,10 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
     const cargarCSV = async () => {
       const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
-  
+
       // Lista de ubigeos de oficinas principales
       const ubigeosPrincipales = [130101, 150101, 40101];
-  
+
       // Parsear el CSV con PapaParse
       Papa.parse(csvText, {
         header: true, // Primera fila como nombres de columna
@@ -116,7 +115,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
         },
       });
     };
-  
+
     cargarCSV();
   }, []);
 
@@ -164,9 +163,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
 
       {/* Renderizar las rutas de los camiones */}
       {trucks.map((truck) => {
-                if (completedTrucks.has(truck.camion.codigo)) return null;
-                const truckPosition = truckPositions[truck.camion.codigo];
-                //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
+        if (completedTrucks.has(truck.camion.codigo)) return null;
+        const truckPosition = truckPositions[truck.camion.codigo];
+        //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
                 return (
                     <React.Fragment key={truck.camion.codigo}>
@@ -193,8 +192,8 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
                         );
                       })}
                     </React.Fragment>
-                );
-            })}
+                    );
+      })}
 
       {/* Renderizar los marcadores de posición actual */}
       {truckPositions &&
@@ -237,54 +236,47 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
 };
 
 MapComponent.propTypes = {
-    trucks: PropTypes.arrayOf(
-        PropTypes.shape({
-            camion: PropTypes.shape({
-                codigo: PropTypes.string.isRequired,
-                tipo: PropTypes.string,
-                capacidad: PropTypes.number,
-                cargaActual: PropTypes.number,
-                paquetes: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        codigo: PropTypes.string.isRequired,
-                        fechaHoraPedido: PropTypes.string.isRequired, // ISO date string
-                        destino: PropTypes.shape({
-                            latitud: PropTypes.number.isRequired,
-                            longitud: PropTypes.number.isRequired,
-                        }).isRequired,
-                        cantidadEntregada: PropTypes.number.isRequired,
-                        cantidadTotal: PropTypes.number.isRequired,
-                        idCliente: PropTypes.string.isRequired,
-                    }).isRequired
-                ),
+  trucks: PropTypes.arrayOf(
+    PropTypes.shape({
+      camion: PropTypes.shape({
+        codigo: PropTypes.string.isRequired,
+        tipo: PropTypes.string,
+        capacidad: PropTypes.number,
+        cargaActual: PropTypes.number,
+        paquetes: PropTypes.arrayOf(
+          PropTypes.shape({
+            codigo: PropTypes.string.isRequired,
+            fechaHoraPedido: PropTypes.string.isRequired, // ISO date string
+            destino: PropTypes.shape({
+              latitud: PropTypes.number.isRequired,
+              longitud: PropTypes.number.isRequired,
             }).isRequired,
-            tramos: PropTypes.arrayOf(
-                PropTypes.shape({
-                    origen: PropTypes.shape({
-                        latitud: PropTypes.number.isRequired,
-                        longitud: PropTypes.number.isRequired,
-                    }).isRequired,
-                    destino: PropTypes.shape({
-                        latitud: PropTypes.number.isRequired,
-                        longitud: PropTypes.number.isRequired,
-                    }).isRequired,
-                    distancia: PropTypes.number,
-                    velocidad: PropTypes.number,
-                    tiempoSalida: PropTypes.string, // ISO date string
-                    tiempoLlegada: PropTypes.string, // ISO date string
-                    tiempoEspera: PropTypes.number,
-                    seDejaraElPaquete: PropTypes.bool,
-                }).isRequired
-            ).isRequired,
-        }).isRequired
-    ).isRequired,
-
-    truckPositions: PropTypes.objectOf(
+            cantidadEntregada: PropTypes.number.isRequired,
+            cantidadTotal: PropTypes.number.isRequired,
+            idCliente: PropTypes.string.isRequired,
+          }).isRequired
+        ),
+      }).isRequired,
+      tramos: PropTypes.arrayOf(
         PropTypes.shape({
-            lat: PropTypes.number.isRequired,
-            lng: PropTypes.number.isRequired,
+          origen: PropTypes.shape({
+            latitud: PropTypes.number.isRequired,
+            longitud: PropTypes.number.isRequired,
+          }).isRequired,
+          destino: PropTypes.shape({
+            latitud: PropTypes.number.isRequired,
+            longitud: PropTypes.number.isRequired,
+          }).isRequired,
+          distancia: PropTypes.number,
+          velocidad: PropTypes.number,
+          tiempoSalida: PropTypes.string, // ISO date string
+          tiempoLlegada: PropTypes.string, // ISO date string
+          tiempoEspera: PropTypes.number,
+          seDejaraElPaquete: PropTypes.bool,
         }).isRequired
-    ).isRequired,
+      ).isRequired,
+    }).isRequired
+  ).isRequired,
 
     completedTrucks: PropTypes.instanceOf(Set).isRequired,
 

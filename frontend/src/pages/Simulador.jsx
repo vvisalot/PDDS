@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, DatePicker, Tabs, message } from "antd";
+import { Button, ConfigProvider, DatePicker, Pagination, Space, Tabs, Typography, message } from "antd";
 import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
@@ -7,9 +7,13 @@ import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
+import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
-///
+import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
+
+const { Title } = Typography;
+
 const Simulador = () => {
 	const [trucks, setTrucks] = useState([]);
 	const [truckPositions, setTruckPositions] = useState({});
@@ -23,7 +27,7 @@ const Simulador = () => {
 	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
 	const [completedTrucks, setCompletedTrucks] = useState(new Set());
 	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
-
+	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	// Actualiza el tiempo simulado
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -51,7 +55,7 @@ const Simulador = () => {
 
 	const fetchTrucks = async () => {
 		try {
-			const response = await axios.get("http://localhost:8080/simulacion"); // Replace with your API endpoint
+			const response = await getSimulacion() // Replace with your API endpoint
 
 			if (response.data.some((truck) => truck.colapso)) {
 				handleStop("colapsada");
@@ -172,10 +176,10 @@ const Simulador = () => {
 		isCancelledRef.current = false;
 
 		try {
-			await axios.get("http://localhost:8080/simulacion/reset");
+			await resetSimulacion();
 			console.log("Reset completado");
 
-			await axios.get(`http://localhost:8080/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
+			await actualizarReloj(dtpValue);
 			console.log("Reloj configurado");
 
             setTrucks([]);
@@ -225,6 +229,15 @@ const Simulador = () => {
 			children: <TablaFlota data={trucks} />
 		},
 	];
+
+
+	const [currentPage, setCurrentPage] = useState(1);
+	const cardsPerPage = 5;
+
+	const handlePageChange = (page) => {
+		setCurrentPage(page);
+	};
+
 
 	const calcularEstadisticas = () => {
         let totalPedidos = 0;
@@ -284,6 +297,10 @@ const Simulador = () => {
 				transition: "all 0.3s ease",
 				overflowY: "hidden",
 				width: isPanelVisible ? "35%" : "0",
+				height: "100%",
+				display: "flex",
+				flexDirection: "column",
+				marginBottom: "10px"
 			}}>
 				{/* Controles de la simulacion */}
 				{isPanelVisible && <>
@@ -302,7 +319,7 @@ const Simulador = () => {
 						type="primary"
 						onClick={isFetching ? handleStop : handleStart}
 						disabled={!dtpValue && !isFetching}
-						style={{ marginLeft: "10px" }}
+						style={{ marginTop: '10px' }}
 					>
 						{isFetching ? "Parar" : "Iniciar"}
 					</Button>
@@ -328,8 +345,47 @@ const Simulador = () => {
                         </p>
                     </div>
 
-					{/*Tablas de camiones y rutas*/}
-					<Tabs style={{ marginTop: "20px" }} type="card" items={TabItems} />
+
+					<div style={{
+						flex: 1,
+						overflowY: 'auto',
+						marginTop: '20px',
+						paddingRight: '10px',
+					}}>
+						<Space direction="vertical" style={{ width: '100%' }}>
+							<Title level={5}>Camiones en Ruta</Title>
+							{trucks
+								.filter(truck => !completedTrucks.has(truck.camion.codigo))
+								.map(truck => (
+									<TruckCard
+										key={truck.camion.codigo}
+										camionData={truck}
+										isSelected={selectedTruckCode === truck.camion.codigo}
+									/>
+								))}
+
+							{/* Paginación */}
+							<div style={{
+								marginTop: '16px',
+								display: 'flex',
+								justifyContent: 'center',
+								position: 'sticky',
+								bottom: 0,
+								backgroundColor: 'white',
+								padding: '8px 0',
+								borderTop: '1px solid #f0f0f0'
+							}}>
+								<Pagination
+									current={currentPage}
+									total={trucks.filter(truck => !completedTrucks.has(truck.camion.codigo)).length}
+									pageSize={cardsPerPage}
+									onChange={handlePageChange}
+									showSizeChanger={false}
+									size="small"
+								/>
+							</div>
+						</Space>
+					</div>
 				</>
 				}
 			</div>
@@ -365,6 +421,7 @@ const Simulador = () => {
 					truckPositions={truckPositions}
 					completedTrucks={completedTrucks}
 					simulatedTime={simulatedTime}
+					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
 				/>
 			</div >
 
