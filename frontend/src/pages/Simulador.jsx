@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, DatePicker, Pagination, Space, Tabs, Typography, message } from "antd";
+import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Tabs, Typography, message } from "antd";
 import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
@@ -288,6 +288,16 @@ const Simulador = () => {
 	}
 
 
+	// BARRA DE BUSQUEDA
+	const [searchTerm, setSearchTerm] = useState("");
+
+	// Filtra los camiones según el código
+	const filteredTrucks = trucks.filter(truck => !completedTrucks.has(truck.camion.codigo) &&
+		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
+
+
+
+
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
 			<div style={{
@@ -347,6 +357,7 @@ const Simulador = () => {
 					</div>
 
 
+
 					<div style={{
 						flex: 1,
 						overflowY: 'auto',
@@ -354,17 +365,28 @@ const Simulador = () => {
 						paddingRight: '10px',
 					}}>
 						<Space direction="vertical" style={{ width: '100%' }}>
-							<Title level={5}>Camiones en Ruta</Title>
-							{trucks
-								.filter(truck => !completedTrucks.has(truck.camion.codigo))
-								.map(truck => (
-									<TruckCard
-										key={truck.camion.codigo}
-										camionData={truck}
-										isSelected={selectedTruckCode === truck.camion.codigo}
-										currentTime={simulatedTime}
-									/>
-								))}
+							<Title level={4}>Camiones en Ruta</Title>
+							{/* Búsqueda de camiones */}
+							<Input.Search
+								placeholder="Buscar camión por código"
+								onChange={e => setSearchTerm(e.target.value)}
+								style={{
+									marginBottom: '10px'
+								}}
+							/>
+
+							{
+								filteredTrucks
+									.filter(truck => !completedTrucks.has(truck.camion.codigo))
+									.map(truck => (
+										<TruckCard
+											key={truck.camion.codigo}
+											camionData={truck}
+											isSelected={selectedTruckCode === truck.camion.codigo}
+											currentTime={simulatedTime}
+										/>
+									))
+							}
 
 							{/* Paginación */}
 							<div style={{
