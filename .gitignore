@@ -32,6 +32,11 @@ node_modules/
 
 # Dependency directory
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
 MACOSX/
 
 # Editor directories and files
@@ -39,3 +44,5 @@ MACOSX/
 .idea/
 *.swp
 
+# Build
+dist/
