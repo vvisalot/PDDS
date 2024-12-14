@@ -18,7 +18,7 @@ const TruckCard = ({ camionData, isSelected }) => {
                 />
                 <Text strong>{camion.codigo}</Text>
             </Space>
-            <Text>{camion.cargaActual}/{camion.capacidad} kg</Text>
+            <Text>Capacidad: {camion.cargaActual}/{camion.capacidad}</Text>
         </Space>
     );
 
@@ -30,13 +30,13 @@ const TruckCard = ({ camionData, isSelected }) => {
                 children: (
                     <>
                         {/* Salida */}
-                        <Space direction="vertical" size={1} style={{ marginBottom: 8 }}>
+                        <Space direction="vertical" size={12} style={{ marginBottom: 8, width: "100%" }}>
                             <Space>
                                 <FaClock size={12} />
                                 <Text>{dayjs(tramo.tiempoSalida).format('HH:mm')}</Text>
-                                <Text>
+                                <Text >
                                     {index === 0 ?
-                                        `Salió de ${tramo.nombreOrigen} con ${camion.paquetes.length} paquetes` :
+                                        `Salió de ${tramo.nombreOrigen} con ${camion.paquetes.length} órdenes` :
                                         `Continuó ruta desde ${tramo.nombreOrigen}`
                                     }
                                 </Text>
@@ -44,7 +44,7 @@ const TruckCard = ({ camionData, isSelected }) => {
                         </Space>
 
                         {/* Llegada */}
-                        <Space direction="vertical" size={1}>
+                        <Space direction="vertical" size={1} style={{ width: "100%" }}>
                             <Space>
                                 <FaClock size={12} />
                                 <Text>{dayjs(tramo.tiempoLlegada).format('HH:mm')}</Text>
@@ -53,7 +53,7 @@ const TruckCard = ({ camionData, isSelected }) => {
                                         `Entregó ${camion.paquetes.filter(paquete =>
                                             paquete.destino.latitud === tramo.destino.latitud &&
                                             paquete.destino.longitud === tramo.destino.longitud
-                                        ).length} paquetes en ${tramo.nombreDestino}`
+                                        ).length} orden en ${tramo.nombreDestino}`
                                     ) : (
                                         `Llegó a ${tramo.nombreDestino}`
                                     )}
@@ -69,7 +69,7 @@ const TruckCard = ({ camionData, isSelected }) => {
                                             paquete.destino.longitud === tramo.destino.longitud
                                         )
                                         .map(paquete => paquete.cantidadEntregada)
-                                        .join(' + ')} kg
+                                        .join(' + ')} paquetes
                                 </Text>
                             )}
                         </Space>
