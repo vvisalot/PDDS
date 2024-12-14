@@ -329,22 +329,6 @@ const Simulador = () => {
 
 					</div>
 
-                    {/* Estadísticas de la simulación */}
-                    <div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
-                        <p> <FaTruck size={17} color="orange" style={{ marginRight: '8px' }} />
-                            <strong>Total camiones en simulación:</strong> <span style={{ marginLeft: '13px' }}>{trucks.length}</span>
-                        </p>
-                        <p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
-                            <strong>Camiones en Mapa:</strong> <span style={{ marginLeft: '85px' }}>{camionesEnMapa}</span>
-                        </p>
-                        <p> <FaBoxOpen size={17} color="lightblack" style={{ marginRight: '8px' }} />
-                            <strong>Pedidos totales:</strong> <span style={{ marginLeft: '113px' }}>{totalPedidos}</span>
-                        </p>
-                        <p> <FaBoxOpen size={17} color="green" style={{ marginRight: '8px' }} />
-                            <strong>Pedidos entregados:</strong> <span style={{ marginLeft: '81px' }}>{pedidosEntregados}</span>
-                        </p>
-                    </div>
-
 
 					<div style={{
 						flex: 1,
@@ -422,6 +406,10 @@ const Simulador = () => {
 					completedTrucks={completedTrucks}
 					simulatedTime={simulatedTime}
 					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
+					trucksCompletos={trucks.length}
+					camionesEnMapa={camionesEnMapa}
+					totalPedidos={totalPedidos}
+					pedidosEntregados={pedidosEntregados}
 				/>
 			</div >
 
