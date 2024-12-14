@@ -4,7 +4,6 @@ import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/f
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { FaBoxOpen, FaTruck } from 'react-icons/fa';
 import MapComponent from "/src/components/MapComponent";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
