@@ -120,7 +120,23 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
   }, []);
 
   return (
-    <MapContainer center={[-13.5, -76]} zoom={6} style={{ height: '100%', width: '100%' }}>
+    <MapContainer
+      center={[-13.5, -76]}
+      zoom={6}
+      style={{
+        height: '100%',
+        width: '100%'
+      }}
+      minZoom={4}
+      maxZoom={7}
+      scrollWheelZoom={true}
+      maxBounds={[
+        //Limites de Sudamerica
+        [-60, -110],
+        [15, -30]
+      ]}
+      maxBoundsViscosity={1.0}
+    >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; OpenStreetMap contributors"
