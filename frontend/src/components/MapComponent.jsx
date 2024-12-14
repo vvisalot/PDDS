@@ -5,7 +5,7 @@ import L from 'leaflet';
 import Papa from "papaparse";
 import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { FaTruck,  FaWarehouse } from 'react-icons/fa';
+import { FaTruck, FaWarehouse } from 'react-icons/fa';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -30,7 +30,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
@@ -56,11 +56,10 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
     const interval = setInterval(() => {
       const updatedCompletedRoutes = { ...completedRoutes };
 
-      trucks.forEach((truck) => {
+      for (const truck of trucks) {
         if (!completedTrucks.has(truck.camion.codigo)) {
           const currentTime = new Date();
-          truck.tramos.forEach((tramo) => {
-            const startTime = new Date(tramo.tiempoSalida);
+          for (const tramo of truck.tramos) {
             const endTime = new Date(tramo.tiempoLlegada);
 
             if (currentTime > endTime) {
@@ -80,9 +79,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
                 updatedCompletedRoutes[truck.camion.codigo].push(tramo);
               }
             }
-          });
+          }
         }
-      });
+      }
       setCompletedRoutes(updatedCompletedRoutes);
     }, 10000);
 
@@ -95,10 +94,10 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
     const cargarCSV = async () => {
       const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
-  
+
       // Lista de ubigeos de oficinas principales
       const ubigeosPrincipales = [130101, 150101, 40101];
-  
+
       // Parsear el CSV con PapaParse
       Papa.parse(csvText, {
         header: true, // Primera fila como nombres de columna
@@ -118,7 +117,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
         },
       });
     };
-  
+
     cargarCSV();
   }, []);
 
@@ -166,37 +165,38 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
 
       {/* Renderizar las rutas de los camiones */}
       {trucks.map((truck) => {
-                if (completedTrucks.has(truck.camion.codigo)) return null;
-                const truckPosition = truckPositions[truck.camion.codigo];
-                //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
+        if (completedTrucks.has(truck.camion.codigo)) return null;
+        const truckPosition = truckPositions[truck.camion.codigo];
+        //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
-                return (
-                    <React.Fragment key={truck.camion.codigo}>
-                      {truck.tramos.map((tramo, index) => {
-                        const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
-                        const isSelected = selectedTruck === truck.camion.codigo;
+        return (
+          <React.Fragment key={truck.camion.codigo}>
+            {truck.tramos.map((tramo, index) => {
+              const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
+              const isSelected = selectedTruck === truck.camion.codigo;
+              if (!isRecorrido && !isSelected) return null;
 
-                        return (
-                          <Polyline
-                            key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
-                            positions={[
-                              [tramo.origen.latitud, tramo.origen.longitud],
-                              [tramo.destino.latitud, tramo.destino.longitud],
-                            ]}
-                            color={
-                              isRecorrido
-                                ? 'blue' // Tramo recorrido
-                                : isSelected
-                                ? 'red' // Tramo del camión seleccionado
-                                : 'blue' // Tramo del camión no seleccionado
-                            }
-                            weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
-                          />
-                        );
-                      })}
-                    </React.Fragment>
-                );
+              return (
+                <Polyline
+                  key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
+                  positions={[
+                    [tramo.origen.latitud, tramo.origen.longitud],
+                    [tramo.destino.latitud, tramo.destino.longitud],
+                  ]}
+                  color={
+                    isRecorrido
+                      ? 'blue' // Tramo recorrido
+                      : isSelected
+                        ? 'red' // Tramo del camión seleccionado
+                        : 'blue' // Tramo del camión no seleccionado
+                  }
+                  weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
+                />
+              );
             })}
+          </React.Fragment>
+        );
+      })}
 
       {/* Renderizar los marcadores de posición actual */}
       {truckPositions &&
@@ -239,56 +239,56 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual }) 
 };
 
 MapComponent.propTypes = {
-    trucks: PropTypes.arrayOf(
-        PropTypes.shape({
-            camion: PropTypes.shape({
-                codigo: PropTypes.string.isRequired,
-                tipo: PropTypes.string,
-                capacidad: PropTypes.number,
-                cargaActual: PropTypes.number,
-                paquetes: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        codigo: PropTypes.string.isRequired,
-                        fechaHoraPedido: PropTypes.string.isRequired, // ISO date string
-                        destino: PropTypes.shape({
-                            latitud: PropTypes.number.isRequired,
-                            longitud: PropTypes.number.isRequired,
-                        }).isRequired,
-                        cantidadEntregada: PropTypes.number.isRequired,
-                        cantidadTotal: PropTypes.number.isRequired,
-                        idCliente: PropTypes.string.isRequired,
-                    }).isRequired
-                ),
+  trucks: PropTypes.arrayOf(
+    PropTypes.shape({
+      camion: PropTypes.shape({
+        codigo: PropTypes.string.isRequired,
+        tipo: PropTypes.string,
+        capacidad: PropTypes.number,
+        cargaActual: PropTypes.number,
+        paquetes: PropTypes.arrayOf(
+          PropTypes.shape({
+            codigo: PropTypes.string.isRequired,
+            fechaHoraPedido: PropTypes.string.isRequired, // ISO date string
+            destino: PropTypes.shape({
+              latitud: PropTypes.number.isRequired,
+              longitud: PropTypes.number.isRequired,
             }).isRequired,
-            tramos: PropTypes.arrayOf(
-                PropTypes.shape({
-                    origen: PropTypes.shape({
-                        latitud: PropTypes.number.isRequired,
-                        longitud: PropTypes.number.isRequired,
-                    }).isRequired,
-                    destino: PropTypes.shape({
-                        latitud: PropTypes.number.isRequired,
-                        longitud: PropTypes.number.isRequired,
-                    }).isRequired,
-                    distancia: PropTypes.number,
-                    velocidad: PropTypes.number,
-                    tiempoSalida: PropTypes.string, // ISO date string
-                    tiempoLlegada: PropTypes.string, // ISO date string
-                    tiempoEspera: PropTypes.number,
-                    seDejaraElPaquete: PropTypes.bool,
-                }).isRequired
-            ).isRequired,
-        }).isRequired
-    ).isRequired,
-
-    truckPositions: PropTypes.objectOf(
+            cantidadEntregada: PropTypes.number.isRequired,
+            cantidadTotal: PropTypes.number.isRequired,
+            idCliente: PropTypes.string.isRequired,
+          }).isRequired
+        ),
+      }).isRequired,
+      tramos: PropTypes.arrayOf(
         PropTypes.shape({
-            lat: PropTypes.number.isRequired,
-            lng: PropTypes.number.isRequired,
+          origen: PropTypes.shape({
+            latitud: PropTypes.number.isRequired,
+            longitud: PropTypes.number.isRequired,
+          }).isRequired,
+          destino: PropTypes.shape({
+            latitud: PropTypes.number.isRequired,
+            longitud: PropTypes.number.isRequired,
+          }).isRequired,
+          distancia: PropTypes.number,
+          velocidad: PropTypes.number,
+          tiempoSalida: PropTypes.string, // ISO date string
+          tiempoLlegada: PropTypes.string, // ISO date string
+          tiempoEspera: PropTypes.number,
+          seDejaraElPaquete: PropTypes.bool,
         }).isRequired
-    ).isRequired,
+      ).isRequired,
+    }).isRequired
+  ).isRequired,
 
-    completedTrucks: PropTypes.instanceOf(Set).isRequired,
+  truckPositions: PropTypes.objectOf(
+    PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
+    }).isRequired
+  ).isRequired,
+
+  completedTrucks: PropTypes.instanceOf(Set).isRequired,
 };
 
 export default MapComponent;

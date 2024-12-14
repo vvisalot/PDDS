@@ -12,7 +12,7 @@ import java.util.Random;
 public class SimulatedAnnealing {
     private static final MapaVelocidad mapaVelocidad = MapaVelocidad.getInstance();
     private static final double TIEMPO_DESCARGA = 1;
-    private static final double TIEMPO_EN_OFICINA = 1;
+    private static final double TIEMPO_EN_OFICINA = 0;
     private final GrafoTramos grafoTramos = GrafoTramos.getInstance();
 
     public static Solucion calcular(List<Paquete> paquetes, Camion camion, RelojSimulado reloj,
@@ -84,7 +84,8 @@ public class SimulatedAnnealing {
                     paquete.getVenta().getIdCliente()
             ));
         }
-        var camionSolucion = new odipar.grupo2b.backend.dto.Camion(camion.getCodigo(),camion.getTipo(),camion.getCapacidad(),camion.getCargaActual(),paquetesAEntregar);
+        var cargaActual = paquetesAEntregar.stream().mapToInt(odipar.grupo2b.backend.dto.Paquete::cantidadEntregada).sum();
+        var camionSolucion = new odipar.grupo2b.backend.dto.Camion(camion.getCodigo(),camion.getTipo(),camion.getCapacidad(),cargaActual,paquetesAEntregar);
         var tramosSolucion = new ArrayList<odipar.grupo2b.backend.dto.Tramo>();
         LocalDateTime tiempoActual = reloj.getTiempo();
         for (int i=0;  i< best.getRutaRecorrida().size(); i++) {
@@ -94,15 +95,17 @@ public class SimulatedAnnealing {
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
             tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
                     new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+                    origen.getProvincia() + ", " + origen.getDepartamento(),
                     new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    destino.getProvincia() + ", " + destino.getDepartamento(),
                     tramo.getDistancia(),
                     velocidad,
                     tiempoActual,
-                    tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)),
-                    i != best.getRutaRecorrida().size() -1 ? (int) TIEMPO_EN_OFICINA: (int) TIEMPO_DESCARGA,
+                    tiempoActual = !tramo.getEsFinal() ? tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)) : tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)).minusHours((long) TIEMPO_DESCARGA),
+                    !tramo.getEsFinal() ? (int) TIEMPO_EN_OFICINA: (int) TIEMPO_DESCARGA,
                     tramo.getEsFinal()
             ));
-            tiempoActual = tiempoActual.plusHours((long) TIEMPO_EN_OFICINA);
+            tiempoActual = !tramo.getEsFinal() ? tiempoActual.plusHours((long) TIEMPO_EN_OFICINA) : tiempoActual.plusHours((long) TIEMPO_DESCARGA);
         }
         best.desmarcarTramos();
         mejorRutaRegreso.construirRuta();
@@ -113,20 +116,17 @@ public class SimulatedAnnealing {
             var origen = tramo.getOrigen();
             var destino = tramo.getDestino();
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
-            var tiempoLlegada = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60.0 / (double) velocidad));
-            var origenDTO = new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(), origen.getLongitud());
-            var destinoDTO = new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(), destino.getLongitud());
-            var distancia = tramo.getDistancia();
-            var esFinal = tramo.getEsFinal();
             tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
-                    origenDTO,
-                    destinoDTO,
-                    distancia,
-                    velocidad,
-                    tiempoActual,
-                    tiempoLlegada,
-                    (int) TIEMPO_EN_OFICINA,
-                    esFinal
+                new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+                origen.getProvincia() + ", " + origen.getDepartamento(),
+                new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                destino.getProvincia() + ", " + destino.getDepartamento(),
+                tramo.getDistancia(),
+                velocidad,
+                tiempoActual,
+                tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)),
+                (int) TIEMPO_EN_OFICINA,
+                tramo.getEsFinal()
             ));
             tiempoActual = tiempoActual.plusHours((long) TIEMPO_EN_OFICINA);
         }
@@ -222,15 +222,17 @@ public class SimulatedAnnealing {
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
             tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
                     new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+                    origen.getProvincia() + ", " + origen.getDepartamento(),
                     new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    destino.getProvincia() + ", " + destino.getDepartamento(),
                     tramo.getDistancia(),
                     velocidad,
                     tiempoActual,
-                    tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)),
-                    i != best.getRutaRecorrida().size() -1 ? (int) TIEMPO_EN_OFICINA: (int) TIEMPO_DESCARGA,
+                    tiempoActual = !tramo.getEsFinal() ? tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)) : tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)).minusHours((long) TIEMPO_DESCARGA),
+                    !tramo.getEsFinal() ? (int) TIEMPO_EN_OFICINA: (int) TIEMPO_DESCARGA,
                     tramo.getEsFinal()
             ));
-            tiempoActual = tiempoActual.plusHours((long) TIEMPO_EN_OFICINA);
+            tiempoActual = !tramo.getEsFinal() ? tiempoActual.plusHours((long) TIEMPO_EN_OFICINA) : tiempoActual.plusHours((long) TIEMPO_DESCARGA);
         }
         best.desmarcarTramos();
         for (int i=0;  i< rutaRegreso.getRutaRecorrida().size(); i++) {
@@ -240,7 +242,9 @@ public class SimulatedAnnealing {
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
             tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
                     new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+                    origen.getProvincia() + ", " + origen.getDepartamento(),
                     new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    destino.getProvincia() + ", " + destino.getDepartamento(),
                     tramo.getDistancia(),
                     velocidad,
                     tiempoActual,
