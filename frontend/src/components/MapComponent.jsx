@@ -28,7 +28,7 @@ const iconCapacidad = { //icono según porcentaje de capacidad
 
 const oficinaIcon = L.icon({ iconUrl: warehouseIconUrl, iconSize: [15, 15], }); //icono oficinas
 const camionIcon = L.icon({ iconUrl: truckIconUrl, iconSize: [15, 15], }); //icono camiones
-const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [15, 15], }); //icono camiones seleccionados
+const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [20, 20], }); //icono camiones seleccionados
 
 // Ícono personalizado para oficinas principales (verde oscuro)
 const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
