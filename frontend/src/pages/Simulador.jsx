@@ -66,6 +66,7 @@ const Simulador = () => {
                         return newSet;
                     });
                 }
+                adjustTramoTimes(truck.tramos);
             });
 
             for (const truck of response.data) simulateTruckRoute(truck)
@@ -80,6 +81,23 @@ const Simulador = () => {
         } catch (error) {
             console.error("Error fetching truck data:", error);
         }
+    };
+
+    const adjustTramoTimes = (tramos) => {
+        for (let i = 1; i < tramos.length; i++) {
+            const prevTramo = tramos[i - 1];
+            const currentTramo = tramos[i];
+
+            if (!prevTramo.seDejaraElPaquete) {
+                currentTramo.tiempoSalida = dayjs(currentTramo.tiempoSalida).subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
+            }
+        }
+        console.log("Tiempos actualizados después del ajuste:", tramos.map(tramo => ({
+            origen: tramo.origen,
+            destino: tramo.destino,
+            tiempoSalida: tramo.tiempoSalida,
+            tiempoLlegada: tramo.tiempoLlegada
+        })));
     };
 
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
