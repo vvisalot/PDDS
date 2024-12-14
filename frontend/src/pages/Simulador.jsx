@@ -66,7 +66,6 @@ const Simulador = () => {
                         return newSet;
                     });
                 }
-                adjustTramoTimes(truck.tramos);
             });
 
 			for (const truck of response.data) simulateTruckRoute(truck)
@@ -83,22 +82,6 @@ const Simulador = () => {
 		}
 	};
 
-    const adjustTramoTimes = (tramos) => {
-        for (let i = 1; i < tramos.length; i++) {
-            const prevTramo = tramos[i - 1];
-            const currentTramo = tramos[i];
-
-            if (!prevTramo.seDejaraElPaquete) {
-                currentTramo.tiempoSalida = dayjs(currentTramo.tiempoSalida).subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
-            }
-        }
-        console.log("Tiempos actualizados después del ajuste:", tramos.map(tramo => ({
-            origen: tramo.origen,
-            destino: tramo.destino,
-            tiempoSalida: tramo.tiempoSalida,
-            tiempoLlegada: tramo.tiempoLlegada
-        })));
-    };
 
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
@@ -195,37 +178,14 @@ const Simulador = () => {
 			await axios.get(`http://localhost:8080/simulacion/reloj?fechaInicial=${encodeURIComponent(dtpValue)}`);
 			console.log("Reloj configurado");
 
-			setTrucks([]);
-			setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
-
-			const interations = 28
-			const colapseSimulation = interations === -1
-
-			if (colapseSimulation) {
-				console.log("Simulación colapsada")
-				intervalRef.current = setInterval(fetchTrucks, 60000);
-			} else {
-				let counter = 0
-
-				const executeIteration = async () => {
-					if (counter >= interations || isCancelledRef.current) {
-						console.log("Iteraciones completadas")
-						setIsFetching(false)
-						return
-					}
-					await fetchTrucks();
-					counter++;
-					console.log(`Iteración ${counter}/${interations}`);
-
-					setTimeout(executeIteration, 120000)
-				};
-				executeIteration()
-			};
-
-			setIsFetching(true);
-		} catch (error) {
-			console.error("Error starting simulation:", error);
-		}
+            setTrucks([]);
+            setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
+            fetchTrucks();
+            intervalRef.current = setInterval(fetchTrucks, 90000);
+            setIsFetching(true);
+        } catch (error) {
+            console.error("Error starting simulation:", error);
+        }
 	};
 
 
@@ -267,32 +227,46 @@ const Simulador = () => {
 	];
 
 	const calcularEstadisticas = () => {
-		let totalPedidos = 0;
-		let pedidosEntregados = 0;
-		let camionesIncompletos = 0;
+        let totalPedidos = 0;
+        let pedidosEntregados = 0;
+        let camionesEnMapa  = 0;
+    
+        trucks.forEach((truck) => {
+            // Filtrar tramos activos según la hora simulada
+            const tramosActivos = truck.tramos.filter(
+                (tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
+            );
+    
+            if (tramosActivos.length > 0) {
+                camionesEnMapa++; // Contar camión si tiene al menos un tramo activo
+    
+                // Contar pedidos totales y entregados solo para camiones en el mapa
+                totalPedidos += truck.camion.paquetes.length;
+    
+                // Verificar paquetes entregados en función del destino y tiempo
+                truck.camion.paquetes.forEach((paquete) => {
+                    const tramoCorrespondiente = truck.tramos.find(
+                        (tramo) =>
+                            tramo.destino.latitud === paquete.destino.latitud &&
+                            tramo.destino.longitud === paquete.destino.longitud
+                    );
 
-		for (const truck of trucks) {
-			// Sumar pedidos totales
-			totalPedidos += truck.camion.paquetes.length;
+                    if (
+                        tramoCorrespondiente &&
+                        dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
+                        !completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
+                    ) {
+                        pedidosEntregados++;
+                    }
+                });
+            }
+        });
+    
+        return { totalPedidos, pedidosEntregados, camionesEnMapa };
+    };
+    
+    const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
 
-			// Verificar si el camión completó todos sus tramos
-			const camiónCompleto = completedTrucks.has(truck.camion.codigo);
-
-			if (camiónCompleto) {
-				// Incrementar los pedidos entregados solo si el camión completó sus tramos y entregó todos los paquetes
-				pedidosEntregados += truck.camion.paquetes.filter(
-					(paquete) => paquete.cantidadEntregada === paquete.cantidadTotal
-				).length;
-			} else {
-				// Incrementar camiones incompletos si el camión no ha terminado
-				camionesIncompletos++;
-			}
-		}
-
-		return { totalPedidos, pedidosEntregados, camionesIncompletos };
-	};
-
-	const { totalPedidos, pedidosEntregados, camionesIncompletos } = calcularEstadisticas();
 
 	// PANEL COLAPSABLE
 	const [isPanelVisible, setIsPanelVisible] = useState(false);
@@ -338,21 +312,21 @@ const Simulador = () => {
 
 					</div>
 
-					{/* Estadísticas de la simulación */}
-					<div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
-						<p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
-							<strong>Total camiones en simulación:</strong> <span style={{ marginLeft: '13px' }}>{trucks.length}</span>
-						</p>
-						<p> <FaTruck size={17} color="red" style={{ marginRight: '8px' }} />
-							<strong>Camiones incompletos:</strong> <span style={{ marginLeft: '60px' }}>{camionesIncompletos}</span>
-						</p>
-						<p> <FaBoxOpen size={17} color="darkgrey" style={{ marginRight: '8px' }} />
-							<strong>Pedidos totales:</strong> <span style={{ marginLeft: '113px' }}>{totalPedidos}</span>
-						</p>
-						<p> <FaBoxOpen size={17} color="green" style={{ marginRight: '8px' }} />
-							<strong>Pedidos entregados:</strong> <span style={{ marginLeft: '81px' }}>{pedidosEntregados}</span>
-						</p>
-					</div>
+                    {/* Estadísticas de la simulación */}
+                    <div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
+                        <p> <FaTruck size={17} color="orange" style={{ marginRight: '8px' }} />
+                            <strong>Total camiones en simulación:</strong> <span style={{ marginLeft: '13px' }}>{trucks.length}</span>
+                        </p>
+                        <p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
+                            <strong>Camiones en Mapa:</strong> <span style={{ marginLeft: '85px' }}>{camionesEnMapa}</span>
+                        </p>
+                        <p> <FaBoxOpen size={17} color="lightblack" style={{ marginRight: '8px' }} />
+                            <strong>Pedidos totales:</strong> <span style={{ marginLeft: '113px' }}>{totalPedidos}</span>
+                        </p>
+                        <p> <FaBoxOpen size={17} color="green" style={{ marginRight: '8px' }} />
+                            <strong>Pedidos entregados:</strong> <span style={{ marginLeft: '81px' }}>{pedidosEntregados}</span>
+                        </p>
+                    </div>
 
 					{/*Tablas de camiones y rutas*/}
 					<Tabs style={{ marginTop: "20px" }} type="card" items={TabItems} />
