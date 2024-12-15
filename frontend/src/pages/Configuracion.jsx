@@ -13,11 +13,11 @@ const Configuracion = () => {
       <Sider
         theme="dark"
         style={{
-          backgroundColor: "#1f2937", // Gris oscuro
+          backgroundColor: "white", // Gris oscuro
         }}
       >
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           defaultSelectedKeys={["1"]} // Seleccionar por defecto el ítem de "Oficinas"
           items={configItems.map((item) => ({
@@ -28,8 +28,8 @@ const Configuracion = () => {
         />
       </Sider>
 
-      {/* Contenido dinámico */}
-      <Content style={{ padding: "16px", backgroundColor: "#f5f5f5" }}>
+      {/* Contenido dinámico    //ya no color #f5f5f5 */}
+      <Content style={{ padding: "16px", backgroundColor: "white" }}>
         <Routes>
           {/* Redireccionar por defecto a Subida Oficina */}
           <Route path="/" element={<Navigate to="subida-oficina" replace />} />

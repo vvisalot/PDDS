@@ -22,7 +22,10 @@ const menuItems = [
 // Componente para resaltar la página activa
 const NavigationMenu = () => {
   const location = useLocation();
-  const currentKey = location.pathname === "/" ? "simulador" : location.pathname.replace("/", "");
+  // Lógica para seleccionar el ítem correcto en base a la ruta actual
+  const currentKey = location.pathname.startsWith("/configuracion")
+  ? "configuracion" // Selecciona Configuración si la ruta empieza con "/configuracion"
+  : "simulador";    // Selecciona Simulador para la ruta raíz "/"
 
   return (
     <Menu
