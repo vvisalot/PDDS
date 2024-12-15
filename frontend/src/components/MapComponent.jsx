@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
+import { MapContainer, Marker, Polyline, Popup, TileLayer,  } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import Papa from "papaparse";
 import PropTypes from 'prop-types';
+import LeyendaSimu from "../components/LeyendaSim";
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
@@ -31,7 +32,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, simulatedTime,elapsedTime }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
@@ -159,112 +160,120 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
         attribution="&copy; OpenStreetMap contributors"
       />
 
-      {/* Renderizar marcadores de oficinas principales */}
-      {oficinasPrincipales.map((oficina) => (
-        <Marker
-          key={oficina.id}
-          position={[oficina.lat, oficina.lng]}
-          icon={oficinaPrincipalIcon}
-        >
-          <Popup>
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-              <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
-              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+        {/* Renderizar marcadores de oficinas principales */}
+        {oficinasPrincipales.map((oficina) => (
+          <Marker
+            key={oficina.id}
+            position={[oficina.lat, oficina.lng]}
+            icon={oficinaPrincipalIcon}
+          >
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
+                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
 
-      {/* Renderizar marcadores de oficinas normales */}
-      {oficinas.map((oficina) => (
-        <Marker
-          key={oficina.id}
-          position={[oficina.lat, oficina.lng]}
-          icon={oficinaIcon}
-        >
-          <Popup>
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-              <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-              <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+        {/* Renderizar marcadores de oficinas normales */}
+        {oficinas.map((oficina) => (
+          <Marker
+            key={oficina.id}
+            position={[oficina.lat, oficina.lng]}
+            icon={oficinaIcon}
+          >
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
 
-      {/* Renderizar las rutas de los camiones */}
-      {trucks.map((truck) => {
-        if (completedTrucks.has(truck.camion.codigo)) return null;
-        const truckPosition = truckPositions[truck.camion.codigo];
-        //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
+        {/* Renderizar LeyendaSimu enviando estadísticas como props */}
+        <LeyendaSimu
+            totalCamionesSimulacion={trucksCompletos}
+            camionesEnMapa={camionesEnMapa}
+            totalPedidos={totalPedidos}
+            pedidosEntregados={pedidosEntregados}
+        />
 
-        return (
-          <React.Fragment key={truck.camion.codigo}>
-            {truck.tramos.map((tramo, index) => {
-              const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
-              const isSelected = selectedTruck === truck.camion.codigo;
-              if (!isRecorrido && !isSelected) return null;
-              return (
-                <Polyline
-                  key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
-                  positions={[
-                    [tramo.origen.latitud, tramo.origen.longitud],
-                    [tramo.destino.latitud, tramo.destino.longitud],
-                  ]}
-                  color={
-                    isRecorrido
-                      ? 'blue' // Tramo recorrido
-                      : isSelected
-                        ? 'red' // Tramo del camión seleccionado
-                        : 'blue' // Tramo del camión no seleccionado
-                  }
-                  weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
-                />
-              );
-            })}
-          </React.Fragment>
-        );
-      })}
+        {/* Renderizar las rutas de los camiones */}
+        {trucks.map((truck) => {
+          if (completedTrucks.has(truck.camion.codigo)) return null;
+          const truckPosition = truckPositions[truck.camion.codigo];
+          //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
-      {/* Renderizar los marcadores de posición actual */}
-      {truckPositions &&
-        Object.entries(truckPositions).map(([truckCode, position]) => {
-          const truckData = trucks.find((truck) => truck.camion.codigo === truckCode); // Buscar datos del camión
-          const cargaActual = truckData?.camion.cargaActual || 0; // Obtener la carga actual, 0 si no existe
-          const capacidadRestante = truckData?.camion.capacidad - cargaActual || 0; // Calcular capacidad restante
-
-          return (
-            !completedTrucks.has(truckCode) && (
-              <Marker
-                key={truckCode}
-                position={[position.lat, position.lng]}
-                icon={selectedTruck === truckCode ? camionSeleccionadoIcon : camionIcon} // Cambiar ícono según el camión seleccionado
-                eventHandlers={{
-                  click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
-                  popupopen: () => setSelectedTruck(truckCode), // Actualizar estado al abrir el popup
-                  popupclose: () => setSelectedTruck(null), // Limpiar selección al cerrar el popup
-                }}
-              >
-                <Popup>
-                  <div style={{ textAlign: 'center' }}>
-                    <h3 style={{ margin: '0', color: '#333' }}>Camión: {truckCode}</h3>
-                    <p style={{ margin: '0', color: '#777' }}>Latitud: {position.lat.toFixed(6)}</p>
-                    <p style={{ margin: '0', color: '#777' }}>Longitud: {position.lng.toFixed(6)}</p>
-                    <p style={{ margin: '0', color: '#777' }}>
-                      <strong>Carga Actual:</strong> {cargaActual} kg
-                    </p>
-                    <p style={{ margin: '0', color: '#777' }}>
-                      <strong>Capacidad Restante:</strong> {capacidadRestante} kg
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            )
-          );
+                  return (
+                      <React.Fragment key={truck.camion.codigo}>
+                        {truck.tramos.map((tramo, index) => {
+                          const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
+                          const isSelected = selectedTruck === truck.camion.codigo;
+                          if (!isRecorrido && !isSelected) return null;
+                          return (
+                            <Polyline
+                              key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
+                              positions={[
+                                [tramo.origen.latitud, tramo.origen.longitud],
+                                [tramo.destino.latitud, tramo.destino.longitud],
+                              ]}
+                              color={
+                                isRecorrido
+                                  ? 'blue' // Tramo recorrido
+                                  : isSelected
+                                  ? 'red' // Tramo del camión seleccionado
+                                  : 'blue' // Tramo del camión no seleccionado
+                              }
+                              weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
+                            />
+                          );
+                        })}
+                      </React.Fragment>
+                      );
         })}
-    </MapContainer>
+
+        {/* Renderizar los marcadores de posición actual */}
+        {truckPositions &&
+          Object.entries(truckPositions).map(([truckCode, position]) => {
+            const truckData = trucks.find((truck) => truck.camion.codigo === truckCode); // Buscar datos del camión
+            const cargaActual = truckData?.camion.cargaActual || 0; // Obtener la carga actual, 0 si no existe
+            const capacidadRestante = truckData?.camion.capacidad - cargaActual || 0; // Calcular capacidad restante
+
+            return (
+              !completedTrucks.has(truckCode) && (
+                <Marker
+                  key={truckCode}
+                  position={[position.lat, position.lng]}
+                  icon={selectedTruck === truckCode ? camionSeleccionadoIcon : camionIcon} // Cambiar ícono según el camión seleccionado
+                  eventHandlers={{
+                    click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
+                    popupopen: () => setSelectedTruck(truckCode), // Actualizar estado al abrir el popup
+                    popupclose: () => setSelectedTruck(null), // Limpiar selección al cerrar el popup
+                  }}
+                >
+                  <Popup>
+                    <div style={{ textAlign: 'center' }}>
+                      <h3 style={{ margin: '0', color: '#333' }}>Camión: {truckCode}</h3>
+                      <p style={{ margin: '0', color: '#777' }}>Latitud: {position.lat.toFixed(6)}</p>
+                      <p style={{ margin: '0', color: '#777' }}>Longitud: {position.lng.toFixed(6)}</p>
+                      <p style={{ margin: '0', color: '#777' }}>
+                        <strong>Carga Actual:</strong> {cargaActual} kg
+                      </p>
+                      <p style={{ margin: '0', color: '#777' }}>
+                        <strong>Capacidad Restante:</strong> {capacidadRestante} kg
+                      </p>
+                    </div>
+                  </Popup>
+                </Marker>
+              )
+            );
+          })}
+      </MapContainer>
     </div>
   );
 };

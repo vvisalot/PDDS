@@ -372,7 +372,6 @@ const Simulador = () => {
 					</div>
 
 
-
 					<div style={{
 						flex: 1,
 						overflowY: 'auto',
@@ -462,6 +461,10 @@ const Simulador = () => {
 					simulatedTime={simulatedTime}
 					elapsedTime={elapsedTime}
 					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
+					trucksCompletos={trucks.length}
+					camionesEnMapa={camionesEnMapa}
+					totalPedidos={totalPedidos}
+					pedidosEntregados={pedidosEntregados}
 				/>
 			</div >
 
