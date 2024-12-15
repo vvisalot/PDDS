@@ -101,7 +101,7 @@ public class SimulatedAnnealing {
                     tramo.getDistancia(),
                     velocidad,
                     tiempoActual,
-                    tiempoActual = !tramo.getEsFinal() ? tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)) : tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)).minusHours((long) TIEMPO_DESCARGA),
+                    tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60.0 / (double) velocidad)),
                     !tramo.getEsFinal() ? (int) TIEMPO_EN_OFICINA: (int) TIEMPO_DESCARGA,
                     tramo.getEsFinal()
             ));
@@ -124,7 +124,7 @@ public class SimulatedAnnealing {
                 tramo.getDistancia(),
                 velocidad,
                 tiempoActual,
-                tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)),
+                tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60.0 / (double) velocidad)),
                 (int) TIEMPO_EN_OFICINA,
                 tramo.getEsFinal()
             ));
@@ -228,7 +228,7 @@ public class SimulatedAnnealing {
                     tramo.getDistancia(),
                     velocidad,
                     tiempoActual,
-                    tiempoActual = !tramo.getEsFinal() ? tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)) : tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60 / velocidad)).minusHours((long) TIEMPO_DESCARGA),
+                    tiempoActual = tiempoActual.plusMinutes((long) (tramo.getDistancia() * 60.0 / (double) velocidad)),
                     !tramo.getEsFinal() ? (int) TIEMPO_EN_OFICINA: (int) TIEMPO_DESCARGA,
                     tramo.getEsFinal()
             ));
