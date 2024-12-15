@@ -3,12 +3,13 @@ import { Link, Routes, Route, Navigate } from "react-router-dom";
 import { configItems } from "../utils/menuItemConf";
 import SubidaOficina from "./SubidaOficina.jsx";
 import SubidaTramo from "./SubidaTramo.jsx";
+import SubidaMantenimiento from "./SubidaMantenimiento.jsx";
 
 const { Sider, Content } = Layout;
 
 const Configuracion = () => {
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: "87vh" }}>
       {/* Menú lateral */}
       <Sider
         theme="dark"
@@ -35,6 +36,7 @@ const Configuracion = () => {
           <Route path="/" element={<Navigate to="subida-oficina" replace />} />
           <Route path="subida-oficina" element={<SubidaOficina />} />
           <Route path="subida-tramo" element={<SubidaTramo />} />
+          <Route path="subida-mantenimiento" element={<SubidaMantenimiento />} />
         </Routes>
       </Content>
     </Layout>

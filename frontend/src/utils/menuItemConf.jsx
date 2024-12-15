@@ -1,4 +1,4 @@
-import { FaRoute, FaWarehouse } from 'react-icons/fa';
+import { FaRoute, FaWarehouse, FaTools } from 'react-icons/fa';
 
 function getItem(label, key, icon, link) {
     return {
@@ -22,4 +22,10 @@ export const configItems = [
       <FaRoute size={20} />,
       "/configuracion/subida-tramo",
     ),
+    getItem(
+        "Mantenimientos",
+        "3",
+        <FaTools size={20} />,
+        "/configuracion/subida-mantenimiento",
+      ),
 ];
