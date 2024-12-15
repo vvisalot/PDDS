@@ -69,7 +69,7 @@ const App = () => {
         <Content style={{ height: "calc(100vh - 50px)", overflow: "auto", padding: "16px" }}>
           <Routes>
             <Route path="/" element={<Simulador />} />
-            <Route path="/configuracion" element={<Configuracion />} />
+            <Route path="/configuracion/*" element={<Configuracion />} />
           </Routes>
         </Content>
       </Layout>
