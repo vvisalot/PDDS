@@ -20,10 +20,8 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class LeerDatos {
-    private static final Logger logger = Logger.getLogger(LeerDatos.class.getName());
     private static Random random = new Random();
 
     // Método para leer las oficinas desde un archivo y almacenarlas en un HashMap
@@ -95,7 +93,7 @@ public class LeerDatos {
         return new Pair<>(tramos, mapaTramos);
     }
 
-    public static Pair<List<Tramo>, Map<String, Set<Tramo>>> leerTramosDesdeArchivo(String fileName, Map<String, Oficina> mapaOficinas, Map<Tramo,List<Bloqueo>> mapaBloqueos) {
+    public static Pair<List<Tramo>, Map<String, Set<Tramo>>> leerTramosDesdeArchivo(String fileName, Map<String, Oficina> mapaOficinas, Map<Tramo,List<Bloqueo>> mapaBloqueos, Map<LocalDateTime,List<odipar.grupo2b.backend.dto.Bloqueo>> mapaBloqueosPorTiempo) {
         List<Tramo> tramos = new ArrayList<>();
         Map<String, Set<Tramo>> mapaTramos = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(LeerDatos.class.getClassLoader().getResourceAsStream("static/" + fileName), StandardCharsets.UTF_8))) {
@@ -115,7 +113,28 @@ public class LeerDatos {
                     //TODO: Revisar si es necesario agregar la distancia
                     Tramo tramo = new Tramo(oficinaOrigen, oficinaDestino, 0);
                     if(mapaBloqueos.containsKey(tramo)){
-                        tramo.setBloqueos(mapaBloqueos.get(tramo));
+                        var bloqueos = mapaBloqueos.get(tramo);
+                        tramo.setBloqueos(bloqueos);
+                        var origen = tramo.getOrigen();
+                        var destino = tramo.getDestino();
+                        bloqueos.forEach(b -> {
+                            var key = getClosest6HourBoundaryBefore(b.getFechaHoraInicio());
+                            var bloqueoDto = new odipar.grupo2b.backend.dto.Bloqueo(                                    
+                                new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+                                origen.getProvincia() + ", " + origen.getDepartamento(),
+                                new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                                destino.getProvincia() + ", " + destino.getDepartamento(),
+                                b.getFechaHoraInicio(),
+                                b.getFechaHoraFin()
+                            );
+                            if (mapaBloqueosPorTiempo.containsKey(key)) {
+                                mapaBloqueosPorTiempo.get(key).add(bloqueoDto);
+                            } else {
+                                var bloqueosPorTiempo = new ArrayList<odipar.grupo2b.backend.dto.Bloqueo>();
+                                bloqueosPorTiempo.add(bloqueoDto);
+                                mapaBloqueosPorTiempo.put(key, bloqueosPorTiempo);
+                            }
+                        });
                     }
                     tramos.add(tramo);
                     if (mapaTramos.containsKey(ubigeoOrigen)) {
@@ -252,7 +271,7 @@ public class LeerDatos {
 
                 // Origen y destino
                 String[] ubicaciones = partes[1].split("=>");
-                String origen = ubicaciones[0].trim();  // Ubigeo de origen (ignorado por ahora)
+                //String origen = ubicaciones[0].trim(); Ubigeo de origen (ignorado por ahora)
                 String destino = ubicaciones[1].trim(); // Ubigeo de destino
 
                 // Cantidad
@@ -313,7 +332,7 @@ public class LeerDatos {
 
                 // Origen y destino
                 String[] ubicaciones = partes[1].split("=>");
-                String origen = ubicaciones[0].trim();  // Ubigeo de origen (ignorado por ahora)
+                // String origen = ubicaciones[0].trim(); Ubigeo de origen (ignorado por ahora)
                 String destino = ubicaciones[1].trim(); // Ubigeo de destino
 
                 // Cantidad
@@ -364,5 +383,11 @@ public class LeerDatos {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static LocalDateTime getClosest6HourBoundaryBefore(LocalDateTime dateTime) {
+        int hour = dateTime.getHour();
+        int closestMultiple = (hour / 6) * 6;
+        return dateTime.withHour(closestMultiple).withMinute(0).withSecond(0).withNano(0);
     }
 }

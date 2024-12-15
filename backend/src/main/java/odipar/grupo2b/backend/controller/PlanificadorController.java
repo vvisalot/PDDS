@@ -1,7 +1,6 @@
 package odipar.grupo2b.backend.controller;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
 import odipar.grupo2b.backend.dto.Paquete;
+import odipar.grupo2b.backend.dto.Resultado;
 import odipar.grupo2b.backend.dto.Solucion;
 import odipar.grupo2b.backend.model.Bloqueo;
 import odipar.grupo2b.backend.model.Camion;
 import odipar.grupo2b.backend.model.Oficina;
 import odipar.grupo2b.backend.model.Tramo;
-import odipar.grupo2b.backend.model.Venta;
 import odipar.grupo2b.backend.service.AlgoritmoService;
 import odipar.grupo2b.backend.service.SimulacionDataService;
 import odipar.grupo2b.backend.service.VentaService;
@@ -44,19 +43,20 @@ public class PlanificadorController {
 	}
 
     @GetMapping
-    public ResponseEntity<List<Solucion>> planificar(@RequestParam("fechaHora") 
+    public ResponseEntity<Resultado> planificar(@RequestParam("fechaHora") 
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHora){
         var camiones = simulacionDataService.getCamiones();
         var ventas = ventaService.listar();
         var almacenesPrincipales = simulacionDataService.getAlmacenesPrincipales();
         var grafoTramos = simulacionDataService.getGrafoTramos();
-        var soluciones = algoritmoService.simular(camiones, ventas, almacenesPrincipales, grafoTramos, fechaHora);
-		for (Solucion solucion : soluciones) {
+        var mapaBloqueos = simulacionDataService.getMapaBloqueos();
+        var resultado = algoritmoService.simular(camiones, ventas, almacenesPrincipales, grafoTramos, fechaHora, mapaBloqueos);
+		for (Solucion solucion : resultado.rutas()) {
             for (Paquete paquete : solucion.camion().paquetes()) {
                 ventaService.actualizarCantidades(paquete.cantidadTotal() - paquete.cantidadEntregada(), paquete.codigo());
             }
         }
-        return new ResponseEntity<>(soluciones,HttpStatus.OK);
+        return new ResponseEntity<>(resultado,HttpStatus.OK);
 	}
 
     @GetMapping("/reset")
@@ -80,7 +80,8 @@ public class PlanificadorController {
 
         GrafoTramos grafoTramos = GrafoTramos.getInstance();
         String filePathTramos = "tramos.txt";  // Cambia esta ruta por la correcta
-        var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos);
+        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<odipar.grupo2b.backend.dto.Bloqueo>>();
+        var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos, mapaBloqueosPorTiempo);
         var listaTramos = datosTramos.first();
         var mapaTramos = datosTramos.second();
 
@@ -96,7 +97,7 @@ public class PlanificadorController {
         List<Camion> camiones = Camion.inicializarCamiones(almacenesPrincipales.get(2), almacenesPrincipales.get(0), almacenesPrincipales.get(1), mapaMantenimientos);
 
         var reloj = RelojSimulado.getInstance();
-        simulacionDataService.reset(camiones, reloj, almacenesPrincipales, grafoTramos);
+        simulacionDataService.reset(camiones, reloj, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo);
         return "SimulacionDataService has been reset!";
     }
 }

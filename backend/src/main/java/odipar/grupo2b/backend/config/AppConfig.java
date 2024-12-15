@@ -43,7 +43,8 @@ public class AppConfig {
 
         GrafoTramos grafoTramos = GrafoTramos.getInstance();
         String filePathTramos = "tramos.txt";  // Cambia esta ruta por la correcta
-        var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos);
+        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<odipar.grupo2b.backend.dto.Bloqueo>>();
+        var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos, mapaBloqueosPorTiempo);
         var listaTramos = datosTramos.first();
         var mapaTramos = datosTramos.second();
 
@@ -98,6 +99,6 @@ public class AppConfig {
         List<Camion> camiones = Camion.inicializarCamiones(almacenesPrincipales.get(2), almacenesPrincipales.get(0), almacenesPrincipales.get(1), mapaMantenimientos);
 
         var reloj = RelojSimulado.getInstance();
-        return new SimulacionDataService(camiones, reloj, ventas, almacenesPrincipales, grafoTramos);
+        return new SimulacionDataService(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo);
     }
 }

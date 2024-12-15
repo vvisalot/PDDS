@@ -13,7 +13,6 @@ public class SimulatedAnnealing {
     private static final MapaVelocidad mapaVelocidad = MapaVelocidad.getInstance();
     private static final double TIEMPO_DESCARGA = 1;
     private static final double TIEMPO_EN_OFICINA = 0;
-    private final GrafoTramos grafoTramos = GrafoTramos.getInstance();
 
     public static Solucion calcular(List<Paquete> paquetes, Camion camion, RelojSimulado reloj,
                                   List<Oficina> almacenesPrincipales) {
@@ -22,8 +21,6 @@ public class SimulatedAnnealing {
             RutaManager.agregarPaquete(paquete);
         }
 
-        double temp = 100000;
-        double coolingRate = 0.003;
         Ruta currentSolution;
         Ruta best;
         double bestTime;
@@ -151,8 +148,6 @@ public class SimulatedAnnealing {
             RutaManager.agregarPaquete(paquete);
         }
 
-        double temp = 100000;
-        double coolingRate = 0.003;
         Ruta currentSolution;
         Ruta best;
         double bestTime;

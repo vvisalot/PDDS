@@ -3,12 +3,16 @@ package odipar.grupo2b.backend.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import odipar.grupo2b.backend.algorithm.AsignadorVentas;
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
 import odipar.grupo2b.backend.algorithm.SimulatedAnnealing;
+import odipar.grupo2b.backend.dto.Bloqueo;
+import odipar.grupo2b.backend.dto.Mantenimiento;
+import odipar.grupo2b.backend.dto.Resultado;
 import odipar.grupo2b.backend.dto.Solucion;
 import odipar.grupo2b.backend.model.Camion;
 import odipar.grupo2b.backend.model.Oficina;
@@ -19,8 +23,9 @@ import odipar.grupo2b.backend.utils.RelojSimulado;
 public class AlgoritmoService {
     private final int DIAS_MANTENIMIENTO = 3;
 
-    public List<Solucion> simular(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
-                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos){
+    public Resultado simular(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
+                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos){
+        var mantenimientos = new ArrayList<Mantenimiento>();
         for (Camion c : camiones) {
             //Revisar si esta en mantenimiento, si ya paso los días de mantenimiento vuelve a estar disponible
             if (c.getEnMantenimiento() && reloj.getTiempo().equals(c.getFechaUltimoMantenimiento().plusDays(DIAS_MANTENIMIENTO))) {
@@ -31,6 +36,7 @@ public class AlgoritmoService {
                 if (fechaMantenimieto.equals(reloj.getTiempo())) {
                     c.setFechaUltimoMantenimiento(reloj.getTiempo());
                     c.setEnMantenimiento(true);
+                    mantenimientos.add(new Mantenimiento(c.getCodigo(), reloj.getTiempo(), reloj.getTiempo().plusDays(DIAS_MANTENIMIENTO)));
                 }
             }
         }
@@ -62,13 +68,15 @@ public class AlgoritmoService {
                 }
             }
         }
+        var bloqueos = mapaBloqueos.get(reloj.getTiempo());
         reloj.pasarCicloDeEntregas();
-        return solucion;
+        return new Resultado(solucion, mantenimientos, bloqueos);
     }
 
 
-    public List<Solucion> simular(List<Camion> camiones, List<Venta> ventas,
-                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, LocalDateTime fechaHora){
+    public Resultado simular(List<Camion> camiones, List<Venta> ventas,
+                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, LocalDateTime fechaHora, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos){
+        var mantenimientos = new ArrayList<Mantenimiento>();
         for (Camion c : camiones) {
             //Revisar si esta en mantenimiento, si ya paso los días de mantenimiento vuelve a estar disponible
             if (c.getEnMantenimiento() && fechaHora.equals(c.getFechaUltimoMantenimiento().plusDays(DIAS_MANTENIMIENTO))) {
@@ -79,6 +87,7 @@ public class AlgoritmoService {
                 if (fechaMantenimieto.equals(fechaHora)) {
                     c.setFechaUltimoMantenimiento(fechaHora);
                     c.setEnMantenimiento(true);
+                    mantenimientos.add(new Mantenimiento(c.getCodigo(), fechaHora, fechaHora.plusDays(DIAS_MANTENIMIENTO)));
                 }
             }
         }
@@ -111,6 +120,10 @@ public class AlgoritmoService {
                 }
             }
         }
-        return solucion;
+        int hour = fechaHora.getHour();
+        int closestMultiple = (hour / 6) * 6;
+        var key = fechaHora.withHour(closestMultiple).withMinute(0).withSecond(0).withNano(0);
+        var bloqueos = mapaBloqueos.get(key);
+        return new Resultado(solucion, mantenimientos, bloqueos);
     }
 }

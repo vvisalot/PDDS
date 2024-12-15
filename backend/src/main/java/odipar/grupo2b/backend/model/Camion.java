@@ -71,12 +71,10 @@ public class Camion {
         for (int i = 16; i < 24; i++)
             camiones.add(new Camion(String.format("C%03d", i + 1), 'C', arequipa));
 
-        int cap = 0;
         for (Camion c : camiones) {
             if(mapaMantenimientos.containsKey(c)){
                 c.setMantenimientosProgrmados(mapaMantenimientos.get(c));
             }
-            cap += c.getCapacidad();
         }
 //        System.out.println("Capacidad total: " + cap + "\n");
         return camiones;

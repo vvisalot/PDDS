@@ -5,7 +5,6 @@ import odipar.grupo2b.backend.utils.RelojSimulado;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AsignadorVentas {
     private static final RelojSimulado reloj = RelojSimulado.getInstance();

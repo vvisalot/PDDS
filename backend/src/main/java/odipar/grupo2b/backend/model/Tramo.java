@@ -14,7 +14,6 @@ public class Tramo {
     private Oficina destino;
 
     private double costoReal;
-    private double costoTotal;
     private boolean esFinal = false;
     private boolean estaBloqueado = false;
 
@@ -41,10 +40,6 @@ public class Tramo {
 
     public double getCostoReal() {
         return costoReal;
-    }
-
-    public void setCostoTotal(double costoTotal) {
-        this.costoTotal = costoTotal;
     }
 
     public void agregarBloqueo(Bloqueo bloqueo) {

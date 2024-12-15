@@ -10,8 +10,8 @@ import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
 import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
-import dayjs from "dayjs";	
-import duration from 'dayjs/plugin/duration'; 
+import dayjs from "dayjs";
+import duration from 'dayjs/plugin/duration';
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
 dayjs.extend(duration); // Extender dayjs con plugin de duración
@@ -44,15 +44,15 @@ const Simulador = () => {
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
 
-	    // Calcular el tiempo transcurrido desde el inicio de la simulación
+		// Calcular el tiempo transcurrido desde el inicio de la simulación
 		const simulatedElapsed = dayjs.duration(elapsedSimulatedTime, "hours");
 		const days = Math.floor(simulatedElapsed.asDays());
 		const hours = Math.floor(simulatedElapsed.asHours());
 		const minutes = simulatedElapsed.minutes();
-		const seconds = simulatedElapsed.seconds();	
+		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 7 && hours >= 0 && minutes >=0 && seconds >= 0) {
+		if (days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
 			handleStop("tiempo máximo alcanzado");
 			return;
 		}
@@ -73,19 +73,19 @@ const Simulador = () => {
 
 	//help printing capacity of warehouses
 	useEffect(() => {
-		console.log("Capacidad almacenes",almacenesCapacidad);
-	} , [almacenesCapacidad]);
+		console.log("Capacidad almacenes", almacenesCapacidad);
+	}, [almacenesCapacidad]);
 
 	const fetchTrucks = async () => {
 		try {
 			const response = await getSimulacion() // Replace with your API endpoint
 
-			if (response.data.some((truck) => truck.colapso)) {
+			if (response.data.rutas.some((truck) => truck.colapso)) {
 				handleStop("colapsada");
 				return;
 			}
 
-			for (const truck of response.data) {
+			for (const truck of response.data.rutas) {
 				if (completedTrucks.has(truck.camion.codigo)) {
 					setCompletedTrucks(prev => {
 						const newSet = new Set(prev);
@@ -95,12 +95,11 @@ const Simulador = () => {
 				}
 			}
 
-			for (const truck of response.data) simulateTruckRoute(truck)
-
+			for (const truck of response.data.rutas) simulateTruckRoute(truck)
 			setTrucks((prevTrucks) => {
 				const trucksMap = new Map();
 				for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
-				for (const newTruck of response.data) trucksMap.set(newTruck.camion.codigo, newTruck);
+				for (const newTruck of response.data.rutas) trucksMap.set(newTruck.camion.codigo, newTruck);
 				return Array.from(trucksMap.values());
 			});
 
@@ -151,11 +150,11 @@ const Simulador = () => {
 				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
 				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
-                while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
-                    //console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
-                    if (isCancelledRef.current) break;
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
-                }
+				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
+					//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
+					if (isCancelledRef.current) break;
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+				}
 
 				if (isValidLatLng(lat, lng)) {
 					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
@@ -194,12 +193,12 @@ const Simulador = () => {
 				});
 			}
 			/*
-            if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
-                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
-                await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
-            }
-            */
-        }
+			if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
+				console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
+				await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
+			}
+			*/
+		}
 
 		if (!isCancelledRef.current) {
 			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);

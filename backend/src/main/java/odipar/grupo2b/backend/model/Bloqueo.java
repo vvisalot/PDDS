@@ -1,7 +1,5 @@
 package odipar.grupo2b.backend.model;
 import java.time.LocalDateTime;
-import java.util.List;
-
 public class Bloqueo {
     private LocalDateTime fechaHoraInicio;
     private LocalDateTime fechaHoraFin;

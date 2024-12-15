@@ -1,7 +1,5 @@
 package odipar.grupo2b.backend.utils;
 
-import odipar.grupo2b.backend.model.Oficina;
-
 public class CalculaDistancia {
 
     private static final int RADIO_TIERRA_KM = 6371; // Radio de la Tierra en kilómetros

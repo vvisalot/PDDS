@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
-import odipar.grupo2b.backend.dto.Solucion;
+import odipar.grupo2b.backend.dto.Resultado;
 import odipar.grupo2b.backend.model.Bloqueo;
 import odipar.grupo2b.backend.model.Camion;
 import odipar.grupo2b.backend.model.Oficina;
@@ -36,13 +36,14 @@ public class SimulacionController {
 	}
 
     @GetMapping
-    public ResponseEntity<List<Solucion>> simular(){
+    public ResponseEntity<Resultado> simular(){
         var camiones = simulacionDataService.getCamiones();
         var reloj = simulacionDataService.getReloj();
         var ventas = simulacionDataService.getVentas();
         var almacenesPrincipales = simulacionDataService.getAlmacenesPrincipales();
         var grafoTramos = simulacionDataService.getGrafoTramos();
-		return new ResponseEntity<>(algoritmoService.simular(camiones, reloj, ventas, almacenesPrincipales, grafoTramos),HttpStatus.OK);
+        var mapaBloqueos = simulacionDataService.getMapaBloqueos();
+		return new ResponseEntity<>(algoritmoService.simular(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueos),HttpStatus.OK);
 	} 
 
     @GetMapping("/reloj")
@@ -74,7 +75,8 @@ public class SimulacionController {
 
         GrafoTramos grafoTramos = GrafoTramos.getInstance();
         String filePathTramos = "tramos.txt";  // Cambia esta ruta por la correcta
-        var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos);
+        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<odipar.grupo2b.backend.dto.Bloqueo>>();
+        var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos, mapaBloqueosPorTiempo);
         var listaTramos = datosTramos.first();
         var mapaTramos = datosTramos.second();
 
@@ -129,7 +131,7 @@ public class SimulacionController {
         List<Camion> camiones = Camion.inicializarCamiones(almacenesPrincipales.get(2), almacenesPrincipales.get(0), almacenesPrincipales.get(1), mapaMantenimientos);
 
         var reloj = RelojSimulado.getInstance();
-        simulacionDataService.reset(camiones, reloj, ventas, almacenesPrincipales, grafoTramos);
+        simulacionDataService.reset(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo);
         return "SimulacionDataService has been reset!";
     }
 }
