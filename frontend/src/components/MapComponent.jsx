@@ -16,9 +16,21 @@ const truckIconUrl = `data:image/svg+xml;base64,${btoa(truckIconMarkup)}`;
 const truckSelectedIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkred" />);
 const truckSelectedIconUrl = `data:image/svg+xml;base64,${btoa(truckSelectedIconMarkup)}`;
 
+const crearIcono = (color) => {
+    const iconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color={color} />);
+    const iconUrl = `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
+    return L.icon({ iconUrl, iconSize: [15, 15] });
+};
+
+const iconCapacidad = { //icono según porcentaje de capacidad
+    verde: crearIcono("green"),
+    amarillo: crearIcono("yellow"),
+    rojo: crearIcono("red"),
+};
+
 const oficinaIcon = L.icon({ iconUrl: warehouseIconUrl, iconSize: [15, 15], }); //icono oficinas
 const camionIcon = L.icon({ iconUrl: truckIconUrl, iconSize: [15, 15], }); //icono camiones
-const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [15, 15], }); //icono camiones seleccionados
+const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [20, 20], }); //icono camiones seleccionados
 
 // Ícono personalizado para oficinas principales (verde oscuro)
 const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
@@ -32,7 +44,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados,elapsedTime }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados,elapsedTime,almacenesCapacidad }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
@@ -110,8 +122,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             lat: Number.parseFloat(fila.lat), // Convertir a número
             lng: Number.parseFloat(fila.lng), // Convertir a número
             region: fila.region,
-            ubigeo: Number.parseInt(fila.ubigeo.trim()), // Convertir a número
-            esPrincipal: ubigeosPrincipales.includes(Number.parseInt(fila.ubigeo.trim())), // Validar si es oficina principal
+            ubigeo: parseInt(fila.ubigeo.trim()), // Convertir a número, en realidad esta es la capacidad maxima
+            cargaActual: 0,
+            esPrincipal: ubigeosPrincipales.includes(parseInt(fila.id.trim())), // Validar si es oficina principal
           }));
           setOficinas(datos); // Actualizar el estado
         },
@@ -120,6 +133,15 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
     cargarCSV();
   }, []);
+
+    useEffect(() => {
+        setOficinas(prevOficinas =>
+            prevOficinas.map(oficina => {
+                const capacidadAlmacen = almacenesCapacidad[`${oficina.lat}-${oficina.lng}`] || 0;
+                return { ...oficina, cargaActual: capacidadAlmacen };
+            })
+        );
+    }, [almacenesCapacidad]);
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
@@ -160,82 +182,105 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         attribution="&copy; OpenStreetMap contributors"
       />
 
-        {/* Renderizar marcadores de oficinas principales */}
-        {oficinasPrincipales.map((oficina) => (
-          <Marker
-            key={oficina.id}
-            position={[oficina.lat, oficina.lng]}
-            icon={oficinaPrincipalIcon}
-          >
-            <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
-                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+      {/* Renderizar marcadores de oficinas principales */}
+      {oficinasPrincipales.map((oficina) => (
+        <Marker
+          key={oficina.id}
+          position={[oficina.lat, oficina.lng]}
+          icon={oficinaPrincipalIcon}
+        >
+          <Popup>
+              <div style={{textAlign: 'center'}}>
+                  <h3 style={{margin: '0', color: '#333'}}>{oficina.ciudad}</h3>
+                  <p style={{margin: '0', color: '#777'}}>Oficina Principal</p>
+                  <p style={{margin: '0', color: '#777'}}>Departamento: {oficina.departamento}</p>
+                  <p style={{margin: '0', color: '#777'}}>Región: {oficina.region}</p>
               </div>
-            </Popup>
-          </Marker>
-        ))}
+          </Popup>
+        </Marker>
+      ))}
 
         {/* Renderizar marcadores de oficinas normales */}
-        {oficinas.map((oficina) => (
-          <Marker
-            key={oficina.id}
-            position={[oficina.lat, oficina.lng]}
-            icon={oficinaIcon}
-          >
-            <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        {oficinas
+            .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
+            .map((oficina) => {
+                const cargaActual = oficina.cargaActual;
+                const capacidadMaxima = oficina.ubigeo;
+                const porcentaje = ((cargaActual / capacidadMaxima) * 1000);
+                const icono = porcentaje <= 30
+                    ? iconCapacidad.verde
+                    : porcentaje <= 60
+                        ? iconCapacidad.amarillo
+                        : iconCapacidad.rojo;
+                return (
+                    <Marker
+                        key={oficina.id}
+                        position={[oficina.lat, oficina.lng]}
+                        icon={icono}
+                    >
+                        <Popup>
+                            <div style={{ textAlign: 'center' }}>
+                                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+                                <p style={{ margin: '0', color: '#777' }}>
+                                    <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
+                                </p>
+                                <p style={{ margin: '0', color: '#777' }}>
+                                    <strong>Carga Actual:</strong> {oficina.cargaActual} kg
+                                </p>
+                                <p style={{ margin: '0', color: '#777' }}>
+                                    <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
+                                </p>
+                            </div>
+                        </Popup>
+                    </Marker>
+                );
+        })}
 
-        {/* Renderizar LeyendaSimu enviando estadísticas como props */}
-        <LeyendaSimu
+            {/* Renderizar LeyendaSimu enviando estadísticas como props */}
+            <LeyendaSimu
             totalCamionesSimulacion={trucksCompletos}
             camionesEnMapa={camionesEnMapa}
             totalPedidos={totalPedidos}
             pedidosEntregados={pedidosEntregados}
-        />
+          />
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
-          if (completedTrucks.has(truck.camion.codigo)) return null;
-          const truckPosition = truckPositions[truck.camion.codigo];
-          //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
+        if (completedTrucks.has(truck.camion.codigo)) return null;
+        const truckPosition = truckPositions[truck.camion.codigo];
+        //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
 
-                  return (
-                      <React.Fragment key={truck.camion.codigo}>
-                        {truck.tramos.map((tramo, index) => {
-                          const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
-                          const isSelected = selectedTruck === truck.camion.codigo;
-                          if (!isRecorrido && !isSelected) return null;
-                          return (
-                            <Polyline
-                              key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
-                              positions={[
-                                [tramo.origen.latitud, tramo.origen.longitud],
-                                [tramo.destino.latitud, tramo.destino.longitud],
-                              ]}
-                              color={
-                                isRecorrido
-                                  ? 'blue' // Tramo recorrido
-                                  : isSelected
-                                  ? 'red' // Tramo del camión seleccionado
-                                  : 'blue' // Tramo del camión no seleccionado
-                              }
-                              weight={isSelected && !isRecorrido ? 4 : 2} // Más grueso si está seleccionado y no recorrido
-                            />
-                          );
-                        })}
-                      </React.Fragment>
-                      );
-        })}
+                return (
+                    <React.Fragment key={truck.camion.codigo}>
+                      {truck.tramos.map((tramo, index) => {
+                        const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
+                        const isSelected = selectedTruck === truck.camion.codigo;
+                        if (!isRecorrido && !isSelected) return null;
+                        return (
+                          <Polyline
+                            key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
+                            positions={[
+                              [tramo.origen.latitud, tramo.origen.longitud],
+                              [tramo.destino.latitud, tramo.destino.longitud],
+                            ]}
+                            color={
+                              isRecorrido
+                                ? 'blue' // Tramo recorrido
+                                : isSelected
+                                ? 'red' // Tramo del camión seleccionado
+                                : 'blue' // Tramo del camión no seleccionado
+                            }
+                            weight={isSelected && !isRecorrido ? 2 : 1.5} // Más grueso si está seleccionado y no recorrido
+                            dashArray={isRecorrido ? '5, 5' : isSelected ? '10, 5' : null} // Línea discontinua para recorridos y seleccionados
+                          />
+                        );
+                      })}
+                    </React.Fragment>
+                    );
+      })}
+
 
         {/* Renderizar los marcadores de posición actual */}
         {truckPositions &&
@@ -322,8 +367,8 @@ MapComponent.propTypes = {
   ).isRequired,
 
   completedTrucks: PropTypes.instanceOf(Set).isRequired,
-
   simulatedTime: PropTypes.string.isRequired,
+  almacenesCapacidad: PropTypes.object.isRequired,
 };
 
 export default MapComponent;

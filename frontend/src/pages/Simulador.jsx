@@ -32,6 +32,7 @@ const Simulador = () => {
 	const [completedTrucks, setCompletedTrucks] = useState(new Set());
 	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
+	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	// Actualiza el tiempo simulado
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -70,6 +71,10 @@ const Simulador = () => {
 		return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
 	}, [isFetching, dtpValue]);
 
+	//help printing capacity of warehouses
+	useEffect(() => {
+		console.log("Capacidad almacenes",almacenesCapacidad);
+	} , [almacenesCapacidad]);
 
 	const fetchTrucks = async () => {
 		try {
@@ -122,10 +127,10 @@ const Simulador = () => {
 			const endTime = dayjs(tramo.tiempoLlegada);
 			const totalDuration = endTime.diff(startTime, 'second');
 
-			console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
+			//console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
 
 			while (dayjs(simulatedTime.current).isBefore(startTime)) {
-				console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
+				//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
 				if (isCancelledRef.current) break;
 				await new Promise((resolve) => setTimeout(resolve, 1000));
 			}
@@ -146,11 +151,11 @@ const Simulador = () => {
 				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
 				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
-				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
-					console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
-					if (isCancelledRef.current) break;
-					await new Promise((resolve) => setTimeout(resolve, 1000));
-				}
+                while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
+                    //console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
+                    if (isCancelledRef.current) break;
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                }
 
 				if (isValidLatLng(lat, lng)) {
 					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
@@ -164,14 +169,37 @@ const Simulador = () => {
 
 				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
 			}
-
-			/*
-			if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
-				console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
-				await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
+			console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
+			if (tramo.seDejaraElPaquete) {
+				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
+				truckData.camion.paquetes.forEach((paquete) => {
+					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
+						setAlmacenesCapacidad((prevCapacidades) => {
+							const updatedCapacidades = { ...prevCapacidades };
+							const cantidadPaquete = paquete.cantidadEntregada;
+							updatedCapacidades[almacenId] = (updatedCapacidades[almacenId] || 0) + cantidadPaquete;
+							return updatedCapacidades;
+						});
+						setTrucks((prevTrucks) => {
+							return prevTrucks.map((truck) => {
+								if (truck.camion.codigo === truckData.camion.codigo) {
+									const updatedCamion = { ...truck.camion };
+									updatedCamion.cargaActual -= paquete.cantidadEntregada;
+									return { ...truck, camion: updatedCamion };
+								}
+								return truck;
+							});
+						});
+					}
+				});
 			}
-			*/
-		}
+			/*
+            if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
+                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
+                await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
+            }
+            */
+        }
 
 		if (!isCancelledRef.current) {
 			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
@@ -465,6 +493,7 @@ const Simulador = () => {
 					camionesEnMapa={camionesEnMapa}
 					totalPedidos={totalPedidos}
 					pedidosEntregados={pedidosEntregados}
+					almacenesCapacidad={almacenesCapacidad}
 				/>
 			</div >
 
