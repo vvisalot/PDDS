@@ -58,7 +58,7 @@ const Simulador = () => {
 		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
 	};
 
-	// Maneja el inicio y pausa del reloj simulado
+	// Maneja el inicio y pausa del reloj simulador
 	useEffect(() => {
 		if (isFetching) {
 			startTimeRef.current = Date.now(); // Registra el inicio del tiempo real
