@@ -6,6 +6,7 @@ import Papa from "papaparse";
 import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
+import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -30,7 +31,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, simulatedTime }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, simulatedTime,elapsedTime }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
@@ -120,6 +121,22 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
   }, []);
 
   return (
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
+    {/* Tarjeta del Reloj Simulado */}
+    <SimulatedTimeCard
+      simulatedTime={simulatedTime}
+      elapsedTime={elapsedTime}
+      style={{
+        position: "absolute",
+        top: "10px",
+        left: "10px",
+        zIndex: 1000,
+        background: "white",
+        padding: "10px",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+      }}
+    />
     <MapContainer
       center={[-13.5, -76]}
       zoom={6}
@@ -248,6 +265,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, cargaActual, si
           );
         })}
     </MapContainer>
+    </div>
   );
 };
 

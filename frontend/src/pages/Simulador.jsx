@@ -1,10 +1,11 @@
-import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Tabs, Typography, message } from "antd";
+import { Button, Card, ConfigProvider, DatePicker, Input, Pagination, Space, Statistic, Tabs, Typography, message } from "antd";
 import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
+import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
 import TruckCard from "../components/TruckCard";
@@ -354,15 +355,6 @@ const Simulador = () => {
 						{isFetching ? "Parar" : "Iniciar"}
 					</Button>
 
-					<div style={{ marginTop: '20px', fontSize: '18px' }}>
-						<strong>Reloj simulado:</strong> {simulatedTime || "No iniciado"} 
-
-					</div>
-					
-					<div style={{ marginTop: '20px', fontSize: '18px' }}>
-					<strong>Tiempo transcurrido:</strong> {elapsedTime}
-					</div>
-
 					{/* Estadísticas de la simulación */}
 					<div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
 						<p> <FaTruck size={17} color="orange" style={{ marginRight: '8px' }} />
@@ -468,6 +460,7 @@ const Simulador = () => {
 					truckPositions={truckPositions}
 					completedTrucks={completedTrucks}
 					simulatedTime={simulatedTime}
+					elapsedTime={elapsedTime}
 					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
 				/>
 			</div >
