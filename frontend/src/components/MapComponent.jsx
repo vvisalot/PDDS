@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
+import CardToggle from '../components/CardToggle';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
 
@@ -126,9 +127,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             lat: Number.parseFloat(fila.lat), // Convertir a número
             lng: Number.parseFloat(fila.lng), // Convertir a número
             region: fila.region,
-            ubigeo: parseInt(fila.ubigeo.trim()), // Convertir a número, en realidad esta es la capacidad maxima
+            ubigeo: Number.parseInt(fila.ubigeo.trim()), // Convertir a número, en realidad esta es la capacidad maxima
             cargaActual: 0,
-            esPrincipal: ubigeosPrincipales.includes(parseInt(fila.id.trim())), // Validar si es oficina principal
+            esPrincipal: ubigeosPrincipales.includes(Number.parseInt(fila.id.trim())), // Validar si es oficina principal
           }));
           setOficinas(datos); // Actualizar el estado
         },
@@ -154,6 +155,8 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         <TruckMapCard
           selectedTruck={selectedTruckObj}
           onClose={() => setSelectedTruck(null)}
+          simulatedTime={simulatedTime}
+          truckPositions={truckPositions}
         />
       )}
 
@@ -184,18 +187,17 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
       <MapContainer
         center={[-13.5, -76]}
-        zoom={6}
+        zoom={5}
         style={{
           height: '100%',
           width: '100%'
         }}
-        minZoom={4}
+        minZoom={6}
         maxZoom={7}
         scrollWheelZoom={true}
         maxBounds={[
-          //Limites de Sudamerica
-          [-60, -110],
-          [15, -30]
+          [-20, -90],
+          [0, -50]
         ]}
         maxBoundsViscosity={1.0}
       >
@@ -224,43 +226,41 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
         {/* Renderizar marcadores de oficinas normales */}
         {oficinas
-            .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
-            .map((oficina) => {
-                const cargaActual = oficina.cargaActual;
-                const capacidadMaxima = oficina.ubigeo;
-                const porcentaje = ((cargaActual / capacidadMaxima) * 100);
-                const icono = porcentaje <= 30
-                    ? iconCapacidad.verde
-                    : porcentaje <= 60
-                        ? iconCapacidad.amarillo
-                        : iconCapacidad.rojo;
-                return (
-                    <Marker
-                        key={oficina.id}
-                        position={[oficina.lat, oficina.lng]}
-                        icon={icono}
-                    >
-                        <Popup>
-                            <div style={{ textAlign: 'center' }}>
-                                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
-                                </p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Carga Actual:</strong> {oficina.cargaActual} kg
-                                </p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
-                                </p>
-                            </div>
-                        </Popup>
-                    </Marker>
-                );
-        })}
-
-
+          .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
+          .map((oficina) => {
+            const cargaActual = oficina.cargaActual;
+            const capacidadMaxima = oficina.ubigeo;
+            const porcentaje = ((cargaActual / capacidadMaxima) * 100);
+            const icono = porcentaje <= 30
+              ? iconCapacidad.verde
+              : porcentaje <= 60
+                ? iconCapacidad.amarillo
+                : iconCapacidad.rojo;
+            return (
+              <Marker
+                key={oficina.id}
+                position={[oficina.lat, oficina.lng]}
+                icon={icono}
+              >
+                <Popup>
+                  <div style={{ textAlign: 'center' }}>
+                    <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                    <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                    <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Carga Actual:</strong> {oficina.cargaActual} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
@@ -292,6 +292,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           );
         })}
 
+        <CardToggle />
 
         {/* Renderizar los marcadores de posición actual */}
         {truckPositions &&
