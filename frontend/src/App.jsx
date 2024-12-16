@@ -3,6 +3,7 @@ import { Layout, Menu } from "antd";
 import { Link, Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
 import logo from "./assets/odipark.svg";
 import Simulador from "./pages/Simulador.jsx";
+import Planificador from "./pages/Planificador.jsx";
 import Configuracion from "./pages/Configuracion.jsx"; // Nueva página
 
 const { Header, Content } = Layout;
@@ -12,6 +13,10 @@ const menuItems = [
   {
     key: "simulador",
     label: <Link to="/">Simulador</Link>,
+  },
+  {
+    key: "planificador",
+    label: <Link to="/planificador">Planificador</Link>,
   },
   {
     key: "configuracion",
@@ -24,8 +29,10 @@ const NavigationMenu = () => {
   const location = useLocation();
   // Lógica para seleccionar el ítem correcto en base a la ruta actual
   const currentKey = location.pathname.startsWith("/configuracion")
-  ? "configuracion" // Selecciona Configuración si la ruta empieza con "/configuracion"
-  : "simulador";    // Selecciona Simulador para la ruta raíz "/"
+    ? "configuracion"
+    : location.pathname.startsWith("/planificador")
+    ? "planificador"
+    : "simulador"; // Por defecto, selecciona "simulador".
 
   return (
     <Menu
@@ -72,7 +79,8 @@ const App = () => {
         <Content style={{ height: "calc(100vh - 50px)", overflow: "auto", padding: "16px" }}>
           <Routes>
             <Route path="/" element={<Simulador />} />
-            <Route path="/configuracion/*" element={<Configuracion />} />
+            <Route path="/planificador" element={<Planificador />} />
+            <Route path="/configuracion/*" element={<Configuracion />}/>
           </Routes>
         </Content>
       </Layout>

@@ -36,6 +36,8 @@ const SubidaOficina = () => {
           const invalidData = [];
           const errors = [];
 
+          console.log("Datos parseados del archivo CSV:", results.data); // Log de la data inicial
+
           // Verificar si las columnas requeridas están presentes
           const fileColumns = results.meta.fields || [];
           const missingColumns = requiredColumns.filter((col) => !fileColumns.includes(col));
@@ -69,6 +71,10 @@ const SubidaOficina = () => {
               errors.push(...rowErrors);
             }
           });
+
+          console.log("Datos válidos:", validData); // Log de datos válidos
+          console.log("Datos inválidos:", invalidData); // Log de datos inválidos
+          console.log("Errores encontrados:", errors); // Log de los errores encontrados
 
           setValidTableData(validData);
           setInvalidTableData(invalidData);
