@@ -9,6 +9,7 @@ import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
+import CardToggle from '../components/CardToggle';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -259,8 +260,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                     </Marker>
                 );
         })}
-
-
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
