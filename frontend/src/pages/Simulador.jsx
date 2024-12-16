@@ -72,6 +72,15 @@ const Simulador = () => {
 		try {
 			const response = await getSimulacion() // Replace with your API endpoint
 
+			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
+
+			// Enfocarse en tramos bloqueados o bloqueos
+			const rutasConBloqueos = response.data.rutas.filter((ruta) =>
+				ruta.tramos.some((tramo) => tramo.bloqueado)
+			);
+			console.log("Rutas con tramos bloqueados:", rutasConBloqueos);
+
+
 			if (response.data.rutas.some((truck) => truck.colapso)) {
 				handleStop("colapsada");
 				return;
