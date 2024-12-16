@@ -46,7 +46,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime}) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
@@ -109,7 +109,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   // Cargar oficinas desde el archivo CSV
   useEffect(() => {
     const cargarCSV = async () => {
-      const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
+      const response = await fetch('/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
 
       // Lista de ubigeos de oficinas principales
@@ -276,21 +276,21 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           );
         })}
 
-        
+
         <SimulatedTimeCard
           simulatedTime={simulatedTime}
           elapsedTime={elapsedTime}
           elapsedRealTime={elapsedRealTime}
           style={{
             position: "absolute",
-            bottom: "20px", 
-            left: "20px",   
+            bottom: "20px",
+            left: "20px",
             background: "white",
             padding: "10px",
             borderRadius: "8px",
             boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-            width: "350px", 
-        }}
+            width: "350px",
+          }}
         />
 
         {/* Renderizar los marcadores de posición actual */}
