@@ -73,7 +73,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
       const updatedCompletedRoutes = { ...completedRoutes };
 
       for (const truck of trucks) {
-        if (!completedTrucks.has(truck.camion.codigo)) {
+        if (!completedTrucks.includes(truck.camion.codigo)) {
           const currentTime = new Date();
           for (const tramo of truck.tramos) {
             const endTime = new Date(tramo.tiempoLlegada);
@@ -248,7 +248,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
-          if (completedTrucks.has(truck.camion.codigo)) return null;
+          if (completedTrucks.includes(truck.camion.codigo)) return null;
 
           return (
             <React.Fragment key={truck.camion.codigo}>
@@ -301,7 +301,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             const capacidadRestante = truckData?.camion.capacidad - cargaActual || 0; // Calcular capacidad restante
 
             return (
-              !completedTrucks.has(truckCode) && (
+              !completedTrucks.includes(truckCode) && (
                 <Marker
                   key={truckCode}
                   position={[position.lat, position.lng]}

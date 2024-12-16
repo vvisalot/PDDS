@@ -8,10 +8,11 @@ import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
+import utc from "dayjs/plugin/utc"; // Importa el plugin UTC
 import HeaderSimulacion from "../components/HeaderSimulacion.jsx"
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
-
+dayjs.extend(utc); // Extiende dayjs con el plugin UTC
 dayjs.extend(duration); // Extender dayjs con plugin de duración
 const { Title } = Typography;
 
@@ -28,7 +29,7 @@ const Simulador = () => {
 	const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
 	const startTimeRef = useRef(null); // Tiempo real de inicio
 	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
-	const [completedTrucks, setCompletedTrucks] = useState(new Set());
+	const [completedTrucks, setCompletedTrucks] = useState([]);
 	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
@@ -92,14 +93,11 @@ const Simulador = () => {
 			}
 
 			for (const truck of response.data.rutas) {
-				if (completedTrucks.has(truck.camion.codigo)) {
-					setCompletedTrucks(prev => {
-						const newSet = new Set(prev);
-						newSet.delete(truck.camion.codigo);
-						return newSet;
-					});
+				if (completedTrucks.includes(truck.camion.codigo)) {
+					setCompletedTrucks(prev => prev.filter(code => code !== truck.camion.codigo));
 				}
 			}
+			
 
 			for (const truck of response.data.rutas) simulateTruckRoute(truck)
 			setTrucks((prevTrucks) => {
@@ -121,7 +119,7 @@ const Simulador = () => {
 
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
-		if (completedTrucks.has(truckData.camion.codigo)) return;
+		if (completedTrucks.includes(truckData.camion.codigo)) return;
 
 		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
@@ -210,7 +208,7 @@ const Simulador = () => {
 		if (!isCancelledRef.current) {
 			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
 			// Actualizar estado para marcar que el camión terminó su ruta
-			setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
+			setCompletedTrucks(prev => [...prev, truckData.camion.codigo]);
 			setTruckPositions((prevPositions) => {
 				const newPositions = { ...prevPositions };
 				delete newPositions[truckData.camion.codigo];
@@ -263,7 +261,10 @@ const Simulador = () => {
 			await resetSimulacion();
 			console.log("Reset completado");
 
-			await actualizarReloj(dtpValue);
+			const fechaDTP = dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
+			await actualizarReloj(fechaDTP);
+			
+			console.log("Fecha UTC ajustada enviada a la API:", fechaDTP);
 			console.log("Reloj configurado");
 
 			setTrucks([]);
@@ -338,7 +339,7 @@ const Simulador = () => {
 					if (
 						tramoCorrespondiente &&
 						dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
-						!completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
+						!completedTrucks.includes(truck.camion.codigo) // Evitar doble conteo para camiones terminados
 					) {
 						pedidosEntregados++;
 					}
@@ -361,14 +362,23 @@ const Simulador = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	// Filtra los camiones según el código
-	const filteredTrucks = trucks.filter(truck => !completedTrucks.has(truck.camion.codigo) &&
+	const filteredTrucks = trucks.filter(truck => !completedTrucks.includes(truck.camion.codigo) &&
 		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
 
 	return (
 		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
 		{/* Encabezado de la simulación */}
 		<HeaderSimulacion
-		  onDateChange={(value) => setDtpValue(value ? value.toISOString() : "")}
+		  onDateChange={(value) => {
+			if (value) {
+				const newDate = dayjs(value).format("YYYY-MM-DD HH:mm:ss"); 
+				console.log("Fecha seleccionada:", newDate); 
+				setDtpValue(newDate);
+			  } else {
+				console.log("Fecha seleccionada: Vacía");
+				setDtpValue("");
+			  }
+		  }}
 		  isFetching={isFetching}
 		  handleStart={handleStart}
 		  handleStop={handleStop}
@@ -376,6 +386,7 @@ const Simulador = () => {
 		  disabledDate={disabledDate}
 		  onDropdownChange={(value) => console.log("Opción seleccionada:", value)}
 		/>
+
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
 			<div style={{
 				flex: isPanelVisible ? "0 0 30%" : "0 0 0%",
@@ -414,7 +425,7 @@ const Simulador = () => {
 
 							{
 								filteredTrucks
-									.filter(truck => !completedTrucks.has(truck.camion.codigo))
+									.filter(truck => !completedTrucks.includes(truck.camion.codigo))
 									.map(truck => (
 										<TruckCard
 											key={truck.camion.codigo}
@@ -438,7 +449,7 @@ const Simulador = () => {
 							}}>
 								<Pagination
 									current={currentPage}
-									total={trucks.filter(truck => !completedTrucks.has(truck.camion.codigo)).length}
+									total={trucks.filter(truck => !completedTrucks.includes(truck.camion.codigo)).length}
 									pageSize={cardsPerPage}
 									onChange={handlePageChange}
 									showSizeChanger={false}
