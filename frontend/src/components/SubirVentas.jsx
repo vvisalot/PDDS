@@ -1,17 +1,25 @@
 import React, { useState } from "react";
-import { Button, Table, message, Typography } from "antd";
+import { Button, Table, message, Typography, Modal } from "antd";
 import Papa from "papaparse";
 
 const { Title } = Typography;
 
 const SubirVentas = ({ requiredColumns = ["fechaHora", "destino", "cantidad", "idCliente"], onValidData, onInvalidData }) => {
   const [validTableData, setValidTableData] = useState([]);
+  const [previewData, setPreviewData] = useState([]); // Datos válidos en revisión (en el Modal)
   const [invalidTableData, setInvalidTableData] = useState([]);
   const [errorMessages, setErrorMessages] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    // Reseteo de estados para una nueva carga de archivo
+    setPreviewData([]);
+    setInvalidTableData([]);
+    setErrorMessages([]);
+    setIsModalVisible(false);
 
     if (file.type !== "text/csv") {
       message.error("Solo se puede subir archivos CSV.");
@@ -84,17 +92,19 @@ const SubirVentas = ({ requiredColumns = ["fechaHora", "destino", "cantidad", "i
         console.log("Datos inválidos:", invalidData);
         console.log("Errores encontrados:", errors);
 
-        setValidTableData(validData);
+        setPreviewData(validData);
+        //setValidTableData(validData);
         setInvalidTableData(invalidData);
         setErrorMessages(errors);
 
-        if (onValidData) onValidData(validData);
-        if (onInvalidData) onInvalidData(invalidData);
+        if (validData.length > 0) {
+            setIsModalVisible(true); // Mostrar el Modal para revisión
+        }
 
         if (errors.length > 0) {
-          message.warning("Se encontraron errores en el archivo.");
-        } else {
-          message.success("Archivo cargado y validado correctamente.");
+            message.warning("Se encontraron errores en el archivo.");
+        // } else {
+        //     message.success("Archivo cargado y validado correctamente.");
         }
       },
       error: function (error) {
@@ -102,6 +112,18 @@ const SubirVentas = ({ requiredColumns = ["fechaHora", "destino", "cantidad", "i
         message.error("Error al procesar el archivo CSV.");
       },
     });
+  };
+
+  const handleConfirm = () => {
+    setValidTableData(previewData); // Confirmar datos válidos
+    setIsModalVisible(false);
+    message.success("Datos confirmados y cargados correctamente.");
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false); // Cerrar el Modal sin confirmar
+    //setPreviewData([]);
+    message.info("Revisión cancelada. Los datos no fueron confirmados.");
   };
 
   const columns = [
@@ -118,34 +140,43 @@ const SubirVentas = ({ requiredColumns = ["fechaHora", "destino", "cantidad", "i
 
   return (
     <div>
-      <Button type="primary" style={{ marginBottom: "10px" }}>
-        <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
-          Subir Archivo
-        </label>
-      </Button>
-      <input
-        id="file-upload"
-        type="file"
-        accept=".csv"
-        onChange={handleFileUpload}
-        style={{ display: "none" }}
-      />
+        <Button type="primary">
+            <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+            Subir archivo de Ventas
+            </label>
+        </Button>
+        <input
+            id="file-upload"
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+        />
 
-      <div style={{ marginTop: "30px" }}>
-        <Title level={4}>Datos Válidos</Title>
-        <Table dataSource={validTableData} columns={columns} rowKey="fechaHora" pagination={false} />
-
-        {errorMessages.length > 0 && (
-          <div style={{ marginTop: "20px", color: "red" }}>
-            <Title level={5}>Errores Encontrados:</Title>
-            <ul>
-              {errorMessages.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+        <Modal
+            title="Revisión de Datos Válidos"
+            open={isModalVisible}
+            onOk={handleConfirm}
+            onCancel={handleCancel}
+            okText="Confirmar"
+            cancelText="Cancelar"
+            width={800}
+            >
+            <Table dataSource={previewData} columns={columns} rowKey="fechaHora" pagination={{ pageSize: 4 }} />
+        
+            <div style={{ marginTop: "30px" }}>
+              {errorMessages.length > 0 && (
+                <div style={{ marginTop: "20px", color: "red" }}>
+                  <Title level={5}>Errores Encontrados:</Title>
+                  <ul>
+                    {errorMessages.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+        </Modal>
     </div>
   );
 };

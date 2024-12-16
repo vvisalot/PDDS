@@ -4,7 +4,7 @@ import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/f
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import MapComponent from "/src/components/MapComponent";
+import MapaPlanifComp from "/src/components/MapaPlanifComp";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
 import SubirVentas from "../components/SubirVentas";
@@ -302,7 +302,7 @@ const Planificador = () => {
 
 				{/* Controles de la simulacion */}
 				{isPanelVisible && <>
-                    <div style={{ marginTop: '5px', fontSize: '22px' }}>
+                    <div style={{ marginBottom: '10px', fontSize: '22px' }}>
                         <strong>Planificador de rutas.</strong>
                     </div>
 
@@ -310,8 +310,7 @@ const Planificador = () => {
 						type="primary"
 						requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
                         onValidData={handleValidData}
-                        onInvalidData={handleInvalidData}
-					    > Subir Archivo
+                        onInvalidData={handleInvalidData}>
 					</SubirVentas>
 
 				</>
@@ -344,7 +343,7 @@ const Planificador = () => {
 
 			{/* Mapa */}
 			<div style={{ flex: "1 1 auto", padding: '5px' }}>
-				<MapComponent
+				<MapaPlanifComp
 					trucks={trucks}
 					truckPositions={truckPositions}
 					completedTrucks={completedTrucks}
