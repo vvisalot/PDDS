@@ -206,7 +206,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             .map((oficina) => {
                 const cargaActual = oficina.cargaActual;
                 const capacidadMaxima = oficina.ubigeo;
-                const porcentaje = ((cargaActual / capacidadMaxima) * 1000);
+                const porcentaje = ((cargaActual / capacidadMaxima) * 100);
                 const icono = porcentaje <= 30
                     ? iconCapacidad.verde
                     : porcentaje <= 60
