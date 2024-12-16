@@ -46,7 +46,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime, isFetching }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
@@ -105,6 +105,13 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     return () => clearInterval(interval);
   }, [trucks, completedRoutes, completedTrucks]);
 
+  // Limpiar selección al terminar de cargar los camiones
+  useEffect(() => {
+    if (!isFetching) {
+      setSelectedTruck(null);
+      setSelectedTruckObj(null);
+    }
+  }, [isFetching]);
 
   // Cargar oficinas desde el archivo CSV
   useEffect(() => {
@@ -332,54 +339,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
       </MapContainer>
     </div>
   );
-};
-
-MapComponent.propTypes = {
-  trucks: PropTypes.arrayOf(
-    PropTypes.shape({
-      camion: PropTypes.shape({
-        codigo: PropTypes.string.isRequired,
-        tipo: PropTypes.string,
-        capacidad: PropTypes.number,
-        cargaActual: PropTypes.number,
-        paquetes: PropTypes.arrayOf(
-          PropTypes.shape({
-            codigo: PropTypes.string.isRequired,
-            fechaHoraPedido: PropTypes.string.isRequired, // ISO date string
-            destino: PropTypes.shape({
-              latitud: PropTypes.number.isRequired,
-              longitud: PropTypes.number.isRequired,
-            }).isRequired,
-            cantidadEntregada: PropTypes.number.isRequired,
-            cantidadTotal: PropTypes.number.isRequired,
-            idCliente: PropTypes.string.isRequired,
-          }).isRequired
-        ),
-      }).isRequired,
-      tramos: PropTypes.arrayOf(
-        PropTypes.shape({
-          origen: PropTypes.shape({
-            latitud: PropTypes.number.isRequired,
-            longitud: PropTypes.number.isRequired,
-          }).isRequired,
-          destino: PropTypes.shape({
-            latitud: PropTypes.number.isRequired,
-            longitud: PropTypes.number.isRequired,
-          }).isRequired,
-          distancia: PropTypes.number,
-          velocidad: PropTypes.number,
-          tiempoSalida: PropTypes.string, // ISO date string
-          tiempoLlegada: PropTypes.string, // ISO date string
-          tiempoEspera: PropTypes.number,
-          seDejaraElPaquete: PropTypes.bool,
-        }).isRequired
-      ).isRequired,
-    }).isRequired
-  ).isRequired,
-
-  completedTrucks: PropTypes.instanceOf(Set).isRequired,
-  simulatedTime: PropTypes.string.isRequired,
-  almacenesCapacidad: PropTypes.object.isRequired,
 };
 
 export default MapComponent;
