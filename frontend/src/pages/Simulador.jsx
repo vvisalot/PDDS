@@ -8,7 +8,9 @@ import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
+import HeaderSimulacion from "../components/HeaderSimulacion.jsx"
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
+
 
 dayjs.extend(duration); // Extender dayjs con plugin de duración
 const { Title } = Typography;
@@ -21,6 +23,7 @@ const Simulador = () => {
 	const [isFetching, setIsFetching] = useState(false);
 	const [dtpValue, setDtpValue] = useState("");
 	const [elapsedTime, setElapsedTime] = useState("")
+	const [elapsedRealTime, setElapsedRealTime] = useState(""); 
 	const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
 	const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
 	const startTimeRef = useRef(null); // Tiempo real de inicio
@@ -31,12 +34,14 @@ const Simulador = () => {
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
 	// Actualiza el tiempo simulado
+
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
 
 		const now = Date.now();
-		const elapsedRealTime = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
-		const elapsedSimulatedTime = elapsedRealTime * velocidad * (1 / 10); // Horas simuladas (relación ajustada)
+		const elapsedRealTimeSec = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
+		setElapsedRealTime(elapsedRealTimeSec);
+		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10); // Horas simuladas (relación ajustada)
 		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
@@ -351,6 +356,17 @@ const Simulador = () => {
 		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
 
 	return (
+		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+		{/* Encabezado de la simulación */}
+		<HeaderSimulacion
+		  onDateChange={(value) => setDtpValue(value ? value.toISOString() : "")}
+		  isFetching={isFetching}
+		  handleStart={handleStart}
+		  handleStop={handleStop}
+		  dtpValue={dtpValue}
+		  disabledDate={disabledDate}
+		  onDropdownChange={(value) => console.log("Opción seleccionada:", value)}
+		/>
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
 			<div style={{
 				flex: isPanelVisible ? "0 0 35%" : "0 0 0%",
@@ -368,25 +384,8 @@ const Simulador = () => {
 				{isPanelVisible && <>
 
 					<ConfigProvider locale={locale}>
-						<DatePicker
-							showTime
-							defaultPickerValue={dayjs('2024-06-01', 'YYYY-MM-DD')}
-							disabled={isFetching}
-							onChange={(value) => {
-								setDtpValue(value ? value.toISOString() : "")
-							}}
-							disabledDate={disabledDate}
-						/>
 					</ConfigProvider>
-					<Button
-						type="primary"
-						onClick={isFetching ? handleStop : handleStart}
-						disabled={!dtpValue && !isFetching}
-						style={{ marginTop: '10px' }}
-					>
-						{isFetching ? "Parar" : "Iniciar"}
-					</Button>
-
+					
 					<div style={{
 						flex: 1,
 						overflowY: 'auto',
@@ -474,6 +473,7 @@ const Simulador = () => {
 					truckPositions={truckPositions}
 					completedTrucks={completedTrucks}
 					simulatedTime={simulatedTime}
+					elapsedRealTime={elapsedRealTime}
 					elapsedTime={elapsedTime}
 					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
 					trucksCompletos={trucks.length}
@@ -485,6 +485,7 @@ const Simulador = () => {
 			</div >
 
 		</div >
+	</div>
 	)
 };
 

@@ -45,7 +45,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime}) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
@@ -157,10 +157,10 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         />
       )}
 
-
       <SimulatedTimeCard
         simulatedTime={simulatedTime}
         elapsedTime={elapsedTime}
+        elapsedRealTime={elapsedRealTime}
         style={{
           position: "absolute",
           top: "10px",

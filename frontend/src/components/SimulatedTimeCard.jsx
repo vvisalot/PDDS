@@ -1,7 +1,16 @@
 import { Card, Typography } from 'antd';
 import PropTypes from 'prop-types';
 
-const SimulatedTimeCard = ({ simulatedTime, elapsedTime }) => {
+const SimulatedTimeCard = ({ simulatedTime, elapsedTime, elapsedRealTime }) => {
+
+  // Formatear tiempo real transcurrido en minutos y segundos
+  const formatRealTime = (elapsedSeconds) => {
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = Math.floor(elapsedSeconds % 60);
+    return `${minutes}m ${seconds}s`;
+  };
+  
+  
   return (
     <Card
       style={{
@@ -15,12 +24,16 @@ const SimulatedTimeCard = ({ simulatedTime, elapsedTime }) => {
       bordered
     >
       <Typography>
-        <b>  Tiempo simulado: </b>
+        <b>  Fecha y Hora de la simulación: </b>
         {simulatedTime || "No iniciado"}
       </Typography>
       <Typography style={{ marginTop: 16 }}>
-        <b>Tiempo transcurrido: </b>
+        <b>Tiempo simulado transcurrido: </b>
         {elapsedTime || "No iniciado"}
+      </Typography>
+      <Typography style={{ marginTop: 16 }}>
+        <b>Tiempo real transcurrido: </b>
+        {elapsedRealTime ? formatRealTime(elapsedRealTime) : "No iniciado"}
       </Typography>
     </Card >
   );
@@ -29,6 +42,7 @@ const SimulatedTimeCard = ({ simulatedTime, elapsedTime }) => {
 SimulatedTimeCard.propTypes = {
   simulatedTime: PropTypes.string.isRequired,
   elapsedTime: PropTypes.string.isRequired,
+  elapsedRealTime: PropTypes.number,
 };
 
 export default SimulatedTimeCard;
