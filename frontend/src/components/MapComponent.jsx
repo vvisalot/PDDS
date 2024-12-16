@@ -46,7 +46,7 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, isFetching }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
@@ -104,6 +104,14 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
     return () => clearInterval(interval);
   }, [trucks, completedRoutes, completedTrucks]);
+
+  // Limpiar selección al terminar de cargar los camiones
+  useEffect(() => {
+    if (!isFetching) {
+      setSelectedTruck(null);
+      setSelectedTruckObj(null);
+    }
+  }, [isFetching]);
 
 
   // Cargar oficinas desde el archivo CSV
@@ -313,7 +321,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                     popupclose: () => setSelectedTruck(null), // Limpiar selección al cerrar el popup
                   }}
                 >
-                  <Popup>
+                  {/* <Popup>
                     <div style={{ textAlign: 'center' }}>
                       <h3 style={{ margin: '0', color: '#333' }}>Camión: {truckCode}</h3>
                       <p style={{ margin: '0', color: '#777' }}>Latitud: {position.lat.toFixed(6)}</p>
@@ -325,7 +333,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                         <strong>Capacidad Restante:</strong> {capacidadRestante} kg
                       </p>
                     </div>
-                  </Popup>
+                  </Popup> */}
                 </Marker>
               )
             );
@@ -381,6 +389,7 @@ MapComponent.propTypes = {
   completedTrucks: PropTypes.instanceOf(Set).isRequired,
   simulatedTime: PropTypes.string.isRequired,
   almacenesCapacidad: PropTypes.object.isRequired,
+  isFetching: PropTypes.bool.isRequired,
 };
 
 export default MapComponent;

@@ -216,7 +216,11 @@ const Simulador = () => {
 
 	// Procesar carga de almacenes según el tiempo simulado
 	useEffect(() => {
-		if (!simulatedTime) return;
+		if (!simulatedTime || !isFetching) {
+			setCargaAlmacenes({});
+			return;
+		}
+
 		setCargaAlmacenes((prev) => {
 			const updatedCarga = {};
 			const simulatedDate = new Date(simulatedTime);
@@ -233,7 +237,7 @@ const Simulador = () => {
 			}
 			return JSON.stringify(prev) === JSON.stringify(updatedCarga) ? prev : updatedCarga;
 		});
-	}, [simulatedTime]);
+	}, [simulatedTime, isFetching]);
 
 	useEffect(() => {
 		const updatedCapacidades = {};
@@ -246,11 +250,28 @@ const Simulador = () => {
 		setAlmacenesCapacidad(updatedCapacidades);
 	}, [cargaAlmacenes]);
 
+
+	useEffect(() => {
+		if (!isFetching) {
+			setAlmacenesCapacidad({});
+			setCargaAlmacenes({});
+		}
+	}, [isFetching]);
+
 	const handleStart = async () => {
 		if (!dtpValue) {
 			message.error("Debe seleccionar una fecha y hora antes de iniciar");
 			return;
 		}
+
+		// Limpiar estados antes de iniciar
+		setCompletedTrucks(new Set());
+		setAlmacenesCapacidad({});
+		setCargaAlmacenes({});
+		setSelectedTruckCode(null);
+		setElapsedTime("");
+		setTrucks([]);
+		setTruckPositions({});
 
 		isCancelledRef.current = false;
 
@@ -281,6 +302,15 @@ const Simulador = () => {
 		setIsFetching(false);
 		setTrucks([]);
 		setTruckPositions({});
+		setCompletedTrucks(new Set());
+		setAlmacenesCapacidad({});
+		setCargaAlmacenes({});
+		setSelectedTruckCode(null);
+		setElapsedTime("");
+		setSimulatedTime("");
+		setCurrentPage(1);
+		setSearchTerm("");
+
 		console.log(`Simulación ${reason}.`);
 
 		if (reason === "detenida") {
@@ -490,6 +520,7 @@ const Simulador = () => {
 					totalPedidos={totalPedidos}
 					pedidosEntregados={pedidosEntregados}
 					almacenesCapacidad={almacenesCapacidad}
+					isFetching={isFetching}
 				/>
 			</div >
 

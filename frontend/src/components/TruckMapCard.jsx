@@ -9,10 +9,32 @@ const { Panel } = Collapse;
 const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 	if (!selectedTruck) return null;
 
+	// Calcular la carga actual basada en los pedidos entregados
+	const calculateCurrentLoad = () => {
+		const cargaInicial = selectedTruck.camion.capacidad;
+		let cargaEntregada = 0;
+
+		for (const paquete of selectedTruck.camion.paquetes) {
+			const tramoEntrega = selectedTruck.tramos.find(tramo =>
+				tramo.seDejaraElPaquete &&
+				tramo.destino.latitud === paquete.destino.latitud &&
+				tramo.destino.longitud === paquete.destino.longitud
+			);
+
+			if (tramoEntrega && dayjs(simulatedTime).isAfter(dayjs(tramoEntrega.tiempoLlegada))) {
+				cargaEntregada += paquete.cantidadEntregada;
+			}
+		}
+
+		return cargaInicial - cargaEntregada;
+	};
+
+	const currentLoad = calculateCurrentLoad();
+
+
 	const getCapacityColor = () => {
 		const capacidad = selectedTruck.camion.capacidad;
-		const cargaActual = selectedTruck.camion.cargaActual;
-		const percentage = (cargaActual / capacidad) * 100;
+		const percentage = (currentLoad / capacidad) * 100;
 
 		if (percentage <= 25) return "success";     // Verde normal de Antd
 		if (percentage <= 50) return "lime";        // Verde amarillento
@@ -23,8 +45,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 
 	const getCapacityIconColor = () => {
 		const capacidad = selectedTruck.camion.capacidad;
-		const cargaActual = selectedTruck.camion.cargaActual;
-		const percentage = (cargaActual / capacidad) * 100;
+		const percentage = (currentLoad / capacidad) * 100;
 
 		if (percentage <= 25) return "#22c55e";     // Verde
 		if (percentage <= 50) return "#84cc16";     // Verde amarillento
@@ -174,8 +195,22 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 
 	return (
 		<Card
-			title={
-				<Space direction="vertical" style={{ width: '100%', marginTop: '10px', marginBottom: '10px' }}>
+			style={cardStyle}
+			bodyStyle={{
+				padding: 0,
+				maxHeight: 'calc(60vh - 100px)', // Ajustar para el header sticky
+				position: 'relative',
+			}}
+		>
+			<div style={{
+				position: 'sticky',
+				top: 0,
+				backgroundColor: 'white',
+				zIndex: 2,
+				padding: '24px 24px 0',
+				borderBottom: '1px solid #f0f0f0',
+			}}>
+				<Space direction="vertical" style={{ width: '100%', marginBottom: '16px' }}>
 					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
 						<Space>
 							<FaTruck size={20} color={getCapacityIconColor()} />
@@ -183,7 +218,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 						</Space>
 						<Tag color={getCapacityColor()}>
 							<FaBox size={12} style={{ marginRight: 4 }} />
-							Capacidad: {selectedTruck.camion.cargaActual}/{selectedTruck.camion.capacidad}
+							Capacidad: {currentLoad}/{selectedTruck.camion.capacidad}
 						</Tag>
 					</Space>
 					{currentPosition && (
@@ -192,9 +227,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 						</Text>
 					)}
 				</Space>
-			}
-			style={cardStyle}
-		>
+			</div>
 			<Collapse defaultActiveKey={['1', '2']}>
 				<Panel
 					header={
