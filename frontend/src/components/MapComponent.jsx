@@ -108,7 +108,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   // Cargar oficinas desde el archivo CSV
   useEffect(() => {
     const cargarCSV = async () => {
-      const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
+      const response = await fetch('/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
 
       // Lista de ubigeos de oficinas principales
@@ -224,41 +224,41 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
         {/* Renderizar marcadores de oficinas normales */}
         {oficinas
-            .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
-            .map((oficina) => {
-                const cargaActual = oficina.cargaActual;
-                const capacidadMaxima = oficina.ubigeo;
-                const porcentaje = ((cargaActual / capacidadMaxima) * 100);
-                const icono = porcentaje <= 30
-                    ? iconCapacidad.verde
-                    : porcentaje <= 60
-                        ? iconCapacidad.amarillo
-                        : iconCapacidad.rojo;
-                return (
-                    <Marker
-                        key={oficina.id}
-                        position={[oficina.lat, oficina.lng]}
-                        icon={icono}
-                    >
-                        <Popup>
-                            <div style={{ textAlign: 'center' }}>
-                                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
-                                </p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Carga Actual:</strong> {oficina.cargaActual} kg
-                                </p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
-                                </p>
-                            </div>
-                        </Popup>
-                    </Marker>
-                );
-        })}
+          .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
+          .map((oficina) => {
+            const cargaActual = oficina.cargaActual;
+            const capacidadMaxima = oficina.ubigeo;
+            const porcentaje = ((cargaActual / capacidadMaxima) * 100);
+            const icono = porcentaje <= 30
+              ? iconCapacidad.verde
+              : porcentaje <= 60
+                ? iconCapacidad.amarillo
+                : iconCapacidad.rojo;
+            return (
+              <Marker
+                key={oficina.id}
+                position={[oficina.lat, oficina.lng]}
+                icon={icono}
+              >
+                <Popup>
+                  <div style={{ textAlign: 'center' }}>
+                    <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                    <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                    <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Carga Actual:</strong> {oficina.cargaActual} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
 
 
 
