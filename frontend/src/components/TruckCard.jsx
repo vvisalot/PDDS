@@ -27,7 +27,7 @@ const TruckCard = ({ camionData, isSelected, currentTime }) => {
         return cargaInicial - cargaEntregada;
     };
 
-    const cargaActual = calcularCargaActual()
+    const cargaActual = Math.min(calcularCargaActual(), camion.capacidad);
 
     const HeaderContent = () => (
         <Space style={{ width: '100%', justifyContent: 'space-between' }}>
