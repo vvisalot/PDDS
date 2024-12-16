@@ -253,7 +253,7 @@ const TruckCard = ({ camionData, isSelected, currentTime }) => {
     };
     return (
         <Collapse
-            defaultActiveKey={isSelected ? ['1'] : []}
+            defaultActiveKey={['1']}
             items={[{
                 key: '1',
                 label: <HeaderContent />,

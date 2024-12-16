@@ -353,12 +353,12 @@ const Simulador = () => {
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
 			<div style={{
-				flex: isPanelVisible ? "0 0 35%" : "0 0 0%",
+				flex: isPanelVisible ? "0 0 30%" : "0 0 0%",
 				padding: isPanelVisible ? "10px" : "0",
 				borderRight: isPanelVisible ? "1px solid #ddd" : "none",
 				transition: "all 0.3s ease",
 				overflowY: "hidden",
-				width: isPanelVisible ? "35%" : "0",
+				width: isPanelVisible ? "30%" : "0",
 				height: "100%",
 				display: "flex",
 				flexDirection: "column",
@@ -450,7 +450,7 @@ const Simulador = () => {
 				onClick={togglePanel}
 				style={{
 					position: 'absolute',
-					left: isPanelVisible ? "35%" : "0",
+					left: isPanelVisible ? "30%" : "0",
 					top: "50%",
 					transform: "translateY(-50%)",
 					zIndex: 1000,
