@@ -8,7 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import LeyendaSimu from "../components/LeyendaSim";
-import StorageMapCard from '../components/StorageMapCard';
+import TruckMapCard from '../components/TruckMapCard';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -151,7 +151,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
 
       {selectedTruck && (
-        <StorageMapCard
+        <TruckMapCard
           selectedTruck={selectedTruckObj}
           onClose={() => setSelectedTruck(null)}
         />
