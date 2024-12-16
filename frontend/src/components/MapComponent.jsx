@@ -290,7 +290,8 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             </React.Fragment>
           );
         })}
-
+        
+        <CardToggle />
 
         {/* Renderizar los marcadores de posición actual */}
         {truckPositions &&
