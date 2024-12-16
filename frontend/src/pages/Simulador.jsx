@@ -33,6 +33,7 @@ const Simulador = () => {
 	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
+	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
 	// Actualiza el tiempo simulado
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -70,11 +71,6 @@ const Simulador = () => {
 		}
 		return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
 	}, [isFetching, dtpValue]);
-
-	//help printing capacity of warehouses
-	useEffect(() => {
-		console.log("Capacidad almacenes", almacenesCapacidad);
-	}, [almacenesCapacidad]);
 
 	const fetchTrucks = async () => {
 		try {
@@ -168,16 +164,23 @@ const Simulador = () => {
 
 				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
 			}
-			console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
 			if (tramo.seDejaraElPaquete) {
 				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
+				console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
+				console.log("hora carga", tramo.tiempoLlegada);
 				truckData.camion.paquetes.forEach((paquete) => {
 					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
-						setAlmacenesCapacidad((prevCapacidades) => {
-							const updatedCapacidades = { ...prevCapacidades };
+						setCargaAlmacenes((prev) => {
+							const updatedCarga = { ...prev };
 							const cantidadPaquete = paquete.cantidadEntregada;
-							updatedCapacidades[almacenId] = (updatedCapacidades[almacenId] || 0) + cantidadPaquete;
-							return updatedCapacidades;
+							if (!updatedCarga[almacenId]) {
+								updatedCarga[almacenId] = [];
+							}
+							updatedCarga[almacenId].push({
+								carga: cantidadPaquete,
+								horaDeCarga: tramo.tiempoLlegada,
+							});
+							return updatedCarga;
 						});
 						setTrucks((prevTrucks) => {
 							return prevTrucks.map((truck) => {
@@ -211,6 +214,38 @@ const Simulador = () => {
 			});
 		}
 	};
+
+	// Procesar carga de almacenes según el tiempo simulado
+	useEffect(() => {
+		if (!simulatedTime) return;
+		setCargaAlmacenes((prev) => {
+			const updatedCarga = {};
+			const simulatedDate = new Date(simulatedTime);
+			for (const almacenId in prev) {
+				const cargasValidas = prev[almacenId].filter(({ horaDeCarga }) => {
+					const horaCargaDate = new Date(horaDeCarga);
+					const diffInHours = (simulatedDate - horaCargaDate) / 7200000;
+					return diffInHours < 1; // Mantener cargas con menos de 1 hora de antigüedad
+				});
+
+				if (cargasValidas.length > 0) {
+					updatedCarga[almacenId] = cargasValidas;
+				}
+			}
+			return JSON.stringify(prev) === JSON.stringify(updatedCarga) ? prev : updatedCarga;
+		});
+	}, [simulatedTime]);
+
+	useEffect(() => {
+		const updatedCapacidades = {};
+		for (const almacenId in cargaAlmacenes) {
+			updatedCapacidades[almacenId] = cargaAlmacenes[almacenId].reduce(
+				(total, item) => total + item.carga,
+				0
+			);
+		}
+		setAlmacenesCapacidad(updatedCapacidades);
+	}, [cargaAlmacenes]);
 
 	const handleStart = async () => {
 		if (!dtpValue) {
