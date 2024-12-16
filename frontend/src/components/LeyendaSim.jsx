@@ -1,27 +1,25 @@
-import React from 'react';
 import { Card, Space, Typography } from "antd";
+import React from 'react';
 import { FaBoxOpen, FaTruck } from 'react-icons/fa';
 
 
-const LeyendaSim = ({totalCamionesSimulacion, camionesEnMapa, totalPedidos, pedidosEntregados}) => {
+const LeyendaSim = ({ totalCamionesSimulacion, camionesEnMapa, totalPedidos, pedidosEntregados }) => {
     const cardStyle = {
         position: "absolute",
-        bottom: "8px",
-        left: "20px",
+        top: "120px",
+        right: "20px",
         zIndex: 1000,
         backgroundColor: "rgba(255, 255, 255, 0.9)",
-        padding: "10px",
         borderRadius: "5px",
-        //boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)",
-        //no se estos van
-        maxWidth: 500,
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        width: 350,
         margin: '20px auto'
     };
 
     return (
-        <Card style={cardStyle}>
+        <Card style={cardStyle} bordered>
             <Typography style={{ marginTop: '0px', marginBottom: '10px', fontSize: '17px' }}>
-                <strong>Leyenda de la simulación:</strong>
+                <strong>Informacion de la simulación:</strong>
             </Typography>
 
             <div style={{ marginTop: '10px', marginLeft: '0px', fontSize: '14px', lineHeight: '1.6' }}>
@@ -38,7 +36,7 @@ const LeyendaSim = ({totalCamionesSimulacion, camionesEnMapa, totalPedidos, pedi
                     <strong>Pedidos entregados:</strong> <span style={{ marginLeft: '81px' }}>{pedidosEntregados}</span>
                 </p>
             </div>
-                
+
         </Card>
     );
 };

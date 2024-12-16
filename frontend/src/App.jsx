@@ -1,10 +1,11 @@
 //import { Content, Header } from "antd/es/layout/layout";
+import './App.css';
 import { Layout, Menu } from "antd";
 import { Link, Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
 import logo from "./assets/odipark.svg";
-import Simulador from "./pages/Simulador.jsx";
-import Planificador from "./pages/Planificador.jsx";
 import Configuracion from "./pages/Configuracion.jsx"; // Nueva página
+import Planificador from "./pages/Planificador.jsx";
+import Simulador from "./pages/Simulador.jsx";
 
 const { Header, Content } = Layout;
 
@@ -24,6 +25,14 @@ const menuItems = [
   },
 ];
 
+// Estilo personalizado para el Menu
+const menuStyle = {
+  backgroundColor: 'transparent',
+  borderBottom: 'none'
+};
+
+
+
 // Componente para resaltar la página activa
 const NavigationMenu = () => {
   const location = useLocation();
@@ -31,8 +40,8 @@ const NavigationMenu = () => {
   const currentKey = location.pathname.startsWith("/configuracion")
     ? "configuracion"
     : location.pathname.startsWith("/planificador")
-    ? "planificador"
-    : "simulador"; // Por defecto, selecciona "simulador".
+      ? "planificador"
+      : "simulador"; // Por defecto, selecciona "simulador".
 
   return (
     <Menu
@@ -40,7 +49,14 @@ const NavigationMenu = () => {
       mode="horizontal"
       selectedKeys={[currentKey]}
       items={menuItems}
-      style={{ height: "50px", marginRight: "20px", flex: 5, justifyContent: 'flex-end' }}
+      style={{
+        ...menuStyle,
+        height: "50px",
+        marginRight: "20px",
+        flex: 5,
+        justifyContent: 'flex-end'
+      }}
+      className="custom-menu"
     />
   );
 };
@@ -80,7 +96,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Simulador />} />
             <Route path="/planificador" element={<Planificador />} />
-            <Route path="/configuracion/*" element={<Configuracion />}/>
+            <Route path="/configuracion/*" element={<Configuracion />} />
           </Routes>
         </Content>
       </Layout>

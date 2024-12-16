@@ -20,13 +20,10 @@ const TruckCard = ({ camionData, isSelected, currentTime }) => {
                     .filter(paquete =>
                         paquete.destino.latitud === tramo.destino.latitud &&
                         paquete.destino.longitud === tramo.destino.longitud
-                    )
-                    .reduce((total, paquete) => total + paquete.cantidadEntregada, 0);
-
+                    ).reduce((total, paquete) => total + paquete.cantidadEntregada, 0);
                 cargaEntregada += entregaEnDestino;
             }
         }
-
         return cargaInicial - cargaEntregada;
     };
 
