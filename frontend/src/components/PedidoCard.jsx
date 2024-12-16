@@ -7,6 +7,7 @@ const { Text, Title } = Typography;
 
 const PedidoCard = ({ pedidoData }) => {
     const { idPedido, fechaHoraEntrega, destino, cantidad, idCliente, entregado } = pedidoData;
+    //const { idPedido, idCliente, cantidadTotal } = pedidoData;
 
     const HeaderContent = () => (
         <Space style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -34,7 +35,7 @@ const PedidoCard = ({ pedidoData }) => {
     );
 
     return (
-        <Collapse defaultActiveKey={['1']} items={[
+        <Collapse defaultActiveKey={[]} items={[
             {
                 key: '1',
                 label: <HeaderContent />,

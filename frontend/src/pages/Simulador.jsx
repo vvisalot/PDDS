@@ -83,6 +83,41 @@ const Simulador = () => {
 		return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
 	}, [isFetching, dtpValue]);
 
+
+	// Actualiza los pedidos completados al procesar datos de camiones - PRUEBA PEDIDOS COMPLETADOS
+    const updateCompletedOrders = (truckData) => {
+        const orderMap = {}; // Agrupa cantidades entregadas por código del pedido
+
+        truckData.forEach((truck) => {
+            truck.camion.paquetes.forEach((paquete) => {
+                const { codigo, cantidadEntregada, cantidadTotal, idCliente } = paquete;
+
+                // Inicializar el pedido si no existe
+                if (!orderMap[codigo]) {
+                    orderMap[codigo] = {
+                        idPedido: `P0${Object.keys(orderMap).length + 1}-${idCliente}`,
+                        idCliente,
+                        cantidadTotal,
+                        cantidadEntregada: 0,
+                    };
+                }
+
+                // Sumar las entregas acumulativas
+                orderMap[codigo].cantidadEntregada += cantidadEntregada;
+
+                // Verificar si el pedido está completo
+                if (orderMap[codigo].cantidadEntregada === cantidadTotal) {
+                    orderMap[codigo].isComplete = true;
+                }
+            });
+        });
+
+        // Filtrar solo los pedidos completados
+        const completed = Object.values(orderMap).filter((order) => order.isComplete);
+        setCompletedOrders(completed);
+    };
+
+
 	const fetchTrucks = async () => {
 		try {
 			const response = await getSimulacion() // Replace with your API endpoint
@@ -118,6 +153,12 @@ const Simulador = () => {
 				for (const newTruck of response.data.rutas) trucksMap.set(newTruck.camion.codigo, newTruck);
 				return Array.from(trucksMap.values());
 			});
+
+			// PRUEBA PEDIDOS COMPLETADOS
+			const truckDataPedido = response.data.rutas || [];
+            //setTrucks(truckDataPedido);
+            // Actualizar pedidos completados al procesar nuevos datos de camiones
+            updateCompletedOrders(truckDataPedido);
 
 		} catch (error) {
 			console.error("Error fetching truck data:", error);
@@ -410,10 +451,10 @@ const Simulador = () => {
                 <>
                     <Input.Search
                         placeholder="Buscar pedido por ID Cliente"
-                        onChange={e => setSearchTerm(e.target.value)}
-                        style={{ marginBottom: '10px' }}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ marginBottom: "10px" }}
                     />
-                    {filteredOrders.map(order => (
+                    {filteredOrders.map((order) => (
                         <PedidoCard key={order.idPedido} pedidoData={order} />
                     ))}
                 </>
