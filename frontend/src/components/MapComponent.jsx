@@ -9,6 +9,7 @@ import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
+import AlmacenMapCard from '../components/AlmacenMapCard';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -50,14 +51,47 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
+  const [selectedAlmacen, setSelectedAlmacen] = useState(null);
 
   const handleTruckClick = (truckCode) => {
+      console.log('Camión seleccionado:', truckCode);
     const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
     setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
     setSelectedTruckObj(truck); // Guarda el objeto del camión seleccionado
   };
 
-  // Verificar si un tramo ha sido recorrido por un camión
+    const handleSelectAlmacen = (almacenId) => {
+        const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
+        const camionesAsociados = trucks.filter(truck =>
+            truck.camion.paquetes.some(paquete =>
+                paquete.destino.latitud === almacenSeleccionado.lat &&
+                paquete.destino.longitud === almacenSeleccionado.lng
+            )
+        );
+        console.log("almacenSeleccionado", almacenSeleccionado);
+        console.log("camiones", trucks);
+        console.log("camionesAsociados", camionesAsociados);
+
+        const almacenConCamiones = {
+            ...almacenSeleccionado,
+            camiones: camionesAsociados.map(truck => ({
+                codigo: truck.camion.codigo,
+                capacidad: truck.camion.capacidad,
+                cargaActual: truck.camion.cargaActual,
+                cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0), // Acumulamos cantidadTotal de los paquetes
+            })),
+        };
+
+        setSelectedAlmacen(almacenConCamiones);
+    };
+
+    const handlePopupClose = () => {
+        if (selectedAlmacen) {
+            setSelectedAlmacen(null);
+        }
+    };
+
+    // Verificar si un tramo ha sido recorrido por un camión
   const isTramoRecorrido = (truckCode, tramo) => {
     if (!completedRoutes[truckCode]) return false;
     const startTime = new Date(tramo.tiempoSalida).getTime();
@@ -239,6 +273,11 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                         key={oficina.id}
                         position={[oficina.lat, oficina.lng]}
                         icon={icono}
+                        eventHandlers={{
+                            click: () => handleSelectAlmacen(oficina.id),
+                            popupclose: () => handlePopupClose,
+                            popupopen: () => setSelectedAlmacen(oficina.id),
+                        }}
                     >
                         <Popup>
                             <div style={{ textAlign: 'center' }}>
@@ -260,7 +299,13 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                 );
         })}
 
-
+          {selectedAlmacen && (
+                  <AlmacenMapCard
+                      selectedAlmacen={selectedAlmacen}
+                      onClose={() => setSelectedAlmacen(null)}
+                      simulatedTime={simulatedTime}
+                  />
+          )}
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
