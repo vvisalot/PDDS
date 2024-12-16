@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, Marker, Polyline, Popup, TileLayer,  } from 'react-leaflet';
+import { MapContainer, Marker, Polyline, Popup, TileLayer, } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import Papa from "papaparse";
@@ -8,6 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import LeyendaSimu from "../components/LeyendaSim";
+import TruckMapCard from '../components/TruckMapCard';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -17,15 +18,15 @@ const truckSelectedIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="d
 const truckSelectedIconUrl = `data:image/svg+xml;base64,${btoa(truckSelectedIconMarkup)}`;
 
 const crearIcono = (color) => {
-    const iconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color={color} />);
-    const iconUrl = `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
-    return L.icon({ iconUrl, iconSize: [15, 15] });
+  const iconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color={color} />);
+  const iconUrl = `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
+  return L.icon({ iconUrl, iconSize: [15, 15] });
 };
 
 const iconCapacidad = { //icono según porcentaje de capacidad
-    verde: crearIcono("green"),
-    amarillo: crearIcono("yellow"),
-    rojo: crearIcono("red"),
+  verde: crearIcono("green"),
+  amarillo: crearIcono("yellow"),
+  rojo: crearIcono("red"),
 };
 
 const oficinaIcon = L.icon({ iconUrl: warehouseIconUrl, iconSize: [15, 15], }); //icono oficinas
@@ -44,13 +45,16 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados,elapsedTime,almacenesCapacidad }) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
+  const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
 
   const handleTruckClick = (truckCode) => {
+    const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
     setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
+    setSelectedTruckObj(truck); // Guarda el objeto del camión seleccionado
   };
 
   // Verificar si un tramo ha sido recorrido por un camión
@@ -134,71 +138,89 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     cargarCSV();
   }, []);
 
-    useEffect(() => {
-        setOficinas(prevOficinas =>
-            prevOficinas.map(oficina => {
-                const capacidadAlmacen = almacenesCapacidad[`${oficina.lat}-${oficina.lng}`] || 0;
-                return { ...oficina, cargaActual: capacidadAlmacen };
-            })
-        );
-    }, [almacenesCapacidad]);
+  useEffect(() => {
+    setOficinas(prevOficinas =>
+      prevOficinas.map(oficina => {
+        const capacidadAlmacen = almacenesCapacidad[`${oficina.lat}-${oficina.lng}`] || 0;
+        return { ...oficina, cargaActual: capacidadAlmacen };
+      })
+    );
+  }, [almacenesCapacidad]);
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-    {/* Tarjeta del Reloj Simulado */}
-    <SimulatedTimeCard
-      simulatedTime={simulatedTime}
-      elapsedTime={elapsedTime}
-      style={{
-        position: "absolute",
-        top: "10px",
-        left: "10px",
-        zIndex: 1000,
-        background: "white",
-        padding: "10px",
-        borderRadius: "8px",
-        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-      }}
-    />
-    <MapContainer
-      center={[-13.5, -76]}
-      zoom={6}
-      style={{
-        height: '100%',
-        width: '100%'
-      }}
-      minZoom={4}
-      maxZoom={7}
-      scrollWheelZoom={true}
-      maxBounds={[
-        //Limites de Sudamerica
-        [-60, -110],
-        [15, -30]
-      ]}
-      maxBoundsViscosity={1.0}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
+
+      {selectedTruck && (
+        <TruckMapCard
+          selectedTruck={selectedTruckObj}
+          onClose={() => setSelectedTruck(null)}
+        />
+      )}
+
+
+      <SimulatedTimeCard
+        simulatedTime={simulatedTime}
+        elapsedTime={elapsedTime}
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "10px",
+          zIndex: 1000,
+          background: "white",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+        }}
       />
 
-      {/* Renderizar marcadores de oficinas principales */}
-      {oficinasPrincipales.map((oficina) => (
-        <Marker
-          key={oficina.id}
-          position={[oficina.lat, oficina.lng]}
-          icon={oficinaPrincipalIcon}
-        >
-          <Popup>
-              <div style={{textAlign: 'center'}}>
-                  <h3 style={{margin: '0', color: '#333'}}>{oficina.ciudad}</h3>
-                  <p style={{margin: '0', color: '#777'}}>Oficina Principal</p>
-                  <p style={{margin: '0', color: '#777'}}>Departamento: {oficina.departamento}</p>
-                  <p style={{margin: '0', color: '#777'}}>Región: {oficina.region}</p>
+      {/* Renderizar LeyendaSimu enviando estadísticas como props */}
+      <LeyendaSimu
+        totalCamionesSimulacion={trucksCompletos}
+        camionesEnMapa={camionesEnMapa}
+        totalPedidos={totalPedidos}
+        pedidosEntregados={pedidosEntregados}
+      />
+
+
+      <MapContainer
+        center={[-13.5, -76]}
+        zoom={6}
+        style={{
+          height: '100%',
+          width: '100%'
+        }}
+        minZoom={4}
+        maxZoom={7}
+        scrollWheelZoom={true}
+        maxBounds={[
+          //Limites de Sudamerica
+          [-60, -110],
+          [15, -30]
+        ]}
+        maxBoundsViscosity={1.0}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+
+        {/* Renderizar marcadores de oficinas principales */}
+        {oficinasPrincipales.map((oficina) => (
+          <Marker
+            key={oficina.id}
+            position={[oficina.lat, oficina.lng]}
+            icon={oficinaPrincipalIcon}
+          >
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
+                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
               </div>
-          </Popup>
-        </Marker>
-      ))}
+            </Popup>
+          </Marker>
+        ))}
 
         {/* Renderizar marcadores de oficinas normales */}
         {oficinas
@@ -238,48 +260,37 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                 );
         })}
 
-            {/* Renderizar LeyendaSimu enviando estadísticas como props */}
-            <LeyendaSimu
-            totalCamionesSimulacion={trucksCompletos}
-            camionesEnMapa={camionesEnMapa}
-            totalPedidos={totalPedidos}
-            pedidosEntregados={pedidosEntregados}
-          />
+
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
-        if (completedTrucks.has(truck.camion.codigo)) return null;
-        const truckPosition = truckPositions[truck.camion.codigo];
-        //if (!truckPosition) return null; // No pintar rutas si el camión no se está moviendo
+          if (completedTrucks.has(truck.camion.codigo)) return null;
 
+          return (
+            <React.Fragment key={truck.camion.codigo}>
+              {truck.tramos.map((tramo, index) => {
+                const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
+                const isSelected = selectedTruck === truck.camion.codigo;
+                if (!isRecorrido && !isSelected) return null;
                 return (
-                    <React.Fragment key={truck.camion.codigo}>
-                      {truck.tramos.map((tramo, index) => {
-                        const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
-                        const isSelected = selectedTruck === truck.camion.codigo;
-                        if (!isRecorrido && !isSelected) return null;
-                        return (
-                          <Polyline
-                            key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
-                            positions={[
-                              [tramo.origen.latitud, tramo.origen.longitud],
-                              [tramo.destino.latitud, tramo.destino.longitud],
-                            ]}
-                            color={
-                              isRecorrido
-                                ? 'blue' // Tramo recorrido
-                                : isSelected
-                                ? 'red' // Tramo del camión seleccionado
-                                : 'blue' // Tramo del camión no seleccionado
-                            }
-                            weight={isSelected && !isRecorrido ? 2 : 1.5} // Más grueso si está seleccionado y no recorrido
-                            dashArray={isRecorrido ? '5, 5' : isSelected ? '10, 5' : null} // Línea discontinua para recorridos y seleccionados
-                          />
-                        );
-                      })}
-                    </React.Fragment>
-                    );
-      })}
+                  <Polyline
+                    key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
+                    positions={[
+                      [tramo.origen.latitud, tramo.origen.longitud],
+                      [tramo.destino.latitud, tramo.destino.longitud],
+                    ]}
+                    color={
+                      isRecorrido ? 'blue' // Tramo recorrido
+                        : isSelected ? 'red' : 'blue'
+                    }
+                    weight={isSelected && !isRecorrido ? 2 : 1.5} // Más grueso si está seleccionado y no recorrido
+                    dashArray={isRecorrido ? '5, 5' : isSelected ? '10, 5' : null} // Línea discontinua para recorridos y seleccionados
+                  />
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
 
 
         {/* Renderizar los marcadores de posición actual */}

@@ -1,13 +1,9 @@
-import { Button, Card, ConfigProvider, DatePicker, Input, Pagination, Space, Statistic, Tabs, Typography, message } from "antd";
-import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
+import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Typography, message } from "antd";
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
-import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
-import TablaFlota from "../components/TablaFlota";
-import TablaPedidos from "../components/TablaPedidos";
 import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
@@ -195,12 +191,6 @@ const Simulador = () => {
 					}
 				});
 			}
-			/*
-			if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
-				console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
-				await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
-			}
-			*/
 		}
 
 		if (!isCancelledRef.current) {
@@ -299,27 +289,12 @@ const Simulador = () => {
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
 
-	const TabItems = [
-		{
-			key: '1',
-			label: 'Pedidos',
-			children: <TablaPedidos data={trucks} />
-		},
-		{
-			key: '2',
-			label: 'Camiones',
-			children: <TablaFlota data={trucks} />
-		},
-	];
-
-
 	const [currentPage, setCurrentPage] = useState(1);
 	const cardsPerPage = 5;
 
 	const handlePageChange = (page) => {
 		setCurrentPage(page);
 	};
-
 
 	const calcularEstadisticas = () => {
 		let totalPedidos = 0;
@@ -356,7 +331,6 @@ const Simulador = () => {
 				}
 			}
 		}
-
 		return { totalPedidos, pedidosEntregados, camionesEnMapa };
 	};
 
@@ -369,16 +343,12 @@ const Simulador = () => {
 		setIsPanelVisible(!isPanelVisible);
 	}
 
-
 	// BARRA DE BUSQUEDA
 	const [searchTerm, setSearchTerm] = useState("");
 
 	// Filtra los camiones según el código
 	const filteredTrucks = trucks.filter(truck => !completedTrucks.has(truck.camion.codigo) &&
 		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
-
-
-
 
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
@@ -416,23 +386,6 @@ const Simulador = () => {
 					>
 						{isFetching ? "Parar" : "Iniciar"}
 					</Button>
-
-					{/* Estadísticas de la simulación */}
-					<div style={{ marginTop: '20px', marginLeft: '50px', fontSize: '15px', lineHeight: '1.6' }}>
-						<p> <FaTruck size={17} color="orange" style={{ marginRight: '8px' }} />
-							<strong>Total camiones en simulación:</strong> <span style={{ marginLeft: '13px' }}>{trucks.length}</span>
-						</p>
-						<p> <FaTruck size={17} color="darkblue" style={{ marginRight: '8px' }} />
-							<strong>Camiones en Mapa:</strong> <span style={{ marginLeft: '85px' }}>{camionesEnMapa}</span>
-						</p>
-						<p> <FaBoxOpen size={17} color="lightblack" style={{ marginRight: '8px' }} />
-							<strong>Pedidos totales:</strong> <span style={{ marginLeft: '113px' }}>{totalPedidos}</span>
-						</p>
-						<p> <FaBoxOpen size={17} color="green" style={{ marginRight: '8px' }} />
-							<strong>Pedidos entregados:</strong> <span style={{ marginLeft: '81px' }}>{pedidosEntregados}</span>
-						</p>
-					</div>
-
 
 					<div style={{
 						flex: 1,
