@@ -1,10 +1,11 @@
-import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Typography, message } from "antd";
+import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Tabs, Typography, message } from "antd";
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
 import TruckCard from "../components/TruckCard";
+import PedidoCard from "../components/PedidoCard"; // Nuevo componente
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
@@ -12,6 +13,13 @@ import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simu
 
 dayjs.extend(duration); // Extender dayjs con plugin de duración
 const { Title } = Typography;
+
+const { TabPane } = Tabs;
+
+const tabBarStyle = {
+  fontSize: '15px',
+  fontWeight: 'semibold',
+};
 
 const Simulador = () => {
 	const [trucks, setTrucks] = useState([]);
@@ -30,6 +38,13 @@ const Simulador = () => {
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
+	const [completedOrders, setCompletedOrders] = useState([]); // PRUEBA PEDIDOS COMPLETADOS
+	const [tabKey, setTabKey] = useState("1"); // Controla la vista seleccionada
+
+    const handleTabChange = (key) => {
+        setTabKey(key); // Cambiar vista al seleccionar una pestaña
+    };
+
 	// Actualiza el tiempo simulado
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -346,6 +361,67 @@ const Simulador = () => {
 	const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
 
 
+	// TABS PARA VISUALIZACIÓN
+	const renderTabContent = () => {
+        if (tabKey === "1") {
+            return (
+                <>
+                    <Input.Search
+                        placeholder="Buscar camión por código"
+                        onChange={e => setSearchTerm(e.target.value)}
+                        style={{
+                            marginBottom: '10px'
+                        }}
+                    />
+                    {
+                        filteredTrucks.map(truck => (
+                            <TruckCard
+                                key={truck.camion.codigo}
+                                camionData={truck}
+                                isSelected={selectedTruckCode === truck.camion.codigo}
+                                currentTime={simulatedTime}
+                            />
+                        ))
+                    }
+					{/* Paginación */}
+					<div style={{
+							marginTop: '16px',
+							display: 'flex',
+							justifyContent: 'center',
+							position: 'sticky',
+							bottom: 0,
+							backgroundColor: 'white',
+							padding: '8px 0',
+							borderTop: '1px solid #f0f0f0'
+					}}>
+						<Pagination
+							current={currentPage}
+							total={trucks.filter(truck => !completedTrucks.has(truck.camion.codigo)).length}
+							pageSize={cardsPerPage}
+							onChange={handlePageChange}
+							showSizeChanger={false}
+							size="small"
+						/>
+					</div>
+                </>
+            );
+        } else if (tabKey === "2") {
+            return (
+                <>
+                    <Input.Search
+                        placeholder="Buscar pedido por ID Cliente"
+                        onChange={e => setSearchTerm(e.target.value)}
+                        style={{ marginBottom: '10px' }}
+                    />
+                    {filteredOrders.map(order => (
+                        <PedidoCard key={order.idPedido} pedidoData={order} />
+                    ))}
+                </>
+            );
+        }
+    };
+
+
 	// PANEL COLAPSABLE
 	const [isPanelVisible, setIsPanelVisible] = useState(false);
 	const togglePanel = () => {
@@ -357,7 +433,14 @@ const Simulador = () => {
 
 	// Filtra los camiones según el código
 	const filteredTrucks = trucks.filter(truck => !completedTrucks.has(truck.camion.codigo) &&
-		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
+		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+	);
+
+	// PRUEBA PEDIDOS COMPLETADOS
+	const filteredOrders = completedOrders.filter((order) =>
+        order.idCliente.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
 
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
@@ -403,49 +486,15 @@ const Simulador = () => {
 						paddingRight: '10px',
 					}}>
 						<Space direction="vertical" style={{ width: '100%' }}>
-							<Title level={4}>Camiones en Ruta</Title>
-							{/* Búsqueda de camiones */}
-							<Input.Search
-								placeholder="Buscar camión por código"
-								onChange={e => setSearchTerm(e.target.value)}
-								style={{
-									marginBottom: '10px'
-								}}
-							/>
+							{/*<Title level={4}>Camiones en Ruta</Title>*/}
 
-							{
-								filteredTrucks
-									.filter(truck => !completedTrucks.has(truck.camion.codigo))
-									.map(truck => (
-										<TruckCard
-											key={truck.camion.codigo}
-											camionData={truck}
-											isSelected={selectedTruckCode === truck.camion.codigo}
-											currentTime={simulatedTime}
-										/>
-									))
-							}
-
-							{/* Paginación */}
-							<div style={{
-								marginTop: '16px',
-								display: 'flex',
-								justifyContent: 'center',
-								position: 'sticky',
-								bottom: 0,
-								backgroundColor: 'white',
-								padding: '8px 0',
-								borderTop: '1px solid #f0f0f0'
-							}}>
-								<Pagination
-									current={currentPage}
-									total={trucks.filter(truck => !completedTrucks.has(truck.camion.codigo)).length}
-									pageSize={cardsPerPage}
-									onChange={handlePageChange}
-									showSizeChanger={false}
-									size="small"
-								/>
-							</div>
+							<Tabs defaultActiveKey="1" onChange={handleTabChange} tabBarStyle={tabBarStyle}>
+								<TabPane tab="Detalle de Camiones" key="1" />
+								<TabPane tab="Pedidos Completos" key="2" />
+							</Tabs>
+							<div style={{ marginTop: '10px', overflowY: 'auto', height: 'calc(100% - 80px)' }}>
+								{renderTabContent()}
+							</div>				
 						</Space>
 					</div>
 				</>
