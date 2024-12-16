@@ -429,7 +429,6 @@ const Simulador = () => {
 					height: "100%",
 					display: "flex",
 					flexDirection: "column",
-					marginBottom: "10px"
 				}}>
 					{/* Controles de la simulacion */}
 					{isPanelVisible && <>

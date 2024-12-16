@@ -7,10 +7,10 @@ import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
+import AlmacenMapCard from '../components/AlmacenMapCard';
 import CardToggle from '../components/CardToggle';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
-import AlmacenMapCard from '../components/AlmacenMapCard';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -55,44 +55,44 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
 
   const handleTruckClick = (truckCode) => {
-      console.log('Camión seleccionado:', truckCode);
+    console.log('Camión seleccionado:', truckCode);
     const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
     setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
     setSelectedTruckObj(truck); // Guarda el objeto del camión seleccionado
   };
 
-    const handleSelectAlmacen = (almacenId) => {
-        const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
-        const camionesAsociados = trucks.filter(truck =>
-            truck.camion.paquetes.some(paquete =>
-                paquete.destino.latitud === almacenSeleccionado.lat &&
-                paquete.destino.longitud === almacenSeleccionado.lng
-            )
-        );
-        console.log("almacenSeleccionado", almacenSeleccionado);
-        console.log("camiones", trucks);
-        console.log("camionesAsociados", camionesAsociados);
+  const handleSelectAlmacen = (almacenId) => {
+    const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
+    const camionesAsociados = trucks.filter(truck =>
+      truck.camion.paquetes.some(paquete =>
+        paquete.destino.latitud === almacenSeleccionado.lat &&
+        paquete.destino.longitud === almacenSeleccionado.lng
+      )
+    );
+    console.log("almacenSeleccionado", almacenSeleccionado);
+    console.log("camiones", trucks);
+    console.log("camionesAsociados", camionesAsociados);
 
-        const almacenConCamiones = {
-            ...almacenSeleccionado,
-            camiones: camionesAsociados.map(truck => ({
-                codigo: truck.camion.codigo,
-                capacidad: truck.camion.capacidad,
-                cargaActual: truck.camion.cargaActual,
-                cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0), // Acumulamos cantidadTotal de los paquetes
-            })),
-        };
-
-        setSelectedAlmacen(almacenConCamiones);
+    const almacenConCamiones = {
+      ...almacenSeleccionado,
+      camiones: camionesAsociados.map(truck => ({
+        codigo: truck.camion.codigo,
+        capacidad: truck.camion.capacidad,
+        cargaActual: truck.camion.cargaActual,
+        cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0), // Acumulamos cantidadTotal de los paquetes
+      })),
     };
 
-    const handlePopupClose = () => {
-        if (selectedAlmacen) {
-            setSelectedAlmacen(null);
-        }
-    };
+    setSelectedAlmacen(almacenConCamiones);
+  };
 
-    // Verificar si un tramo ha sido recorrido por un camión
+  const handlePopupClose = () => {
+    if (selectedAlmacen) {
+      setSelectedAlmacen(null);
+    }
+  };
+
+  // Verificar si un tramo ha sido recorrido por un camión
   const isTramoRecorrido = (truckCode, tramo) => {
     if (!completedRoutes[truckCode]) return false;
     const startTime = new Date(tramo.tiempoSalida).getTime();
@@ -191,7 +191,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-
       {selectedTruck && (
         <TruckMapCard
           selectedTruck={selectedTruckObj}
@@ -225,6 +224,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           [0, -50]
         ]}
         maxBoundsViscosity={1.0}
+        zoomControl={false}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -251,54 +251,54 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
         {/* Renderizar marcadores de oficinas normales */}
         {oficinas
-            .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
-            .map((oficina) => {
-                const cargaActual = oficina.cargaActual;
-                const capacidadMaxima = oficina.ubigeo;
-                const porcentaje = ((cargaActual / capacidadMaxima) * 100);
-                const icono = porcentaje <= 30
-                    ? iconCapacidad.verde
-                    : porcentaje <= 60
-                        ? iconCapacidad.amarillo
-                        : iconCapacidad.rojo;
-                return (
-                    <Marker
-                        key={oficina.id}
-                        position={[oficina.lat, oficina.lng]}
-                        icon={icono}
-                        eventHandlers={{
-                            click: () => handleSelectAlmacen(oficina.id),
-                            popupclose: () => handlePopupClose,
-                            popupopen: () => setSelectedAlmacen(oficina.id),
-                        }}
-                    >
-                        <Popup>
-                            <div style={{ textAlign: 'center' }}>
-                                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
-                                </p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Carga Actual:</strong> {oficina.cargaActual} kg
-                                </p>
-                                <p style={{ margin: '0', color: '#777' }}>
-                                    <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
-                                </p>
-                            </div>
-                        </Popup>
-                    </Marker>
-                );
-        })}
+          .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
+          .map((oficina) => {
+            const cargaActual = oficina.cargaActual;
+            const capacidadMaxima = oficina.ubigeo;
+            const porcentaje = ((cargaActual / capacidadMaxima) * 100);
+            const icono = porcentaje <= 30
+              ? iconCapacidad.verde
+              : porcentaje <= 60
+                ? iconCapacidad.amarillo
+                : iconCapacidad.rojo;
+            return (
+              <Marker
+                key={oficina.id}
+                position={[oficina.lat, oficina.lng]}
+                icon={icono}
+                eventHandlers={{
+                  click: () => handleSelectAlmacen(oficina.id),
+                  popupclose: () => handlePopupClose,
+                  popupopen: () => setSelectedAlmacen(oficina.id),
+                }}
+              >
+                <Popup>
+                  <div style={{ textAlign: 'center' }}>
+                    <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
+                    <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
+                    <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Carga Actual:</strong> {oficina.cargaActual} kg
+                    </p>
+                    <p style={{ margin: '0', color: '#777' }}>
+                      <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
 
-          {selectedAlmacen && (
-                  <AlmacenMapCard
-                      selectedAlmacen={selectedAlmacen}
-                      onClose={() => setSelectedAlmacen(null)}
-                      simulatedTime={simulatedTime}
-                  />
-          )}
+        {selectedAlmacen && (
+          <AlmacenMapCard
+            selectedAlmacen={selectedAlmacen}
+            onClose={() => setSelectedAlmacen(null)}
+            simulatedTime={simulatedTime}
+          />
+        )}
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
