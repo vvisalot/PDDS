@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
+import CardToggle from '../components/CardToggle';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
-import CardToggle from '../components/CardToggle';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -127,9 +127,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             lat: Number.parseFloat(fila.lat), // Convertir a número
             lng: Number.parseFloat(fila.lng), // Convertir a número
             region: fila.region,
-            ubigeo: parseInt(fila.ubigeo.trim()), // Convertir a número, en realidad esta es la capacidad maxima
+            ubigeo: Number.parseInt(fila.ubigeo.trim()), // Convertir a número, en realidad esta es la capacidad maxima
             cargaActual: 0,
-            esPrincipal: ubigeosPrincipales.includes(parseInt(fila.id.trim())), // Validar si es oficina principal
+            esPrincipal: ubigeosPrincipales.includes(Number.parseInt(fila.id.trim())), // Validar si es oficina principal
           }));
           setOficinas(datos); // Actualizar el estado
         },
@@ -291,7 +291,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             </React.Fragment>
           );
         })}
-        
+
         <CardToggle />
 
         {/* Renderizar los marcadores de posición actual */}

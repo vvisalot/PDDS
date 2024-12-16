@@ -1,10 +1,11 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { Button, Card, Divider, List, Space, Tag, Typography } from 'antd';
+import { Button, Card, Collapse, List, Space, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { FaBox, FaTruck } from 'react-icons/fa';
 
 const { Title, Text } = Typography;
+const { Panel } = Collapse;
 
 const TruckMapCard = ({ selectedTruck, onClose, simulatedTime, truckPositions }) => {
 	if (!selectedTruck) return null;
@@ -23,14 +24,13 @@ const TruckMapCard = ({ selectedTruck, onClose, simulatedTime, truckPositions })
 	};
 
 	const bodyStyle = {
-		maxHeight: 'calc(70vh - 55px)', // 55px es aproximadamente el alto del título
+		maxHeight: 'calc(70vh - 55px)',
 		overflowY: 'auto',
 	};
 
 	const currentPosition = truckPositions[selectedTruck.camion.codigo];
 	const currentTimeObj = dayjs(simulatedTime);
 
-	// Verificar estado de cada pedido
 	const getPedidoStatus = (pedido) => {
 		const destino = pedido.destino;
 		const tramoEntrega = selectedTruck.tramos.find(tramo =>
@@ -43,7 +43,6 @@ const TruckMapCard = ({ selectedTruck, onClose, simulatedTime, truckPositions })
 		return currentTimeObj.isAfter(dayjs(tramoEntrega.tiempoLlegada)) ? 'entregado' : 'pendiente';
 	};
 
-	// Encontrar tramo actual
 	const getCurrentTramo = () => {
 		for (const tramo of selectedTruck.tramos) {
 			const startTime = dayjs(tramo.tiempoSalida);
@@ -61,6 +60,71 @@ const TruckMapCard = ({ selectedTruck, onClose, simulatedTime, truckPositions })
 
 	const currentTramo = getCurrentTramo();
 
+	const renderPedidosList = () => (
+		<List
+			size="small"
+			dataSource={selectedTruck.camion.paquetes}
+			renderItem={paquete => {
+				const status = getPedidoStatus(paquete);
+				const tramoEntrega = selectedTruck.tramos.find(tramo =>
+					tramo.seDejaraElPaquete &&
+					tramo.destino.latitud === paquete.destino.latitud &&
+					tramo.destino.longitud === paquete.destino.longitud
+				);
+
+				return (
+					<List.Item style={{
+						flexDirection: 'column',
+						alignItems: 'flex-start',
+					}}>
+						<Space align='center' style={{ width: '100%', justifyContent: 'space-between' }}>
+							<div>
+								<FaBox style={{ marginRight: '2px' }} /> <Text>{paquete.cantidadTotal} unidades</Text>
+							</div>
+							<Tag color={status === 'entregado' ? 'success' : 'processing'}>
+								{status}
+							</Tag>
+						</Space>
+
+						<div>
+							<Text type="secondary">
+								Registro: {dayjs(paquete.fechaHoraPedido).format('DD/MM/YYYY, hh:mm A')}
+							</Text>
+						</div>
+
+						<Text type="secondary">
+							Destino: {tramoEntrega?.nombreDestino || 'Por definir'}
+						</Text>
+
+						{status === 'entregado' && tramoEntrega && (
+							<Text type="secondary">
+								Entrega: {dayjs(tramoEntrega.tiempoLlegada).format('DD/MM/YYYY, hh:mm A')}
+							</Text>
+						)}
+					</List.Item>
+				);
+			}}
+		/>
+	);
+
+	const renderCurrentRoute = () => (
+		currentTramo && (
+			<Space direction="vertical" style={{ width: '100%' }}>
+				<Text>
+					{currentTramo.status === 'waiting' ? 'En espera' : 'En camino'}
+				</Text>
+				<Space direction="vertical">
+					<Text type="secondary">
+						Origen: {currentTramo.tramo.nombreOrigen} ({dayjs(currentTramo.tramo.tiempoSalida).format('HH:mm')})
+					</Text>
+					<Text type="secondary">
+						Destino: {currentTramo.tramo.nombreDestino} ({dayjs(currentTramo.tramo.tiempoLlegada).format('HH:mm')})
+					</Text>
+				</Space>
+			</Space>
+		)
+	);
+
 	return (
 		<Card
 			title={
@@ -76,63 +140,31 @@ const TruckMapCard = ({ selectedTruck, onClose, simulatedTime, truckPositions })
 					{currentPosition && (
 						<div>
 							<Text type="secondary">
-								{currentPosition.lat.toFixed(2)}, {currentPosition.lng.toFixed(2)}
+								[{currentPosition.lat.toFixed(2)}, {currentPosition.lng.toFixed(2)}]
 							</Text>
 						</div>
 					)}
-
 				</Space>
 			}
-			// extra={<Button type="text" icon={<CloseOutlined />} onClick={onClose} />}
 			style={cardStyle}
 		>
-
-			{/* Información básica */}
-			<Space direction="vertical" style={{ width: '100%' }}>
-				{/* Lista de pedidos */}
-				<Typography orientation="left">Lista de pedidos</Typography>
-				<List
-					size="small"
-					dataSource={selectedTruck.camion.paquetes}
-					renderItem={paquete => {
-						const status = getPedidoStatus(paquete);
-						return (
-							<List.Item>
-								<Space>
-									<FaBox />
-									<Text>{paquete.cantidadTotal} kg</Text>
-									<Tag color={status === 'entregado' ? 'success' : 'processing'}>
-										{status}
-									</Tag>
-								</Space>
-								<div>
-									<Text type="secondary">
-										Registro: {dayjs(paquete.fechaHoraPedido).format('DD/MM/YY')}
-									</Text>
-								</div>
-							</List.Item>
-						);
-					}}
-				/>
-
-				{/* Ruta actual */}
-				<Typography orientation="left">Ruta tomada</Typography>
-				{currentTramo && (
-					<Space direction="vertical" style={{ width: '100%' }}>
-						<Text>
-							{currentTramo.status === 'waiting' ? 'En espera' : 'En camino'}
-						</Text>
-						<Space direction="vertical" style={{ paddingLeft: 20 }}>
-							<Text type="secondary">
-								Origen: {currentTramo.tramo.nombreOrigen} ({dayjs(currentTramo.tramo.tiempoSalida).format('HH:mm')})
-							</Text>
-							<Text type="secondary">
-								Destino: {currentTramo.tramo.nombreDestino} ({dayjs(currentTramo.tramo.tiempoLlegada).format('HH:mm')})
-							</Text>
+			<Collapse defaultActiveKey={['1', '2']}>
+				<Panel
+					header={
+						<Space style={{ width: '100%', justifyContent: 'space-between' }}>
+							<Text strong>Lista de pedidos</Text>
+							<Tag>Total: {selectedTruck.camion.paquetes.length}</Tag>
 						</Space>
-					</Space>
-				)}
-			</Space>
+					}
+					key="1"
+				>
+					{renderPedidosList()}
+				</Panel>
+
+				<Panel header={<Text strong>Ruta tomada</Text>} key="2">
+					{renderCurrentRoute()}
+				</Panel>
+			</Collapse>
 		</Card>
 	);
 };
