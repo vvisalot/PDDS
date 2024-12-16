@@ -24,7 +24,7 @@ const SimulatedTimeCard = ({ simulatedTime, elapsedTime, elapsedRealTime }) => {
       bordered
     >
       <Typography>
-        <b>  Fecha y Hora simuladas: </b>
+        <b>  Fecha y hora simuladas: </b>
         {simulatedTime || "No iniciado"}
       </Typography>
       <Typography style={{ marginTop: 16 }}>
