@@ -8,14 +8,14 @@ const CardToggle = () => {
 
     const handleToggle = (checked) => {
         setIsToggled(checked);
-        console.log(`Switch is now ${checked ? 'On' : 'Off'}`);
+        //console.log(`Switch is now ${checked ? 'On' : 'Off'}`);
     };
 
     return (
         <div style={styles.card}>
             {/* Título de la tarjeta */}
             <Title level={4} style={styles.title}>
-                Visualizar Bloqeos
+                Visualizar Bloqueos
             </Title>
             {/* Switch con texto */}
             <div style={styles.switchContainer}>
@@ -42,7 +42,7 @@ const styles = {
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Sombra para diseño limpio
     },
     title: {
-        fontSize: '18px',
+        fontSize: '16px',
         fontWeight: '650',
         marginBottom: '16px',
         color: '#333',
