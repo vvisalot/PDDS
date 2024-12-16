@@ -12,8 +12,8 @@ const TruckMapCard = ({ selectedTruck, onClose, simulatedTime, truckPositions })
 
 	const cardStyle = {
 		position: "absolute",
-		top: "350px",
-		right: "20px",
+		top: "250px",
+		right: "18px",
 		zIndex: 1000,
 		backgroundColor: "white",
 		borderRadius: "8px",

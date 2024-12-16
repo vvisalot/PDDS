@@ -160,22 +160,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         />
       )}
 
-      <SimulatedTimeCard
-        simulatedTime={simulatedTime}
-        elapsedTime={elapsedTime}
-        elapsedRealTime={elapsedRealTime}
-        style={{
-          position: "absolute",
-          top: "10px",
-          left: "10px",
-          zIndex: 1000,
-          background: "white",
-          padding: "10px",
-          borderRadius: "8px",
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-        }}
-      />
-
       {/* Renderizar LeyendaSimu enviando estadísticas como props */}
       <LeyendaSimu
         totalCamionesSimulacion={trucksCompletos}
@@ -292,7 +276,22 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           );
         })}
 
-        <CardToggle />
+        
+        <SimulatedTimeCard
+          simulatedTime={simulatedTime}
+          elapsedTime={elapsedTime}
+          elapsedRealTime={elapsedRealTime}
+          style={{
+            position: "absolute",
+            bottom: "20px", 
+            left: "20px",   
+            background: "white",
+            padding: "10px",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+            width: "350px", 
+        }}
+        />
 
         {/* Renderizar los marcadores de posición actual */}
         {truckPositions &&

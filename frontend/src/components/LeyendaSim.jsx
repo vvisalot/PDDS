@@ -6,8 +6,8 @@ import { FaBoxOpen, FaTruck } from 'react-icons/fa';
 const LeyendaSim = ({ totalCamionesSimulacion, camionesEnMapa, totalPedidos, pedidosEntregados }) => {
     const cardStyle = {
         position: "absolute",
-        top: "120px",
-        right: "20px",
+        top: "10px",
+        right: "10px",
         zIndex: 1000,
         backgroundColor: "rgba(255, 255, 255, 0.9)",
         borderRadius: "5px",
