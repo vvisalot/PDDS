@@ -1,5 +1,5 @@
 import { Button, ConfigProvider, DatePicker, Pagination, Space, Tabs, Typography, message } from "antd";
-import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
+import { FaPlus, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
@@ -12,6 +12,7 @@ import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
+import FormVenta from "../components/FormVenta.jsx";
 
 const { Title } = Typography;
 
@@ -275,6 +276,23 @@ const Planificador = () => {
 		setIsPanelVisible(!isPanelVisible);
 	}
 
+
+	// Lógica para subida de 1 venta
+	const handleAddSale = async (saleData) => {
+        try {
+            // TODO: Implement API call to add sale
+            console.log("Nueva venta registrada:", saleData);
+            message.success("Venta registrada exitosamente");
+            
+            // Optional: You might want to trigger a refresh of sales data or update simulation
+            // For example:
+            // await fetchUpdatedSalesData();
+        } catch (error) {
+            console.error("Error al registrar venta:", error);
+            message.error("No se pudo registrar la venta");
+        }
+    };
+
     //logica para la subida de ventas
     const handleValidData = (data) => {
         console.log("Datos válidos recibidos desde UploadButton:", data);
@@ -305,13 +323,16 @@ const Planificador = () => {
                     <div style={{ marginBottom: '10px', fontSize: '22px' }}>
                         <strong>Planificador de rutas.</strong>
                     </div>
-
-                    <SubirVentas
-						type="primary"
-						requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
-                        onValidData={handleValidData}
-                        onInvalidData={handleInvalidData}>
-					</SubirVentas>
+					
+					<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+						<FormVenta onAddSale={handleAddSale} />
+						<SubirVentas
+							type="primary"
+							requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
+							onValidData={handleValidData}
+							onInvalidData={handleInvalidData}
+						/>
+					</div>
 
 				</>
 				}
