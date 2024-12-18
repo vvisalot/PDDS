@@ -10,7 +10,7 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
 
     const cardStyle = {
         position: "absolute",
-        top: "310px",
+        top: "220px",
         right: "20px",
         zIndex: 1000,
         backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -18,6 +18,8 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         width: 350,
         margin: '20px auto',
+        //help me with the padding top pls:
+        paddingTop: '16px',
     };
 
     const getCapacidadColor = () => {
@@ -27,10 +29,14 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
         return 'green';  // Bajo uso
     };
 
+    const compareTimes = (simulated, arrival) => {
+        return new Date(simulated) > new Date(arrival);
+    };
+
     return (
         <Card
             title={
-                <Space direction="vertical" style={{ width: "100%" }}>
+                <Space direction="vertical" style={{ marginBottom: '12px', width: "100%" }}>
                     <Space style={{ justifyContent: 'space-between', width: "100%" }}>
                         <Space>
                             <FaWarehouse size={20} color={getCapacidadColor()} />
@@ -40,35 +46,46 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
                             {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} kg
                         </Tag>
                     </Space>
-                    <Space direction="vertical" size={0}>
+                    <Space direction="vertical" size={0} style={{ width: "100%" }}>
                         <Text strong>Provincia: {selectedAlmacen.ciudad}</Text>
                         <Text strong>Departamento: {selectedAlmacen.departamento}</Text>
-                        <Text strong>Región: {selectedAlmacen.region}</Text>
-                        <Text strong>Ubigeo: {selectedAlmacen.id}</Text>
+                        <Space style={{ justifyContent: 'space-between', width: "100%" }}>
+                            <Text strong>Región: {selectedAlmacen.region}</Text>
+                            <Text strong>Ubigeo: {selectedAlmacen.id}</Text>
+                        </Space>
                     </Space>
                 </Space>
             }
-            extra={<Button type="text" icon={<CloseOutlined />} onClick={onClose} />}
             style={cardStyle}
         >
-            <Collapse>
-                <Collapse.Panel header={<Title level={5}>Flujo Camión</Title>} key="1">
-                    {selectedAlmacen.camiones.map((camion) => (
-                        <Space
-                            key={camion.codigo}
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Space>
-                                <FaTruck size={16} />
-                                <Text>Camión {camion.codigo}</Text>
+            <Collapse defaultActiveKey={selectedAlmacen.camiones.length > 0 ? ['1'] : []}>
+                <Collapse.Panel header={<Title level={5}>Flujo de Camiones</Title>} key="1">
+                    {selectedAlmacen.camiones.map((camion) => {
+                        const entregado = compareTimes(simulatedTime, camion.tiempoLlegada);
+                        return (
+                            <Space
+                                key={camion.codigo}
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%", // Para aprovechar todo el ancho
+                                    marginBottom: 8,
+                                }}
+                            >
+                                <Space>
+                                    <FaTruck size={16} />
+                                    <Text>Camión {camion.codigo}</Text>
+                                </Space>
+                                <Space>
+                                    <Tag color={entregado ? "green" : "red"}>
+                                        {entregado ? "Entregado" : "Pendiente"}
+                                    </Tag>
+                                    <Tag color="blue">{camion.cantidadPedido} unidades</Tag>
+                                </Space>
                             </Space>
-                            <Tag color="blue">{camion.cantidadPedido} unidades</Tag>
-                        </Space>
-                    ))}
+                        );
+                    })}
                 </Collapse.Panel>
             </Collapse>
         </Card>
@@ -87,7 +104,8 @@ AlmacenMapCard.propTypes = {
         cargaActual: PropTypes.number.isRequired,
         camiones: PropTypes.arrayOf(PropTypes.shape({
             codigo: PropTypes.string.isRequired,
-            cantidadPedido: PropTypes.number.isRequired
+            cantidadPedido: PropTypes.number.isRequired,
+            tiempoLlegada: PropTypes.string.isRequired, // Añadido como requerido
         })).isRequired
     }),
     onClose: PropTypes.func.isRequired,

@@ -53,6 +53,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
+  const [almacenesHistorial, setAlmacenesHistorial] = useState({});
 
   const handleTruckClick = (truckCode) => {
     console.log('Camión seleccionado:', truckCode);
@@ -64,32 +65,33 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   const handleSelectAlmacen = (almacenId) => {
     const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
     const camionesAsociados = trucks.filter(truck =>
-      truck.camion.paquetes.some(paquete =>
-        paquete.destino.latitud === almacenSeleccionado.lat &&
-        paquete.destino.longitud === almacenSeleccionado.lng
-      )
+        truck.camion.paquetes.some(paquete =>
+            paquete.destino.latitud === almacenSeleccionado.lat &&
+            paquete.destino.longitud === almacenSeleccionado.lng
+        )
     );
-    console.log("almacenSeleccionado", almacenSeleccionado);
-    console.log("camiones", trucks);
-    console.log("camionesAsociados", camionesAsociados);
 
     const almacenConCamiones = {
       ...almacenSeleccionado,
-      camiones: camionesAsociados.map(truck => ({
-        codigo: truck.camion.codigo,
-        capacidad: truck.camion.capacidad,
-        cargaActual: truck.camion.cargaActual,
-        cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0), // Acumulamos cantidadTotal de los paquetes
-      })),
+      camiones: camionesAsociados.map(truck => {
+        const tramoDestino = truck.tramos.find(tramo =>
+            tramo.destino.latitud === almacenSeleccionado.lat &&
+            tramo.destino.longitud === almacenSeleccionado.lng
+        );
+        return {
+          codigo: truck.camion.codigo,
+          capacidad: truck.camion.capacidad,
+          cargaActual: truck.camion.cargaActual,
+          cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0),
+          tiempoLlegada: tramoDestino ? tramoDestino.tiempoLlegada : null,
+        };
+      }),
     };
-
+    setAlmacenesHistorial(prevHistorial => ({
+      ...prevHistorial,
+      [almacenId]: almacenConCamiones,
+    }));
     setSelectedAlmacen(almacenConCamiones);
-  };
-
-  const handlePopupClose = () => {
-    if (selectedAlmacen) {
-      setSelectedAlmacen(null);
-    }
   };
 
   // Verificar si un tramo ha sido recorrido por un camión
@@ -200,6 +202,14 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         />
       )}
 
+      {selectedAlmacen && (
+          <AlmacenMapCard
+              selectedAlmacen={selectedAlmacen}
+              onClose={() => setSelectedAlmacen(null)}
+              simulatedTime={simulatedTime}
+          />
+      )}
+
       {/* Renderizar LeyendaSimu enviando estadísticas como props */}
       <LeyendaSimu
         totalCamionesSimulacion={trucksCompletos}
@@ -268,7 +278,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                 icon={icono}
                 eventHandlers={{
                   click: () => handleSelectAlmacen(oficina.id),
-                  popupclose: () => handlePopupClose,
+                  popupclose: () => setSelectedAlmacen(null),
                   popupopen: () => setSelectedAlmacen(oficina.id),
                 }}
               >
@@ -291,14 +301,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
               </Marker>
             );
           })}
-
-        {selectedAlmacen && (
-          <AlmacenMapCard
-            selectedAlmacen={selectedAlmacen}
-            onClose={() => setSelectedAlmacen(null)}
-            simulatedTime={simulatedTime}
-          />
-        )}
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {

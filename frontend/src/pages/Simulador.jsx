@@ -293,6 +293,7 @@ const Simulador = () => {
 			fetchTrucks();
 			intervalRef.current = setInterval(fetchTrucks, 90000);
 			setIsFetching(true);
+			setCargaAlmacenes({});
 		} catch (error) {
 			console.error("Error starting simulation:", error);
 		}
