@@ -87,6 +87,44 @@ const Planificador = () => {
 		}
 	};
 
+	//probando logica de api
+	const fetchTrucksPlanificador = async () => {
+		try {
+			//const response = await getSimulacion()
+
+			const response = await axios.post("http://localhost:5000/api/ventas",{diaPlani,destinPlani,cantidadPlani,idCliente});
+
+			console.log(response.data);
+
+			// if (response.data.some((truck) => truck.colapso)) {
+			// 	handleStop("colapsada");
+			// 	return;
+			// }
+
+            // response.data.forEach(truck => {
+            //     if (completedTrucks.has(truck.camion.codigo)) {
+            //         setCompletedTrucks(prev => {
+            //             const newSet = new Set(prev);
+            //             newSet.delete(truck.camion.codigo);
+            //             return newSet;
+            //         });
+            //     }
+            // });
+
+			// for (const truck of response.data) simulateTruckRoute(truck)
+
+			// setTrucks((prevTrucks) => {
+			// 	const trucksMap = new Map();
+			// 	for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
+			// 	for (const newTruck of response.data) trucksMap.set(newTruck.camion.codigo, newTruck);
+			// 	return Array.from(trucksMap.values());
+			// });
+
+		} catch (error) {
+			console.error("Error fetching truck data para planificador:", error);
+		}
+	};
+
 
     const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
@@ -212,12 +250,6 @@ const Planificador = () => {
 		}
 	};
 
-	const disabledDate = (current) => {
-		const startDate = dayjs("2024-06-01")
-		const endDate = dayjs("2026-11-30")
-		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
-	}
-
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const cardsPerPage = 5;
@@ -299,7 +331,10 @@ const Planificador = () => {
 
 	const handleAddSale = async (ventaIndividual) => {
 		try {
+			
+			fetchTrucksPlanificador();
 			console.log("Nueva venta registrada:", ventaIndividual);
+
 			message.success("Venta registrada exitosamente");
 			setIsModalVisible(false);
 		} catch (error) {
