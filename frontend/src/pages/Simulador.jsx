@@ -30,6 +30,7 @@ const Simulador = () => {
 	const startTimeRef = useRef(null); // Tiempo real de inicio
 	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
 	const [completedTrucks, setCompletedTrucks] = useState([]);
+	const completedTrucksRef = useRef([]);
 	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
@@ -80,6 +81,9 @@ const Simulador = () => {
 
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
+			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
+			console.log("Camiones recibidos:", truckCodesInResponse);
+
 			// Enfocarse en tramos bloqueados o bloqueos
 			const rutasConBloqueos = response.data.rutas.filter((ruta) =>
 				ruta.tramos.some((tramo) => tramo.bloqueado)
@@ -92,14 +96,16 @@ const Simulador = () => {
 				return;
 			}
 
-			for (const truck of response.data.rutas) {
-				if (completedTrucks.includes(truck.camion.codigo)) {
-					setCompletedTrucks(prev => prev.filter(code => code !== truck.camion.codigo));
-				}
-			}
-			
+            // Eliminar camiones de la lista de completados
+			const updatedCompletedTrucks = completedTrucksRef.current.filter(
+				codigo => !truckCodesInResponse.includes(codigo)
+			);
+			completedTrucksRef.current = updatedCompletedTrucks; 
+			setCompletedTrucks([...completedTrucksRef.current]); 
+
 
 			for (const truck of response.data.rutas) simulateTruckRoute(truck)
+
 			setTrucks((prevTrucks) => {
 				const trucksMap = new Map();
 				for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
@@ -119,7 +125,7 @@ const Simulador = () => {
 
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
-		if (completedTrucks.includes(truckData.camion.codigo)) return;
+    	if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
 
 		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
@@ -207,8 +213,14 @@ const Simulador = () => {
 
 		if (!isCancelledRef.current) {
 			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
-			// Actualizar estado para marcar que el camión terminó su ruta
-			setCompletedTrucks(prev => [...prev, truckData.camion.codigo]);
+
+        	// Actualizar la referencia de completedTrucks
+        	completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
+
+        	// Actualizar el estado para forzar la re-renderización
+        	setCompletedTrucks([...completedTrucksRef.current]);			
+
+
 			setTruckPositions((prevPositions) => {
 				const newPositions = { ...prevPositions };
 				delete newPositions[truckData.camion.codigo];
