@@ -63,7 +63,6 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                     {selectedAlmacen.camiones?.length > 0 ? (
                         selectedAlmacen.camiones.map((camion) => {
                             const enRuta = compareTimes(simulatedTime, camion.tiempoSalida);
-                            const porcentajeUso = ((camion.cargaActual / camion.capacidad) * 100).toFixed(1);
 
                             return (
                                 <Space
@@ -88,15 +87,12 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                                     </Space>
 
                                     <Space direction="vertical" size={0} style={{ width: "100%" }}>
-                                        <Text>
-                                            Destino: {camion.destino.ciudad}, {camion.destino.departamento}
-                                        </Text>
                                         <Space style={{ width: "100%", justifyContent: "space-between" }}>
                                             <Text type="secondary">
-                                                Paquetes: {camion.paquetes}
+                                                Ordenes por entregar: {camion.paquetes}
                                             </Text>
                                             <Tag color="blue">
-                                                Capacidad: {porcentajeUso}%
+                                                Capacidad: {camion.cargaActual}
                                             </Tag>
                                         </Space>
                                         {enRuta && (
@@ -167,7 +163,7 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                     ...baseCardStyle,
                     top: "20px",
                 }}
-                bodyStyle={{
+                className={{
                     padding: '16px',
                     maxHeight: '200px',
                     overflowY: 'auto'
@@ -213,7 +209,7 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                     ...baseCardStyle,
                     top: "190px",
                 }}
-                bodyStyle={{
+                className={{
                     padding: '16px',
                     maxHeight: '400px',
                     overflowY: 'auto'

@@ -9,6 +9,8 @@ import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import AlmacenMapCard from '../components/AlmacenMapCard';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
+import BloqueosMap from './BloqueosMap';
+import CardToggle from './CardToggle';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
@@ -44,7 +46,21 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime, isFetching }) => {
+const MapComponent = ({
+  trucks,
+  truckPositions,
+  completedTrucks,
+  simulatedTime,
+  bloqueos,
+  trucksCompletos,
+  camionesEnMapa,
+  totalPedidos,
+  pedidosEntregados,
+  elapsedTime,
+  almacenesCapacidad,
+  elapsedRealTime,
+  isFetching }) => {
+
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
@@ -52,6 +68,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
   const [almacenesHistorial, setAlmacenesHistorial] = useState({});
 
+  const [mostrarBloqueos, setMostrarBloqueos] = useState(false)
 
   // Función para manejar el click en un camión
   const handleTruckClick = (e, truckCode) => {
@@ -112,7 +129,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
               ciudad: oficinaDest?.ciudad || 'Desconocido',
               departamento: oficinaDest?.departamento || 'Desconocido'
             },
-            paquetes: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0)
+            paquetes: truck.camion.paquetes.length
           };
         })
       };
@@ -241,6 +258,15 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
 
+      <LeyendaSimu
+        totalCamionesSimulacion={trucksCompletos}
+        camionesEnMapa={camionesEnMapa}
+        totalPedidos={totalPedidos}
+        pedidosEntregados={pedidosEntregados}
+      />
+
+      <CardToggle onToggleChange={setMostrarBloqueos} />
+
       {/* Renderizar card de camión seleccionado */}
       {selectedTruck && (
         <div className="truck-card">
@@ -286,6 +312,13 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         attributionControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
+
+        <BloqueosMap
+          bloqueos={bloqueos}
+          simulatedTime={simulatedTime}
+          isVisible={mostrarBloqueos}
+        />
+
 
         <SimulatedTimeCard
           simulatedTime={simulatedTime}
@@ -358,11 +391,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         {/* Renderizar los marcadores de posición actual */}
         {truckPositions &&
           Object.entries(truckPositions).map(([truckCode, position]) => {
-            // Verificar si el camión no está en completedTrucks (ya sea Set o Array)
             const isCompleted = completedTrucks &&
               (completedTrucks instanceof Set ?
-                completedTrucks.has(truckCode) :
-                completedTrucks.includes(truckCode));
+                completedTrucks.has(truckCode) : completedTrucks.includes(truckCode));
 
             return (
               !isCompleted && (

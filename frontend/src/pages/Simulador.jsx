@@ -35,7 +35,9 @@ const Simulador = () => {
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
-	// Actualiza el tiempo simulado
+
+	const [bloqueos, setBloqueos] = useState([]);
+
 
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -78,7 +80,6 @@ const Simulador = () => {
 	const fetchTrucks = async () => {
 		try {
 			const response = await getSimulacion() // Replace with your API endpoint
-
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
 			if (response.data.rutas.some((truck) => truck.colapso)) {
@@ -87,13 +88,31 @@ const Simulador = () => {
 			}
 
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
-			console.log("Camiones recibidos:", truckCodesInResponse);
 
-			// Enfocarse en tramos bloqueados o bloqueos
-			const rutasConBloqueos = response.data.rutas.filter((ruta) =>
-				ruta.tramos.some((tramo) => tramo.bloqueado)
-			);
-			console.log("Rutas con tramos bloqueados:", rutasConBloqueos);
+
+			// Manejar los bloqueos de forma acumulativa
+			if (response.data.bloqueos) {
+				setBloqueos(prevBloqueos => {
+					// Crear un Map de los bloqueos existentes usando una clave única
+					const bloqueosMap = new Map(
+						prevBloqueos.map(b => [
+							`${b.nombreOrigen}-${b.nombreDestino}`,
+							b
+						])
+					);
+
+					// Agregar o actualizar con los nuevos bloqueos
+					response.data.bloqueos.forEach(nuevoBloqueo => {
+						const key = `${nuevoBloqueo.nombreOrigen}-${nuevoBloqueo.nombreDestino}`;
+						if (!bloqueosMap.has(key)) {
+							bloqueosMap.set(key, nuevoBloqueo);
+						}
+					});
+
+					// Convertir el Map de vuelta a array
+					return Array.from(bloqueosMap.values());
+				});
+			}
 
 			// Eliminar camiones de la lista de completados
 			const updatedCompletedTrucks = completedTrucksRef.current.filter(
@@ -126,7 +145,7 @@ const Simulador = () => {
 		if (isCancelledRef.current) return;
 		if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
 
-		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
+		// console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
 		for (const tramo of truckData.tramos) {
 			if (isCancelledRef.current) break;
@@ -179,8 +198,8 @@ const Simulador = () => {
 			}
 			if (tramo.seDejaraElPaquete) {
 				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
-				console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
-				console.log("hora carga", tramo.tiempoLlegada);
+				// console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
+				// console.log("hora carga", tramo.tiempoLlegada);
 				for (const paquete of truckData.camion.paquetes) {
 					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
 						setCargaAlmacenes((prev) => {
@@ -211,7 +230,7 @@ const Simulador = () => {
 		}
 
 		if (!isCancelledRef.current) {
-			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+			// console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
 
 			// Actualizar la referencia de completedTrucks
 			completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
@@ -320,7 +339,7 @@ const Simulador = () => {
 		setIsFetching(false);
 		setTrucks([]);
 		setTruckPositions({});
-
+		setBloqueos([]);
 		setCompletedTrucks(new Set());
 		setAlmacenesCapacidad({});
 		setCargaAlmacenes({});
@@ -532,6 +551,7 @@ const Simulador = () => {
 				<div style={{ flex: "1 1 auto", padding: '5px' }}>
 					<MapComponent
 						trucks={trucks}
+						bloqueos={bloqueos}
 						truckPositions={truckPositions}
 						completedTrucks={completedTrucks}
 						simulatedTime={simulatedTime}

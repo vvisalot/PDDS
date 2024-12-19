@@ -1,36 +1,33 @@
-import React, { useState } from 'react';
 import { Switch, Typography } from 'antd';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 
 const { Title } = Typography;
 
-const CardToggle = () => {
+const CardToggle = ({ onToggleChange }) => {
     const [isToggled, setIsToggled] = useState(false);
 
     const handleToggle = (checked) => {
         setIsToggled(checked);
-        //console.log(`Switch is now ${checked ? 'On' : 'Off'}`);
+        if (onToggleChange) onToggleChange(checked);
     };
 
     return (
         <div style={styles.card}>
-            {/* Título de la tarjeta */}
-            <Title level={4} style={styles.title}>
-                Visualizar Bloqueos
-            </Title>
-            {/* Switch con texto */}
             <div style={styles.switchContainer}>
                 <Switch checked={isToggled} onChange={handleToggle} />
-                <span style={styles.text}>{isToggled ? 'Encendido' : 'Apagado'}</span>
+                <span style={styles.text}>Bloqueos</span>
             </div>
         </div>
     );
 };
 
+
 const styles = {
     card: {
         position: 'absolute',
         bottom: "8px",
-        left: "20px",
+        right: "20px",
         zIndex: 1000,
         backgroundColor: "rgba(255, 255, 255, 0.9)",
         padding: "20px", // Aumentado para más espacio
@@ -58,6 +55,11 @@ const styles = {
         fontWeight: '600',
         color: '#555',
     },
+};
+
+
+CardToggle.propTypes = {
+    onToggleChange: PropTypes.func,
 };
 
 export default CardToggle;
