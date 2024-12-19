@@ -5,6 +5,11 @@ import { Modal, Button } from 'antd';
 const ResumenSimu = ({ open, onClose, resumen }) => {
   const { camionesModal, pedidosModal, tiempoRealModal, tiempoSimuladoModal, fechaFinalModal, ultimaDataModal } = resumen;
 
+  const bloqueos = ultimaDataModal?.current?.bloqueos || [];
+  const colapso = ultimaDataModal?.current?.colapso;
+  const rutas = ultimaDataModal?.current?.rutas || [];
+  const tiempoTotal = ultimaDataModal?.current?.tiempoTotal;
+
   return (
     <Modal
       title="Resumen de la Simulación"
@@ -21,6 +26,25 @@ const ResumenSimu = ({ open, onClose, resumen }) => {
       <p><b>Tiempo Real Transcurrido:</b> {tiempoRealModal} segundos</p>
       <p><b>Tiempo Simulado:</b> {tiempoSimuladoModal} horas</p>
       <p><b>Fecha Final:</b> {fechaFinalModal}</p>
+
+      {/* Mostramos los datos de ultimaDataModal */}
+      <p><b>Tiempo Total:</b> {tiempoTotal?.toFixed(2)} horas</p>
+      <p><b>Bloqueos:</b> {bloqueos.length}</p>
+      <ul>
+        {bloqueos.map((bloqueo, index) => (
+          <li key={index}>Detalle del bloqueo #{index + 1}</li>
+        ))}
+      </ul>
+      <p><b>Rutas:</b> {rutas.length}</p>
+      <ul>
+        {rutas.map((ruta, index) => (
+          <li key={index}>
+            <b>Camión:</b> {ruta.camion.codigo}, 
+            <b> Capacidad:</b> {ruta.camion.capacidad}, 
+            <b> Carga Actual:</b> {ruta.camion.cargaActual}
+          </li>
+        ))}
+      </ul>
     </Modal>
   );
 };

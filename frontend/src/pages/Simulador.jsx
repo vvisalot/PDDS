@@ -600,10 +600,6 @@ const Simulador = () => {
 						isFetching={isFetching}
 					/>
 
-					<Button type="primary" onClick={() => setIsModalVisible(true)}>
-						Ver Resumen de la Simulación
-					</Button>
-
 					{/* Modal de Resumen */}
 					<ResumenSimu
 						open={isModalVisible}
