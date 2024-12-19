@@ -1,19 +1,17 @@
-import { Button, ConfigProvider, DatePicker, Pagination, Tabs, Typography, Modal, Form, InputNumber, message } from "antd";
-import { FaPlus, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
+import { Button, DatePicker, Form, InputNumber, Modal, Table, Typography, message } from "antd";
+import { FaChevronLeft, FaChevronRight, FaPlus, FaTruck } from 'react-icons/fa';
 
-import locale from 'antd/locale/es_ES';
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MapaPlanifComp from "/src/components/MapaPlanifComp";
-import TablaFlota from "../components/TablaFlota";
-import TablaPedidos from "../components/TablaPedidos";
 import SubirVentas from "../components/SubirVentas";
-import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
-import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
 const { Title } = Typography;
+
+import ModalVenta from "../components/ModalVenta.jsx";
+import { getPlanificador, registrarVentaArchivo, registrarVentaUnica, resetPlanificador, verVentas } from "../service/planificador.js";
+
 
 const Planificador = () => {
 	const [trucks, setTrucks] = useState([]);
@@ -29,7 +27,9 @@ const Planificador = () => {
 	const [completedTrucks, setCompletedTrucks] = useState(new Set());
 	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
-	// Actualiza el tiempo simulado
+
+	const [ventas, setVentas] = useState([]);
+
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
 
@@ -53,42 +53,17 @@ const Planificador = () => {
 		return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
 	}, [isFetching, dtpValue]);
 
-
-	const fetchTrucks = async () => {
+	const fetchVentas = async () => {
 		try {
-			const response = await getSimulacion() // Replace with your API endpoint
-
-			if (response.data.some((truck) => truck.colapso)) {
-				handleStop("colapsada");
-				return;
-			}
-
-            response.data.forEach(truck => {
-                if (completedTrucks.has(truck.camion.codigo)) {
-                    setCompletedTrucks(prev => {
-                        const newSet = new Set(prev);
-                        newSet.delete(truck.camion.codigo);
-                        return newSet;
-                    });
-                }
-            });
-
-			for (const truck of response.data) simulateTruckRoute(truck)
-
-			setTrucks((prevTrucks) => {
-				const trucksMap = new Map();
-				for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
-				for (const newTruck of response.data) trucksMap.set(newTruck.camion.codigo, newTruck);
-				return Array.from(trucksMap.values());
-			});
-
+			const ventasResponse = await verVentas();
+			setVentas(ventasResponse.data);
 		} catch (error) {
-			console.error("Error fetching truck data:", error);
+			console.error("Error al obtener los datos:", error);
 		}
 	};
 
 
-    const interpolate = (start, end, ratio) => start + (end - start) * ratio;
+	const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
 	const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
 
@@ -115,11 +90,11 @@ const Planificador = () => {
 
 			if (totalDuration === 0) continue;
 
-            const steps = Math.max(1, Math.floor(totalDuration / 1000));
-            const stepDuration = totalDuration / steps;
-            const realStepDuration = (stepDuration * 10) / 3600 * 1000;
+			const steps = Math.max(1, Math.floor(totalDuration / 1000));
+			const stepDuration = totalDuration / steps;
+			const realStepDuration = (stepDuration * 10) / 3600 * 1000;
 
-            //console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
+			//console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
 
 
 			for (let step = 0; step <= steps; step++) {
@@ -129,32 +104,25 @@ const Planificador = () => {
 				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
 				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
-                while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
-                    console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
-                    if (isCancelledRef.current) break;
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
-                }
+				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
+					console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
+					if (isCancelledRef.current) break;
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+				}
 
-                if (isValidLatLng(lat, lng)) {
-                    //console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
-                    setTruckPositions((prevPositions) => ({
-                        ...prevPositions,
-                        [truckData.camion.codigo]: { lat, lng },
-                    }));
-                } else {
-                    console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
-                }
+				if (isValidLatLng(lat, lng)) {
+					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
+					setTruckPositions((prevPositions) => ({
+						...prevPositions,
+						[truckData.camion.codigo]: { lat, lng },
+					}));
+				} else {
+					console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
+				}
 
 				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
 			}
-
-            /*
-            if (tramo.seDejaraElPaquete && tramo.tiempoEspera  > 0) {
-                console.log(`Camión ${truckData.camion.codigo} esperando en la oficina durante ${tramo.tiempoEspera} segundos.`);
-                await new Promise((resolve) => setTimeout(resolve, tramo.tiempoEspera * 1000));
-            }
-            */
-        }
+		}
 
 		if (!isCancelledRef.current) {
 			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
@@ -168,105 +136,47 @@ const Planificador = () => {
 		}
 	};
 
-	const handleStart = async () => {
-		if (!dtpValue) {
-			message.error("Debe seleccionar una fecha y hora antes de iniciar");
-			return;
-		}
-
-		isCancelledRef.current = false;
-
-		try {
-			await resetSimulacion();
-			console.log("Reset completado");
-
-			await actualizarReloj(dtpValue);
-			console.log("Reloj configurado");
-
-            setTrucks([]);
-            setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
-            fetchTrucks();
-            intervalRef.current = setInterval(fetchTrucks, 90000);
-            setIsFetching(true);
-        } catch (error) {
-            console.error("Error starting simulation:", error);
-        }
-	};
-
-
-	const handleStop = (reason = "detenida") => {
-		if (intervalRef.current) {
-			clearInterval(intervalRef.current);
-			intervalRef.current = null;
-		}
-		isCancelledRef.current = true;
-		setIsFetching(false);
-		setTrucks([]);
-		setTruckPositions({});
-		console.log(`Simulación ${reason}.`);
-
-		if (reason === "detenida") {
-			message.info("Simulación detenida por el usuario")
-		} else if (reason === "colapsada") {
-			message.error("La simulación ha colapsado")
-		}
-	};
-
-	const disabledDate = (current) => {
-		const startDate = dayjs("2024-06-01")
-		const endDate = dayjs("2026-11-30")
-		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
-	}
-
-
-	const [currentPage, setCurrentPage] = useState(1);
-	const cardsPerPage = 5;
-
-	const handlePageChange = (page) => {
-		setCurrentPage(page);
-	};
-
 
 	const calcularEstadisticas = () => {
-        let totalPedidos = 0;
-        let pedidosEntregados = 0;
-        let camionesEnMapa  = 0;
-    
-        trucks.forEach((truck) => {
-            // Filtrar tramos activos según la hora simulada
-            const tramosActivos = truck.tramos.filter(
-                (tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
-            );
-    
-            if (tramosActivos.length > 0) {
-                camionesEnMapa++; // Contar camión si tiene al menos un tramo activo
-    
-                // Contar pedidos totales y entregados solo para camiones en el mapa
-                totalPedidos += truck.camion.paquetes.length;
-    
-                // Verificar paquetes entregados en función del destino y tiempo
-                truck.camion.paquetes.forEach((paquete) => {
-                    const tramoCorrespondiente = truck.tramos.find(
-                        (tramo) =>
-                            tramo.destino.latitud === paquete.destino.latitud &&
-                            tramo.destino.longitud === paquete.destino.longitud
-                    );
+		let totalPedidos = 0;
+		let pedidosEntregados = 0;
+		let camionesEnMapa = 0;
 
-                    if (
-                        tramoCorrespondiente &&
-                        dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
-                        !completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
-                    ) {
-                        pedidosEntregados++;
-                    }
-                });
-            }
-        });
-    
-        return { totalPedidos, pedidosEntregados, camionesEnMapa };
-    };
-    
-    const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
+		for (const truck of trucks) {
+			// Filtrar tramos activos según la hora simulada
+			const tramosActivos = truck.tramos.filter(
+				(tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
+			);
+
+			if (tramosActivos.length > 0) {
+				camionesEnMapa++; // Contar camión si tiene al menos un tramo activo
+
+				// Contar pedidos totales y entregados solo para camiones en el mapa
+				totalPedidos += truck.camion.paquetes.length;
+
+				// Verificar paquetes entregados en función del destino y tiempo
+				for (const paquete of truck.camion.paquetes) {
+					const tramoCorrespondiente = truck.tramos.find(
+						(tramo) =>
+							tramo.destino.latitud === paquete.destino.latitud &&
+							tramo.destino.longitud === paquete.destino.longitud
+					);
+
+					if (
+						tramoCorrespondiente &&
+						dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
+						!completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
+					) {
+						pedidosEntregados++;
+					}
+				}
+			}
+		}
+
+		return { totalPedidos, pedidosEntregados, camionesEnMapa };
+	};
+
+	const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
 
 
 	// PANEL COLAPSABLE
@@ -280,7 +190,7 @@ const Planificador = () => {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [diaPlani, setDiaPlani] = useState('');
 	const [destinPlani, setDestinPlani] = useState('');
-  	const [cantidadPlani, setCantidadPlani] = useState('');
+	const [cantidadPlani, setCantidadPlani] = useState('');
 	const [idCliente, setIdCliente] = useState('');
 
 	const showModal = () => {
@@ -288,39 +198,50 @@ const Planificador = () => {
 	};
 	const handleCancel = () => {
 		setIsModalVisible(false);
-		ressetFormularioVenta();
+		resetFormularioVenta();
 	};
-	const ressetFormularioVenta=()=>{
+	const resetFormularioVenta = () => {
 		setDiaPlani('');
 		setCantidadPlani('');
 		setDestinPlani('');
 		setIdCliente('');
 	}
 
-	const handleAddSale = async (ventaIndividual) => {
+	const handleAddSale = async (values) => {
 		try {
-			console.log("Nueva venta registrada:", ventaIndividual);
+			const ventaData = {
+				fechaHora: dayjs(values.fechaHora).format('YYYY-MM-DDTHH:mm:ss'),
+				destino: values.destino.toString(), // Asegurarnos que sea string
+				cantidad: values.cantidad,
+				idCliente: values.idCliente.toString() // Asegurarnos que sea string
+			};
+
+			await registrarVentaUnica(ventaData);
 			message.success("Venta registrada exitosamente");
+
 			setIsModalVisible(false);
+			resetFormularioVenta();
+
+			await fetchVentas();
 		} catch (error) {
 			console.error("Error al registrar venta:", error);
 			message.error("No se pudo registrar la venta");
 		}
 	};
 
-    //logica para la subida de ventas
-    const handleValidData = (data) => {
-        console.log("Datos válidos recibidos desde UploadButton:", data);
-    };
-    
-    const handleInvalidData = (data) => {
-        console.log("Datos inválidos recibidos desde UploadButton:", data);
-    };
+	//logica para la subida de ventas
+	const handleValidData = (data) => {
+		console.log("Datos válidos recibidos desde UploadButton:", data);
+	};
+
+	const handleInvalidData = (data) => {
+		console.log("Datos inválidos recibidos desde UploadButton:", data);
+	};
 
 
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
-            <div style={{
+			<div style={{
 				flex: isPanelVisible ? "0 0 35%" : "0 0 0%",
 				padding: isPanelVisible ? "10px" : "0",
 				borderRight: isPanelVisible ? "1px solid #ddd" : "none",
@@ -335,131 +256,28 @@ const Planificador = () => {
 
 				{/* Controles de la simulacion */}
 				{isPanelVisible && <>
-                    <div style={{ marginBottom: '10px', fontSize: '22px' }}>
-                        <strong>Planificador de rutas.</strong>
-                    </div>
-					
+					<div style={{ marginBottom: '10px', fontSize: '22px' }}>
+						<strong>Planificador de rutas.</strong>
+					</div>
+
 					<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
 						{/*<Button type="primary" icon={<FaPlus />} onClick={handleAddSale}>Agregar Venta</Button>*/}
-						
+
 						{/* Botón primario para abrir el modal */}
-						<Button 
-							type="primary" 
-							icon={<FaPlus />} 
+						<Button
+							type="primary"
+							icon={<FaPlus />}
 							onClick={showModal}
 							style={{ marginRight: '15px' }}>
 							Agregar Venta
 						</Button>
 
-						{/* Modal con formulario */}
-						<Modal
-							title="Registrar Nueva Venta"
-							visible={isModalVisible}
+						<ModalVenta
+							isVisible={isModalVisible}
 							onCancel={handleCancel}
-							footer={null}
-						>
-							<Form
-							name="addSaleForm"
-							onFinish={handleAddSale}
-							layout="vertical"
-							>
-							<Form.Item
-								name="fechaHora"
-								label="Fecha y Hora"
-								rules={[{ required: true, message: 'Por favor seleccione una fecha y hora' }]}
-							>
-								<DatePicker
-								value={diaPlani}
-								onChange={(e) => setDiaPlani(e.target.value)} 
-								showTime 
-								style={{ width: '100%' }}
-								disabledDate={(current) => {
-									const startDate = dayjs("2024-06-01");
-									const endDate = dayjs("2026-11-30");
-									return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
-								}}
-								/>
-							</Form.Item>
-							<Form.Item
-							name="destino"
-							label="Destino (Código de 6 dígitos)"
-							rules={[
-								{ 
-								required: true, 
-								message: 'Por favor ingrese el código de destino' 
-								},
-								{
-								validator: async (_, value) => {
-									// Check if value is a number
-									if (value === null || value === undefined) {
-										return Promise.reject(new Error('El destino es requerido'));
-									}
-									const stringValue = value.toString(); // Convert to string to check length
+							onSuccess={fetchVentas}
+						/>
 
-									// Check if exactly 6 digits
-									if (!/^\d{6}$/.test(stringValue)) {
-										return Promise.reject(new Error('El destino debe ser un número de 6 dígitos'));
-									}
-									// Check if it's within the valid range (100000 to 999999)
-									if (value < 100000 || value > 999999) {
-										return Promise.reject(new Error('El destino debe estar entre 100000 y 999999'));
-									}
-									return Promise.resolve();
-								}
-								}
-							]}
-							>
-							<InputNumber
-								value={destinPlani}
-								onChange={(e) => setDestinPlani(e.target.value)}
-								style={{ width: '100%' }} 
-								placeholder="Ej: 123456" 
-								precision={0} // Ensure only integers
-							/>
-							</Form.Item>
-							<Form.Item
-								name="cantidad"
-								label="Cantidad"
-								rules={[
-								{ required: true, message: 'Por favor ingrese la cantidad' },
-								{ type: 'number', min: 1, message: 'La cantidad debe ser mayor a 0' }
-								]}
-							>
-								<InputNumber
-								value={cantidadPlani}
-								onChange={(e) => setCantidadPlani(e.target.value)} 
-								style={{ width: '100%' }} 
-								placeholder="Cantidad de paquetes" 
-								min={1} 
-								/>
-							</Form.Item>
-							<Form.Item
-								name="idCliente"
-								label="ID Cliente"
-								rules={[
-								{ required: true, message: 'Por favor ingrese el ID del cliente' },
-								{ type: 'number', min: 1, message: 'El ID de cliente debe ser mayor a 0' }
-								]}
-							>
-								<InputNumber 
-								value={idCliente}
-								onChange={(e) => setIdCliente(e.target.value)}
-								style={{ width: '100%' }} 
-								placeholder="ID del cliente" 
-								min={1} 
-								/>
-							</Form.Item>
-							<Form.Item alignItems="center">
-								<Button type="default" onClick={handleCancel} style={{ marginLeft: '90px'}}>
-									Cancelar venta
-								</Button>
-								<Button type="primary" htmlType="submit" style={{ marginLeft: '40px' }}>
-									Registrar Venta
-								</Button>
-							</Form.Item>
-							</Form>
-						</Modal>					
-						
 						<SubirVentas
 							type="primary"
 							requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
@@ -468,7 +286,42 @@ const Planificador = () => {
 							style={{ marginLeft: "10px" }}
 						/>
 					</div>
-
+					<Title level={4}>Ventas Registradas</Title>
+					<Table
+						dataSource={ventas}
+						columns={[
+							{
+								title: 'Fecha y Hora',
+								dataIndex: 'fechaHora',
+								key: 'fechaHora',
+								render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
+							},
+							{
+								title: 'Destino',
+								dataIndex: 'destino',
+								key: 'destino'
+							},
+							{
+								title: 'Cantidad',
+								dataIndex: 'cantidad',
+								key: 'cantidad'
+							},
+							{
+								title: 'ID Cliente',
+								dataIndex: 'idCliente',
+								key: 'idCliente'
+							}
+						]}
+						pagination={false}
+						size="small"
+					/>
+					<Button
+						type="primary"
+						onClick={fetchVentas}
+						style={{ marginTop: '10px' }}
+					>
+						Actualizar Ventas
+					</Button>
 				</>
 				}
 			</div>
