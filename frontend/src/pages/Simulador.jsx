@@ -35,6 +35,7 @@ const Simulador = () => {
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
+	const simulatedModeRef = useRef("Semanal"); // Estado para opción del dropdown
 	// Actualiza el tiempo simulado
 
 	const allTrucksResumeRef = useRef(0);
@@ -63,7 +64,7 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 1 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
 			//Funcion para guardar la data
 			// setAllTrucksResume(completedTrucks.length);
 			// setAllPedidos(totalPedidos);
@@ -108,7 +109,12 @@ const Simulador = () => {
 			//setUltimaData(response.data); //PROBANDO RESUMEN
 			ultimaDataRef.current = response.data;
 
-			if (response.data.rutas.some((truck) => truck.colapso)) {
+			if (simulatedModeRef.current === "Colapso" && response.data.rutas.some((truck) => truck.colapso)) { //Para colapsar
+				handleStop("colapsada");
+				return;
+			}
+
+			if (simulatedModeRef.current === "Semanal" && response.data.rutas.some((truck) => truck.colapso)) { //Por si acaso en semanal colapsa
 				handleStop("colapsada");
 				return;
 			}
@@ -167,7 +173,7 @@ const Simulador = () => {
 			while (dayjs(simulatedTime.current).isBefore(startTime)) {
 				//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
 				if (isCancelledRef.current) break;
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				await new Promise((resolve) => setTimeout(resolve, 10));
 			}
 
 			if (totalDuration === 0) continue;
@@ -189,7 +195,7 @@ const Simulador = () => {
 				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
 					//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
 					if (isCancelledRef.current) break;
-					await new Promise((resolve) => setTimeout(resolve, 1000));
+					await new Promise((resolve) => setTimeout(resolve, 10));
 				}
 
 				if (isValidLatLng(lat, lng)) {
@@ -356,14 +362,16 @@ const Simulador = () => {
 		setTrucks([]);
 		setTruckPositions({});
 
-		setCompletedTrucks(new Set());
+		setCompletedTrucks([]);
 		setAlmacenesCapacidad({});
 		setCargaAlmacenes({});
 		setSelectedTruckCode(null);
+		setElapsedRealTime("");
 		setElapsedTime("");
 		setSimulatedTime("");
 		setCurrentPage(1);
 		setSearchTerm("");
+		simulatedModeRef.current = "Semanal";
 
 		console.log(`Simulación ${reason}.`);
 
@@ -462,7 +470,11 @@ const Simulador = () => {
 				handleStop={handleStop}
 				dtpValue={dtpValue}
 				disabledDate={disabledDate}
-				onDropdownChange={(value) => console.log("Opción seleccionada:", value)}
+				onDropdownChange={(value) => {
+					console.log("Opción seleccionada desde el Dropdown:", value);
+					simulatedModeRef.current=value;
+					console.log("Simulated Mode:", simulatedModeRef);
+				}}
 			/>
 
 			<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
