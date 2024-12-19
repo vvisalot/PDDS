@@ -74,7 +74,7 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+		if (simulatedModeRef.current === "Semanal" && days >= 1 && hours >= 0 && minutes >= 0 && seconds >= 0) {
 			//Funcion para guardar la data
 			// setAllTrucksResume(completedTrucks.length);
 			// setAllPedidos(totalPedidos);
@@ -84,16 +84,15 @@ const Simulador = () => {
 			
 			//allTrucksResumeRef.current = trucks.length; //volver a rrpobar
 			//allPedidosRef.current = totalPedidos;	//no sale
-			fechaResumeRef.current = dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"); //si
+			fechaResumeRef.current = dayjs(simulatedTimeRef.current).format("YYYY-MM-DD HH:mm:ss"); //si
 			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
 			allTimeRealRef.current = elapsedRealTimeSec; //no sale
 			//si sale la ultima data
-			console.log("Resumen de la simulación: camiones:", allTrucksResumeRef, 
+			/* console.log("Resumen de la simulación: camiones:", allTrucksResumeRef, 
 					"pedidos:", allPedidosRef, "tiempo real:", allTimeRealRef, 
 					"tiempo simulado:", allTimeSimulatedRef, "fecha:", fechaResumeRef,
-					"ultima data:", ultimaDataRef);
+					"ultima data:", ultimaDataRef); */
 			
-			//los
 			setResumen({
 				camionesModal: allTrucksResumeRef.current,
 				pedidosModal: allPedidosRef.current,
