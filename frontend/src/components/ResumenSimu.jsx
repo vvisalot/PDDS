@@ -17,6 +17,36 @@ const ResumenSimu = ({ open, onClose, resumen }) => {
   rangofinalfecha.setDate(rangofinalfecha.getDate() + 7);
   const rangoiniciofecha = new Date(fechaFinalModal);
   
+  // Función para descargar el contenido como archivo
+  const handleDownload = () => {
+    const contenido = `
+Resumen de la Simulación
+========================
+Rango de Fechas Simuladas: ${rangoiniciofecha.toLocaleDateString()} - ${rangofinalfecha.toLocaleDateString()}
+Camiones Completados: ${camionesModal}
+Pedidos Completados: ${pedidosModal}
+Tiempo Real Transcurrido: ${tiempoRealMinutos} minutos
+Tiempo Simulado: ${diasSimulados} días, ${horasSimuladas} horas, ${minutosSimulados} minutos
+
+Ultima Simulación de Pedidos Exitosa:
+====================================
+Cantidad de tramos bloqueados: ${bloqueosLenght}
+Rutas: ${rutas.length}
+${rutas
+      .map(
+        (ruta, index) =>
+          `Ruta ${index + 1}: Camión: ${ruta.camion.codigo}, Capacidad: ${ruta.camion.capacidad}, Carga Actual: ${ruta.camion.cargaActual}`
+      )
+      .join('\n')}
+    `;
+
+    // Crear un blob y un enlace de descarga
+    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+    const enlace = document.createElement('a');
+    enlace.href = URL.createObjectURL(blob);
+    enlace.download = 'resumen_simulacion.txt';
+    enlace.click();
+  };
 
   return (
     <Modal
@@ -28,6 +58,9 @@ const ResumenSimu = ({ open, onClose, resumen }) => {
       open={open}
       onCancel={onClose}
       footer={[
+        <Button key="descargar" type="default" onClick={handleDownload}>
+          Descargar
+        </Button>,
         <Button key="finalizar" type="primary" onClick={onClose}>
           Finalizar
         </Button>,

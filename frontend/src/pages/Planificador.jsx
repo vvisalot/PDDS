@@ -453,20 +453,33 @@ const Planificador = () => {
 										return Promise.reject(new Error('El destino es requerido'));
 									}
 									const stringValue = value.toString(); // Convert to string to check length
-
 									// Check if exactly 6 digits
 									if (!/^\d{6}$/.test(stringValue)) {
 										return Promise.reject(new Error('El destino debe ser un número de 6 dígitos'));
-									}
-									// Check if it's within the valid range (100000 to 999999)
-									if (value < 100000 || value > 999999) {
-										return Promise.reject(new Error('El destino debe estar entre 100000 y 999999'));
 									}
 									return Promise.resolve();
 								}
 								}
 							]}
 							>
+							<InputNumber
+								value={destinPlani}
+								onChange={(value) => setDestinPlani(value)}
+								style={{ width: '100%' }} 
+								placeholder="Ej: 123456" 
+								formatter={value => value ? value.padStart(6, '0') : ''}
+								parser={value => value ? value.replace(/^0+/, '') : ''}
+								precision={0} // Ensure only integers
+							/>
+									{/* // Check if exactly 6 digits
+									if (!/^\d{6}$/.test(stringValue)) {
+										return Promise.reject(new Error('El destino debe ser un número de 6 dígitos'));
+									}
+									return Promise.resolve();
+								}
+								}
+							]}
+							> */}
 							<InputNumber
 								value={destinPlani}
 								onChange={(e) => setDestinPlani(e.target.value)}
