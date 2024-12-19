@@ -1,10 +1,8 @@
-import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Typography, message } from "antd";
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { Typography, message } from "antd";
 
 import locale from 'antd/locale/es_ES';
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
-import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
@@ -347,7 +345,6 @@ const Simulador = () => {
 		setElapsedTime("");
 		setSimulatedTime("");
 		setCurrentPage(1);
-		setSearchTerm("");
 
 		console.log(`Simulación ${reason}.`);
 
@@ -412,25 +409,6 @@ const Simulador = () => {
 
 	const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
 
-
-	// PANEL COLAPSABLE
-	const [isPanelVisible, setIsPanelVisible] = useState(false);
-	const togglePanel = () => {
-		setIsPanelVisible(!isPanelVisible);
-	}
-
-	// BARRA DE BUSQUEDA
-	const [searchTerm, setSearchTerm] = useState("");
-
-	// Filtra los camiones según el código
-	const filteredTrucks = trucks.filter(truck => !completedTrucks.includes(truck.camion.codigo) &&
-		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
-
-	const paginatedTrucks = filteredTrucks.slice(
-		(currentPage - 1) * cardsPerPage,
-		currentPage * cardsPerPage
-	);
-
 	return (
 		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
 			{/* Encabezado de la simulación */}
@@ -452,124 +430,26 @@ const Simulador = () => {
 				disabledDate={disabledDate}
 				onDropdownChange={(value) => console.log("Opción seleccionada:", value)}
 			/>
-
-			<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
-				<div style={{
-					flex: isPanelVisible ? "0 0 30%" : "0 0 0%",
-					padding: isPanelVisible ? "10px" : "0",
-					borderRight: isPanelVisible ? "1px solid #ddd" : "none",
-					transition: "all 0.3s ease",
-					overflowY: "hidden",
-					width: isPanelVisible ? "30%" : "0",
-					height: "100%",
-					display: "flex",
-					flexDirection: "column",
-				}}>
-					{/* Controles de la simulacion */}
-					{isPanelVisible && <>
-
-						<ConfigProvider locale={locale}>
-						</ConfigProvider>
-
-						<div style={{
-							flex: 1,
-							overflowY: 'auto',
-							marginTop: '20px',
-							paddingRight: '10px',
-						}}>
-							<Space direction="vertical" style={{ width: '100%' }}>
-								<Title level={4}>Camiones en Ruta</Title>
-								{/* Búsqueda de camiones */}
-								<Input.Search
-									placeholder="Buscar camión por código"
-									onChange={e => setSearchTerm(e.target.value)}
-									style={{
-										marginBottom: '10px'
-									}}
-								/>
-
-								{
-									paginatedTrucks.map(truck => (
-											<TruckCard
-												key={truck.camion.codigo}
-												camionData={truck}
-												isSelected={selectedTruckCode === truck.camion.codigo}
-												currentTime={simulatedTime}
-											/>
-										))
-								}
-
-								{/* Paginación */}
-								<div style={{
-									marginTop: '16px',
-									display: 'flex',
-									justifyContent: 'center',
-									position: 'sticky',
-									bottom: 0,
-									backgroundColor: 'white',
-									padding: '8px 0',
-									borderTop: '1px solid #f0f0f0'
-								}}>
-									<Pagination
-										current={currentPage}
-										total={filteredTrucks.length}
-										pageSize={cardsPerPage}
-										onChange={handlePageChange}
-										showSizeChanger={false}
-										size="small"
-									/>
-								</div>
-							</Space>
-						</div>
-					</>
-					}
-				</div>
-
-				{/* Botón para colapsar/expandir */}
-				<Button
-					type="text"
-					icon={isPanelVisible ? <FaChevronLeft /> : <FaChevronRight />}
-					onClick={togglePanel}
-					style={{
-						position: 'absolute',
-						left: isPanelVisible ? "30%" : "0",
-						top: "50%",
-						transform: "translateY(-50%)",
-						zIndex: 1000,
-						transition: "left 0.3s ease",
-						background: "#fff",
-						border: "1px solid #ddd",
-						boxShadow: "2px 0 8px rgba(0,0,0,0.15)",
-						height: "60px",
-						width: "24px",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						borderRadius: "0 4px 4px 0"
-					}}
+			{/* Mapa */}
+			<div style={{ flex: "1 1 auto", padding: '5px' }}>
+				<MapComponent
+					trucks={trucks}
+					bloqueos={bloqueos}
+					truckPositions={truckPositions}
+					completedTrucks={completedTrucks}
+					simulatedTime={simulatedTime}
+					elapsedRealTime={elapsedRealTime}
+					elapsedTime={elapsedTime}
+					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
+					trucksCompletos={trucks.length}
+					camionesEnMapa={camionesEnMapa}
+					totalPedidos={totalPedidos}
+					pedidosEntregados={pedidosEntregados}
+					almacenesCapacidad={almacenesCapacidad}
+					isFetching={isFetching}
 				/>
-
-				{/* Mapa */}
-				<div style={{ flex: "1 1 auto", padding: '5px' }}>
-					<MapComponent
-						trucks={trucks}
-						bloqueos={bloqueos}
-						truckPositions={truckPositions}
-						completedTrucks={completedTrucks}
-						simulatedTime={simulatedTime}
-						elapsedRealTime={elapsedRealTime}
-						elapsedTime={elapsedTime}
-						onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
-						trucksCompletos={trucks.length}
-						camionesEnMapa={camionesEnMapa}
-						totalPedidos={totalPedidos}
-						pedidosEntregados={pedidosEntregados}
-						almacenesCapacidad={almacenesCapacidad}
-						isFetching={isFetching}
-					/>
-				</div >
-
 			</div >
+
 		</div>
 	)
 };

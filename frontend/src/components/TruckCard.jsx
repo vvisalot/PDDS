@@ -2,7 +2,7 @@ import { Collapse, Space, Tag, Timeline, Typography } from 'antd';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { FaBox, FaCalendar, FaClock, FaTruck, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaBox, FaCalendar, FaChevronDown, FaChevronUp, FaClock, FaTruck } from 'react-icons/fa';
 
 const { Text } = Typography;
 

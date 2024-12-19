@@ -55,6 +55,7 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
         <Text style={{
           fontSize: "14px",
           color: "#aaa",
+          marginLeft: "12px",
         }}>
           {currentTime.charAt(0).toUpperCase() + currentTime.slice(1)} {/* Capitalizar */}
         </Text>

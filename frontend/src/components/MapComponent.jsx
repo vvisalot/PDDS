@@ -258,12 +258,20 @@ const MapComponent = ({
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
 
-      <LeyendaSimu
-        totalCamionesSimulacion={trucksCompletos}
-        camionesEnMapa={camionesEnMapa}
-        totalPedidos={totalPedidos}
-        pedidosEntregados={pedidosEntregados}
-      />
+      <div>
+        <LeyendaSimu
+          totalCamionesSimulacion={trucksCompletos}
+          camionesEnMapa={camionesEnMapa}
+          totalPedidos={totalPedidos}
+          pedidosEntregados={pedidosEntregados}
+        />
+        <SimulatedTimeCard
+          simulatedTime={simulatedTime}
+          elapsedTime={elapsedTime}
+          elapsedRealTime={elapsedRealTime}
+        />
+      </div>
+
 
       <CardToggle onToggleChange={setMostrarBloqueos} />
 
@@ -320,21 +328,7 @@ const MapComponent = ({
         />
 
 
-        <SimulatedTimeCard
-          simulatedTime={simulatedTime}
-          elapsedTime={elapsedTime}
-          elapsedRealTime={elapsedRealTime}
-          style={{
-            position: "absolute",
-            bottom: "20px",
-            left: "20px",
-            background: "white",
-            padding: "10px",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-            width: "350px",
-          }}
-        />
+
 
         {/* Renderizar marcadores de oficinas principales */}
         {oficinasPrincipales.map((oficina) => (

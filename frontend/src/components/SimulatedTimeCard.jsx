@@ -9,32 +9,26 @@ const SimulatedTimeCard = ({ simulatedTime, elapsedTime, elapsedRealTime }) => {
     const seconds = Math.floor(elapsedSeconds % 60);
     return `${minutes}m ${seconds}s`;
   };
-  
-  
+
+
   return (
     <Card
       style={{
-        width: 350,
         position: 'absolute',
-        bottom: "20px", 
-        left: "20px",   
+        top: "10px ",
+        left: "10px",
         zIndex: 1000,
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        borderRadius: "5px",
+        width: 280,
       }}
       bordered
     >
-      <Typography>
-        <b>  Fecha y hora simuladas: </b>
-        {simulatedTime || "No iniciado"}
-      </Typography>
-      <Typography style={{ marginTop: 16 }}>
-        <b>Tiempo simulado transcurrido: </b>
-        {elapsedTime || "No iniciado"}
-      </Typography>
-      <Typography style={{ marginTop: 16 }}>
-        <b>Tiempo real transcurrido: </b>
-        {elapsedRealTime ? formatRealTime(elapsedRealTime) : "No iniciado"}
-      </Typography>
+      <b>  Fecha y hora simuladas </b>
+      <p style={{ marginBottom: '2px' }}>{simulatedTime || "No iniciado"}</p>
+      <b>Tiempo simulado transcurrido </b>
+      <p style={{ marginBottom: '2px' }}> {elapsedTime || "No iniciado"}</p>
+      <b>Tiempo real transcurrido </b>
+      <p >{elapsedRealTime ? formatRealTime(elapsedRealTime) : "No iniciado"} </p>
     </Card >
   );
 };
