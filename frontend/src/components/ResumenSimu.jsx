@@ -1,75 +1,51 @@
-import { useState, Button } from 'react';
-import { jsPDF } from 'jspdf';
+// src/pages/ResumenSimulacion.jsx
+import React from 'react';
+import { Modal, Button } from 'antd';
 
-const ResumenSimu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [documentContent, setDocumentContent] = useState('');
+const ResumenSimu = ({ open, onClose, resumen }) => {
+  const { camionesModal, pedidosModal, tiempoRealModal, tiempoSimuladoModal, fechaFinalModal, ultimaDataModal } = resumen;
 
-  const handleOpenModal = () => {
-    setIsOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsOpen(false);
-  };
-
-  const handleDownloadPdf = () => {
-    const doc = new jsPDF();
-    doc.text(documentContent, 10, 10);
-    doc.save('documento.pdf');
-  };
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   setDocumentContent(e.target.value);
-  // };
-  const handleInputChange = (e) => {
-    setDocumentContent(e.target.value);
-  };
+  const bloqueos = ultimaDataModal?.current?.bloqueos || [];
+  const colapso = ultimaDataModal?.current?.colapso;
+  const rutas = ultimaDataModal?.current?.rutas || [];
+  const tiempoTotal = ultimaDataModal?.current?.tiempoTotal;
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={handleOpenModal}
-      >
-        Abrir documento
-      </button>
+    <Modal
+      title="Resumen de la Simulación"
+      open={open}
+      onCancel={onClose}
+      footer={[
+        <Button key="finalizar" type="primary" onClick={onClose}>
+          Finalizar
+        </Button>,
+      ]}
+    >
+      <p><b>Camiones Completados:</b> {camionesModal}</p>
+      <p><b>Pedidos Completados:</b> {pedidosModal}</p>
+      <p><b>Tiempo Real Transcurrido:</b> {tiempoRealModal} segundos</p>
+      <p><b>Tiempo Simulado:</b> {tiempoSimuladoModal} horas</p>
+      <p><b>Fecha Final:</b> {fechaFinalModal}</p>
 
-      {isOpen && (
-        <div
-          className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white w-1/2 h-1/2 rounded shadow-md p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-lg font-bold mb-4">Documento</h2>
-            <textarea
-              className="w-full h-3/4 p-2 border border-gray-400 rounded"
-              value={documentContent}
-              onChange={handleInputChange}
-            />
-            <div className="flex justify-end mt-4">
-              <Button
-                type='primary'
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                onClick={handleDownloadPdf}
-              >
-                Descargar PDF
-              </Button>
-              <Button
-                type='primary'
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                onClick={handleCloseModal}
-              >
-                Cerrar
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Mostramos los datos de ultimaDataModal */}
+      <p><b>Tiempo Total:</b> {tiempoTotal?.toFixed(2)} horas</p>
+      <p><b>Bloqueos:</b> {bloqueos.length}</p>
+      <ul>
+        {bloqueos.map((bloqueo, index) => (
+          <li key={index}>Detalle del bloqueo #{index + 1}</li>
+        ))}
+      </ul>
+      <p><b>Rutas:</b> {rutas.length}</p>
+      <ul>
+        {rutas.map((ruta, index) => (
+          <li key={index}>
+            <b>Camión:</b> {ruta.camion.codigo}, 
+            <b> Capacidad:</b> {ruta.camion.capacidad}, 
+            <b> Carga Actual:</b> {ruta.camion.cargaActual}
+          </li>
+        ))}
+      </ul>
+    </Modal>
   );
 };
 
