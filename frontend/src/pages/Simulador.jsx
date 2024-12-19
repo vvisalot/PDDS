@@ -98,7 +98,7 @@ const Simulador = () => {
 				tiempoRealModal: allTimeRealRef.current.toFixed(2),
 				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
 				fechaFinalModal: fechaResumeRef.current,
-				ultimaDataModal: ultimaDataRef.current,
+				ultimaDataModal: ultimaDataRef,
 			});
 			// Mostrar el modal de resumen
 			setIsModalVisible(true);
@@ -368,7 +368,7 @@ const Simulador = () => {
 		setTrucks([]);
 		setTruckPositions({});
 
-		setCompletedTrucks(new Set());
+		setCompletedTrucks([]) //fallo que no se vea modal
 		setAlmacenesCapacidad({});
 		setCargaAlmacenes({});
 		setSelectedTruckCode(null);
