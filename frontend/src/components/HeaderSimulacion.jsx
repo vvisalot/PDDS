@@ -13,7 +13,7 @@ const { Title, Text } = Typography;
 
 const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, dtpValue, disabledDate, onDropdownChange }) => {
   const [currentTime, setCurrentTime] = useState(dayjs().format("dddd, DD [de] MMMM [del] YYYY - hh:mm:ss"));
-  const [dropdownValue, setDropdownValue] = useState("Semanal"); 
+  const [dropdownValue, setDropdownValue] = useState("Semanal");
 
   // Actualiza el tiempo actual cada segundo
   useEffect(() => {
@@ -24,40 +24,37 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
     return () => clearInterval(interval);
   }, []);
 
-    const handleMenuClick = (e) => {
-        setDropdownValue(e.key);
-        if (onDropdownChange) onDropdownChange(e.key);
-      };
-      
-    const menu = (
-        <Menu onClick={handleMenuClick}>
-          <Menu.Item key="Semanal">Semanal</Menu.Item>
-          <Menu.Item key="Colapso">Colapso</Menu.Item>
-        </Menu>
-    );
+  const handleMenuClick = (e) => {
+    setDropdownValue(e.key);
+    if (onDropdownChange) onDropdownChange(e.key);
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="Semanal">Semanal</Menu.Item>
+      <Menu.Item key="Colapso">Colapso</Menu.Item>
+    </Menu>
+  );
 
   return (
     <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "5px 15px",
-        backgroundColor: "#f5f5f5",
-        borderBottom: "1px solid #ddd",
-        minHeight: "50px",
-      }}>
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: "#f5f5f5",
+      borderBottom: "1px solid #ddd",
+    }}>
 
       {/* Contenedor de Título y Reloj */}
       <div style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px", 
-            padding: "12px 0", 
-        }}>
-        <Title level={3} style={{ margin: 0 }}>Simulaciones</Title>
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+      }}>
+        <Title level={3}>Simulaciones</Title>
         <Text style={{
           fontSize: "14px",
-          color: "#aaa", 
+          color: "#aaa",
         }}>
           {currentTime.charAt(0).toUpperCase() + currentTime.slice(1)} {/* Capitalizar */}
         </Text>
@@ -65,15 +62,14 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
 
       {/* Contenedor de DatePicker y Botón */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        
+
         {/* Dropdown */}
-        <Dropdown overlay={menu} trigger={['click']}>
+        <Dropdown menu={menu} trigger={['click']}>
           <Button size="small" style={{
             height: "32px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "0 12px",
             fontSize: "14px",
           }}>
             {dropdownValue} <DownOutlined />

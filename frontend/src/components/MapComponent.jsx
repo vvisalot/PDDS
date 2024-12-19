@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
+import AlmacenMapCard from '../components/AlmacenMapCard';
 import CardToggle from '../components/CardToggle';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
@@ -46,16 +47,49 @@ const oficinasPrincipales = [
   { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
 ];
 
-const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime}) => {
+const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, trucksCompletos, camionesEnMapa, totalPedidos, pedidosEntregados, elapsedTime, almacenesCapacidad, elapsedRealTime, isFetching }) => {
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
   const [completedRoutes, setCompletedRoutes] = useState({}); // Tramos recorridos por cada camión
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
+  const [selectedAlmacen, setSelectedAlmacen] = useState(null);
 
   const handleTruckClick = (truckCode) => {
+    console.log('Camión seleccionado:', truckCode);
     const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
     setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
     setSelectedTruckObj(truck); // Guarda el objeto del camión seleccionado
+  };
+
+  const handleSelectAlmacen = (almacenId) => {
+    const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
+    const camionesAsociados = trucks.filter(truck =>
+      truck.camion.paquetes.some(paquete =>
+        paquete.destino.latitud === almacenSeleccionado.lat &&
+        paquete.destino.longitud === almacenSeleccionado.lng
+      )
+    );
+    console.log("almacenSeleccionado", almacenSeleccionado);
+    console.log("camiones", trucks);
+    console.log("camionesAsociados", camionesAsociados);
+
+    const almacenConCamiones = {
+      ...almacenSeleccionado,
+      camiones: camionesAsociados.map(truck => ({
+        codigo: truck.camion.codigo,
+        capacidad: truck.camion.capacidad,
+        cargaActual: truck.camion.cargaActual,
+        cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0), // Acumulamos cantidadTotal de los paquetes
+      })),
+    };
+
+    setSelectedAlmacen(almacenConCamiones);
+  };
+
+  const handlePopupClose = () => {
+    if (selectedAlmacen) {
+      setSelectedAlmacen(null);
+    }
   };
 
   // Verificar si un tramo ha sido recorrido por un camión
@@ -105,11 +139,18 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     return () => clearInterval(interval);
   }, [trucks, completedRoutes, completedTrucks]);
 
+  // Limpiar selección al terminar de cargar los camiones
+  useEffect(() => {
+    if (!isFetching) {
+      setSelectedTruck(null);
+      setSelectedTruckObj(null);
+    }
+  }, [isFetching]);
 
   // Cargar oficinas desde el archivo CSV
   useEffect(() => {
     const cargarCSV = async () => {
-      const response = await fetch('/src/assets/data/oficinas.csv'); // Ruta del archivo CSV
+      const response = await fetch('/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
 
       // Lista de ubigeos de oficinas principales
@@ -150,7 +191,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-
       {selectedTruck && (
         <TruckMapCard
           selectedTruck={selectedTruckObj}
@@ -184,6 +224,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           [0, -50]
         ]}
         maxBoundsViscosity={1.0}
+        zoomControl={false}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -225,6 +266,11 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
                 key={oficina.id}
                 position={[oficina.lat, oficina.lng]}
                 icon={icono}
+                eventHandlers={{
+                  click: () => handleSelectAlmacen(oficina.id),
+                  popupclose: () => handlePopupClose,
+                  popupopen: () => setSelectedAlmacen(oficina.id),
+                }}
               >
                 <Popup>
                   <div style={{ textAlign: 'center' }}>
@@ -245,6 +291,14 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
               </Marker>
             );
           })}
+
+        {selectedAlmacen && (
+          <AlmacenMapCard
+            selectedAlmacen={selectedAlmacen}
+            onClose={() => setSelectedAlmacen(null)}
+            simulatedTime={simulatedTime}
+          />
+        )}
 
         {/* Renderizar las rutas de los camiones */}
         {trucks.map((truck) => {
@@ -276,21 +330,21 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           );
         })}
 
-        
+
         <SimulatedTimeCard
           simulatedTime={simulatedTime}
           elapsedTime={elapsedTime}
           elapsedRealTime={elapsedRealTime}
           style={{
             position: "absolute",
-            bottom: "20px", 
-            left: "20px",   
+            bottom: "20px",
+            left: "20px",
             background: "white",
             padding: "10px",
             borderRadius: "8px",
             boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-            width: "350px", 
-        }}
+            width: "350px",
+          }}
         />
 
         {/* Renderizar los marcadores de posición actual */}
@@ -332,54 +386,6 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
       </MapContainer>
     </div>
   );
-};
-
-MapComponent.propTypes = {
-  trucks: PropTypes.arrayOf(
-    PropTypes.shape({
-      camion: PropTypes.shape({
-        codigo: PropTypes.string.isRequired,
-        tipo: PropTypes.string,
-        capacidad: PropTypes.number,
-        cargaActual: PropTypes.number,
-        paquetes: PropTypes.arrayOf(
-          PropTypes.shape({
-            codigo: PropTypes.string.isRequired,
-            fechaHoraPedido: PropTypes.string.isRequired, // ISO date string
-            destino: PropTypes.shape({
-              latitud: PropTypes.number.isRequired,
-              longitud: PropTypes.number.isRequired,
-            }).isRequired,
-            cantidadEntregada: PropTypes.number.isRequired,
-            cantidadTotal: PropTypes.number.isRequired,
-            idCliente: PropTypes.string.isRequired,
-          }).isRequired
-        ),
-      }).isRequired,
-      tramos: PropTypes.arrayOf(
-        PropTypes.shape({
-          origen: PropTypes.shape({
-            latitud: PropTypes.number.isRequired,
-            longitud: PropTypes.number.isRequired,
-          }).isRequired,
-          destino: PropTypes.shape({
-            latitud: PropTypes.number.isRequired,
-            longitud: PropTypes.number.isRequired,
-          }).isRequired,
-          distancia: PropTypes.number,
-          velocidad: PropTypes.number,
-          tiempoSalida: PropTypes.string, // ISO date string
-          tiempoLlegada: PropTypes.string, // ISO date string
-          tiempoEspera: PropTypes.number,
-          seDejaraElPaquete: PropTypes.bool,
-        }).isRequired
-      ).isRequired,
-    }).isRequired
-  ).isRequired,
-
-  completedTrucks: PropTypes.instanceOf(Set).isRequired,
-  simulatedTime: PropTypes.string.isRequired,
-  almacenesCapacidad: PropTypes.object.isRequired,
 };
 
 export default MapComponent;

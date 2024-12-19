@@ -7,7 +7,7 @@ const LeyendaSim = ({ totalCamionesSimulacion, camionesEnMapa, totalPedidos, ped
     const cardStyle = {
         position: "absolute",
         top: "10px",
-        right: "10px",
+        left: "10px",
         zIndex: 1000,
         backgroundColor: "rgba(255, 255, 255, 0.9)",
         borderRadius: "5px",

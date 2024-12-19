@@ -1,5 +1,5 @@
-import { Button, ConfigProvider, DatePicker, Pagination, Space, Tabs, Typography, message } from "antd";
-import { FaBoxOpen, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
+import { Button, ConfigProvider, DatePicker, Pagination, Tabs, Typography, Modal, Form, InputNumber, message } from "antd";
+import { FaPlus, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
@@ -84,6 +84,66 @@ const Planificador = () => {
 
 		} catch (error) {
 			console.error("Error fetching truck data:", error);
+		}
+	};
+
+	//probando logica de api
+	const fetchTrucksPlanificador = async () => {
+		if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
+			console.error("Faltan datos para enviar al API.");
+			return;
+		}
+		
+		try {
+			//const response = await getSimulacion()
+
+			// Configuración de los headers si es necesario
+			const headers = {
+				"Content-Type": "application/json",
+			};
+		  
+			  // Realizar la llamada al API
+			const response = await axios.post(
+				"http://localhost:5000/api/ventas",
+				{ diaPlani, destinPlani, cantidadPlani, idCliente },
+				{ headers } // Opcional
+			);
+
+			console.log("Respuesta del servidor:", response.data);
+
+			// if (response.data.some((truck) => truck.colapso)) {
+			// 	handleStop("colapsada");
+			// 	return;
+			// }
+
+            // response.data.forEach(truck => {
+            //     if (completedTrucks.has(truck.camion.codigo)) {
+            //         setCompletedTrucks(prev => {
+            //             const newSet = new Set(prev);
+            //             newSet.delete(truck.camion.codigo);
+            //             return newSet;
+            //         });
+            //     }
+            // });
+
+			// for (const truck of response.data) simulateTruckRoute(truck)
+
+			// setTrucks((prevTrucks) => {
+			// 	const trucksMap = new Map();
+			// 	for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
+			// 	for (const newTruck of response.data) trucksMap.set(newTruck.camion.codigo, newTruck);
+			// 	return Array.from(trucksMap.values());
+			// });
+
+		} catch (error) {
+			if (error.response) {
+			  // Error de servidor con un código de estado HTTP
+			  console.error("Error en la respuesta:", error.response.data);
+			} else if (error.request) {
+			  console.error("Sin respuesta del servidor:", error.request); //no respuesta del servidor
+			} else {
+			  console.error("Error al configurar la solicitud:", error.message); //otro tipo de error
+			}
 		}
 	};
 
@@ -212,12 +272,6 @@ const Planificador = () => {
 		}
 	};
 
-	const disabledDate = (current) => {
-		const startDate = dayjs("2024-06-01")
-		const endDate = dayjs("2026-11-30")
-		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
-	}
-
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const cardsPerPage = 5;
@@ -275,6 +329,43 @@ const Planificador = () => {
 		setIsPanelVisible(!isPanelVisible);
 	}
 
+
+	// Lógica para subida de 1 venta
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [diaPlani, setDiaPlani] = useState('');
+	const [destinPlani, setDestinPlani] = useState('');
+  	const [cantidadPlani, setCantidadPlani] = useState('');
+	const [idCliente, setIdCliente] = useState('');
+
+	const showModal = () => {
+		setIsModalVisible(true);
+	};
+	const handleCancel = () => {
+		setIsModalVisible(false);
+		ressetFormularioVenta();
+	};
+	const ressetFormularioVenta=()=>{
+		setDiaPlani('');
+		setCantidadPlani('');
+		setDestinPlani('');
+		setIdCliente('');
+	}
+
+	const [ventaIndividual, setVentaIndividual] = useState(null);
+	const handleAddSale = async (ventaIndividual) => {
+		try {
+			
+			fetchTrucksPlanificador();
+			console.log("Nueva venta registrada:", ventaIndividual);
+
+			message.success("Venta registrada exitosamente");
+			setIsModalVisible(false);
+		} catch (error) {
+			console.error("Error al registrar venta:", error);
+			message.error("No se pudo registrar la venta");
+		}
+	};
+
     //logica para la subida de ventas
     const handleValidData = (data) => {
         console.log("Datos válidos recibidos desde UploadButton:", data);
@@ -305,13 +396,136 @@ const Planificador = () => {
                     <div style={{ marginBottom: '10px', fontSize: '22px' }}>
                         <strong>Planificador de rutas.</strong>
                     </div>
+					
+					<div style={{ display: 'flex', marginBottom: '10px' }}>
+						{/*<Button type="primary" icon={<FaPlus />} onClick={handleAddSale}>Agregar Venta</Button>*/}
+						
+						{/* Botón primario para abrir el modal */}
+						<Button 
+							type="primary" 
+							icon={<FaPlus />} 
+							onClick={showModal}
+							style={{ marginRight: '15px' }}>
+							Agregar Venta
+						</Button>
 
-                    <SubirVentas
-						type="primary"
-						requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
-                        onValidData={handleValidData}
-                        onInvalidData={handleInvalidData}>
-					</SubirVentas>
+						{/* Modal con formulario */}
+						<Modal
+							title="Registrar Nueva Venta"
+							visible={isModalVisible}
+							onCancel={handleCancel}
+							footer={null}
+						>
+							<Form
+							name="addSaleForm"
+							onFinish={handleAddSale}
+							layout="vertical"
+							>
+							<Form.Item
+								name="fechaHora"
+								label="Fecha y Hora"
+								rules={[{ required: true, message: 'Por favor seleccione una fecha y hora' }]}
+							>
+								<DatePicker
+								value={diaPlani}
+								onChange={(e) => setDiaPlani(e.target.value)} 
+								showTime 
+								style={{ width: '100%' }}
+								disabledDate={(current) => {
+									const startDate = dayjs("2024-06-01");
+									const endDate = dayjs("2026-11-30");
+									return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
+								}}
+								/>
+							</Form.Item>
+							<Form.Item
+							name="destino"
+							label="Destino (Código de 6 dígitos)"
+							rules={[
+								{ 
+								required: true, 
+								message: 'Por favor ingrese el código de destino' 
+								},
+								{
+								validator: async (_, value) => {
+									// Check if value is a number
+									if (value === null || value === undefined) {
+										return Promise.reject(new Error('El destino es requerido'));
+									}
+									const stringValue = value.toString(); // Convert to string to check length
+
+									// Check if exactly 6 digits
+									if (!/^\d{6}$/.test(stringValue)) {
+										return Promise.reject(new Error('El destino debe ser un número de 6 dígitos'));
+									}
+									// Check if it's within the valid range (100000 to 999999)
+									if (value < 100000 || value > 999999) {
+										return Promise.reject(new Error('El destino debe estar entre 100000 y 999999'));
+									}
+									return Promise.resolve();
+								}
+								}
+							]}
+							>
+							<InputNumber
+								value={destinPlani}
+								onChange={(e) => setDestinPlani(e.target.value)}
+								style={{ width: '100%' }} 
+								placeholder="Ej: 123456" 
+								precision={0} // Ensure only integers
+							/>
+							</Form.Item>
+							<Form.Item
+								name="cantidad"
+								label="Cantidad"
+								rules={[
+								{ required: true, message: 'Por favor ingrese la cantidad' },
+								{ type: 'number', min: 1, message: 'La cantidad debe ser mayor a 0' }
+								]}
+							>
+								<InputNumber
+								value={cantidadPlani}
+								onChange={(e) => setCantidadPlani(e.target.value)} 
+								style={{ width: '100%' }} 
+								placeholder="Cantidad de paquetes" 
+								min={1} 
+								/>
+							</Form.Item>
+							<Form.Item
+								name="idCliente"
+								label="ID Cliente"
+								rules={[
+								{ required: true, message: 'Por favor ingrese el ID del cliente' },
+								{ type: 'number', min: 1, message: 'El ID de cliente debe ser mayor a 0' }
+								]}
+							>
+								<InputNumber 
+								value={idCliente}
+								onChange={(e) => setIdCliente(e.target.value)}
+								style={{ width: '100%' }} 
+								placeholder="ID del cliente" 
+								min={1} 
+								/>
+							</Form.Item>
+							<Form.Item alignItems="center">
+								<Button type="default" onClick={handleCancel} style={{ marginLeft: '90px'}}>
+									Cancelar venta
+								</Button>
+								<Button type="primary" htmlType="submit" style={{ marginLeft: '40px' }}>
+									Registrar Venta
+								</Button>
+							</Form.Item>
+							</Form>
+						</Modal>					
+						
+						<SubirVentas
+							type="primary"
+							requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
+							onValidData={handleValidData}
+							onInvalidData={handleInvalidData}
+							style={{ marginLeft: "10px" }}
+						/>
+					</div>
 
 				</>
 				}
