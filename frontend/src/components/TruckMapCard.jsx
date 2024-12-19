@@ -1,24 +1,26 @@
-import { Card, Collapse, List, Space, Tag, Timeline, Typography } from 'antd';
+import { Card, List, Space, Tag, Timeline, Typography } from 'antd';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { FaBox, FaTruck } from 'react-icons/fa';
 
 const { Text } = Typography;
-const { Panel } = Collapse;
 
-const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
+const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose }) => {
 	if (!selectedTruck) return null;
+
+	const currentPosition = truckPositions[selectedTruck.camion.codigo];
+	const currentTimeObj = dayjs(simulatedTime);
 
 	const getCapacityColor = () => {
 		const capacidad = selectedTruck.camion.capacidad;
 		const cargaActual = selectedTruck.camion.cargaActual;
 		const percentage = (cargaActual / capacidad) * 100;
 
-		if (percentage <= 25) return "success";     // Verde normal de Antd
-		if (percentage <= 50) return "lime";        // Verde amarillento
-		if (percentage <= 75) return "warning";     // Amarillo
-		if (percentage <= 90) return "orange";      // Naranja
-		return "error";                             // Rojo
+		if (percentage <= 25) return "success";
+		if (percentage <= 50) return "lime";
+		if (percentage <= 75) return "warning";
+		if (percentage <= 90) return "orange";
+		return "error";
 	};
 
 	const getCapacityIconColor = () => {
@@ -26,43 +28,19 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 		const cargaActual = selectedTruck.camion.cargaActual;
 		const percentage = (cargaActual / capacidad) * 100;
 
-		if (percentage <= 25) return "#22c55e";     // Verde
-		if (percentage <= 50) return "#84cc16";     // Verde amarillento
-		if (percentage <= 75) return "#eab308";     // Amarillo
-		if (percentage <= 90) return "#f97316";     // Naranja
-		return "#ef4444";                           // Rojo
+		if (percentage <= 25) return "#22c55e";
+		if (percentage <= 50) return "#84cc16";
+		if (percentage <= 75) return "#eab308";
+		if (percentage <= 90) return "#f97316";
+		return "#ef4444";
 	};
-
-	const cardStyle = {
-		position: "absolute",
-		top: "220px",
-		right: "10px",
-		zIndex: 1000,
-		backgroundColor: "white",
-		borderRadius: "8px",
-		boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-		width: 350,
-		maxHeight: '60vh',
-		overflowY: 'auto'
-	};
-
-	const bodyStyle = {
-		maxHeight: 'calc(70vh - 55px)',
-		overflowY: 'auto',
-	};
-
-	const currentPosition = truckPositions[selectedTruck.camion.codigo];
-	const currentTimeObj = dayjs(simulatedTime);
 
 	const formatLocation = (location) => {
-		const toCamelCase = (str) => {
-			return str.split(', ').map(part =>
-				part.split(' ').map(word =>
-					word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-				).join(' ')
-			).join(', ');
-		};
-		return toCamelCase(location);
+		return location.split(', ').map(part =>
+			part.split(' ').map(word =>
+				word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+			).join(' ')
+		).join(', ');
 	};
 
 	const getPedidoStatus = (pedido) => {
@@ -93,21 +71,22 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 					<List.Item style={{
 						flexDirection: 'column',
 						alignItems: 'flex-start',
+						padding: '12px 0',
+						borderBottom: '1px solid #f0f0f0'
 					}}>
 						<Space align='center' style={{ width: '100%', justifyContent: 'space-between' }}>
 							<div>
-								<FaBox style={{ marginRight: '2px' }} /> <Text>{paquete.cantidadTotal} unidades</Text>
+								<FaBox style={{ marginRight: '8px' }} />
+								<Text>{paquete.cantidadTotal} unidades</Text>
 							</div>
 							<Tag color={status === 'entregado' ? 'success' : 'processing'}>
 								{status}
 							</Tag>
 						</Space>
 
-						<div>
-							<Text type="secondary">
-								Registro: {dayjs(paquete.fechaHoraPedido).format('DD/MM/YYYY, hh:mm A')}
-							</Text>
-						</div>
+						<Text type="secondary" style={{ marginTop: '4px' }}>
+							Registro: {dayjs(paquete.fechaHoraPedido).format('DD/MM/YYYY, hh:mm A')}
+						</Text>
 
 						<Text type="secondary">
 							Destino: {tramoEntrega?.nombreDestino ? formatLocation(tramoEntrega.nombreDestino) : 'Por definir'}
@@ -129,68 +108,64 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 			const startTime = dayjs(tramo.tiempoSalida);
 			const endTime = dayjs(tramo.tiempoLlegada);
 
-			if (currentTimeObj.isBefore(startTime)) {
-				return 'wait';
-			} else if (currentTimeObj.isBefore(endTime)) {
-				return 'process';
-			} else {
-				return 'finish';
-			}
+			if (currentTimeObj.isBefore(startTime)) return 'wait';
+			if (currentTimeObj.isBefore(endTime)) return 'process';
+			return 'finish';
 		};
 
 		return (
-			<Space direction="vertical" style={{ width: '100%' }}>
-				<Timeline>
-					{selectedTruck.tramos.map((tramo, index) => {
-						const status = getTramoStatus(tramo);
-						return (
-							<Timeline.Item
-								key={index}
-								color={status === 'wait' ? 'gray' : status === 'process' ? 'blue' : 'green'}
-							>
-								<Space direction="vertical" size={1}>
-									<Text strong>{tramo.nombreOrigen} → {tramo.nombreDestino}</Text>
-									<Space direction="vertical" size={0}>
-										<Text type="secondary">
-											Salida: {dayjs(tramo.tiempoSalida).format('DD/MM/YYYY, HH:mm')}
-										</Text>
-										<Text type="secondary">
-											Llegada: {dayjs(tramo.tiempoLlegada).format('DD/MM/YYYY, HH:mm')}
-										</Text>
-										{tramo.seDejaraElPaquete && (
-											<Tag color="success" style={{ marginTop: '4px' }}>
-												Punto de entrega
-											</Tag>
-										)}
-									</Space>
+			<Timeline>
+				{selectedTruck.tramos.map((tramo, index) => {
+					const status = getTramoStatus(tramo);
+					return (
+						<Timeline.Item
+							key={index}
+							color={status === 'wait' ? 'gray' : status === 'process' ? 'blue' : 'green'}
+						>
+							<Space direction="vertical" size={1}>
+								<Text strong>{formatLocation(tramo.nombreOrigen)} → {formatLocation(tramo.nombreDestino)}</Text>
+								<Space direction="vertical" size={0}>
+									<Text type="secondary">
+										Salida: {dayjs(tramo.tiempoSalida).format('DD/MM/YYYY, HH:mm')}
+									</Text>
+									<Text type="secondary">
+										Llegada: {dayjs(tramo.tiempoLlegada).format('DD/MM/YYYY, HH:mm')}
+									</Text>
+									{tramo.seDejaraElPaquete && (
+										<Tag color="success" style={{ marginTop: '4px' }}>
+											Punto de entrega
+										</Tag>
+									)}
 								</Space>
-							</Timeline.Item>
-						);
-					})}
-				</Timeline>
-			</Space>
+							</Space>
+						</Timeline.Item>
+					);
+				})}
+			</Timeline>
 		);
 	};
 
+	const cardContainerStyle = {
+		position: "absolute",
+		top: "10px",
+		right: "10px",
+		zIndex: 1000,
+		width: 350,
+		display: 'flex',
+		flexDirection: 'column',
+		gap: '8px'
+	};
+
+	const baseCardStyle = {
+		width: '100%',
+		boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+	};
 
 	return (
-		<Card
-			style={cardStyle}
-			bodyStyle={{
-				padding: 0,
-				maxHeight: 'calc(60vh - 100px)', // Ajustar para el header sticky
-				position: 'relative',
-			}}
-		>
-			<div style={{
-				position: 'sticky',
-				top: 0,
-				backgroundColor: 'white',
-				zIndex: 2,
-				padding: '24px 24px 0',
-				borderBottom: '1px solid #f0f0f0',
-			}}>
-				<Space direction="vertical" style={{ width: '100%', marginBottom: '16px' }}>
+		<div style={cardContainerStyle}>
+			{/* Card Principal - Info del Camión */}
+			<Card style={baseCardStyle}>
+				<Space direction="vertical" style={{ width: '100%' }}>
 					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
 						<Space>
 							<FaTruck size={20} color={getCapacityIconColor()} />
@@ -198,45 +173,103 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions }) => {
 						</Space>
 						<Tag color={getCapacityColor()}>
 							<FaBox size={12} style={{ marginRight: 4 }} />
-							Capacidad: {selectedTruck.camion.cargaActual}/{selectedTruck.camion.capacidad}
+							{selectedTruck.camion.cargaActual}/{selectedTruck.camion.capacidad}
 						</Tag>
 					</Space>
 					{currentPosition && (
 						<Text type="secondary">
-							Posicion actual: ({currentPosition.lat.toFixed(3)}, {currentPosition.lng.toFixed(3)})
+							Posición actual: ({currentPosition.lat.toFixed(3)}, {currentPosition.lng.toFixed(3)})
 						</Text>
 					)}
 				</Space>
-			</div>
-			<Collapse defaultActiveKey={['1', '2']}>
-				<Panel
-					header={
-						<Space style={{ width: '100%', justifyContent: 'space-between' }}>
-							<Text strong>Lista de pedidos</Text>
-							<Tag>Total: {selectedTruck.camion.paquetes.length}</Tag>
-						</Space>
-					}
-					key="1"
-				>
-					{renderPedidosList()}
-				</Panel>
+			</Card>
 
-				<Panel
-					header={
-						<Space style={{ width: '100%', justifyContent: 'space-between' }}>
-							<Text strong>Ruta tomada</Text>
-							<Tag>Tramos: {selectedTruck.tramos.length}</Tag>
-						</Space>
-					}
-					key="2"
-				>
-					{renderRouteHistory()}
-				</Panel>
-			</Collapse>
-		</Card>
+			{/* Card de Pedidos */}
+			<Card
+				style={{
+					...baseCardStyle,
+					maxHeight: 300,
+					overflow: 'hidden'
+				}}
+				title={
+					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
+						<Text strong>Lista de pedidos</Text>
+						<Tag>Total: {selectedTruck.camion.paquetes.length}</Tag>
+					</Space>
+				}
+				bodyStyle={{
+					maxHeight: 240,
+					overflowY: 'auto',
+					padding: '0 24px'
+				}}
+			>
+				{renderPedidosList()}
+			</Card>
+
+			{/* Card de Ruta */}
+			<Card
+				style={{
+					...baseCardStyle,
+					maxHeight: 400,
+					overflow: 'hidden'
+				}}
+				title={
+					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
+						<Text strong>Ruta tomada</Text>
+						<Tag>Tramos: {selectedTruck.tramos.length}</Tag>
+					</Space>
+				}
+				bodyStyle={{
+					maxHeight: 340,
+					overflowY: 'auto',
+					padding: '24px'
+				}}
+			>
+				{renderRouteHistory()}
+			</Card>
+		</div>
 	);
 };
 
-
+TruckMapCard.propTypes = {
+	selectedTruck: PropTypes.shape({
+		camion: PropTypes.shape({
+			codigo: PropTypes.string.isRequired,
+			capacidad: PropTypes.number.isRequired,
+			cargaActual: PropTypes.number.isRequired,
+			paquetes: PropTypes.arrayOf(
+				PropTypes.shape({
+					cantidadTotal: PropTypes.number.isRequired,
+					fechaHoraPedido: PropTypes.string.isRequired,
+					destino: PropTypes.shape({
+						latitud: PropTypes.number.isRequired,
+						longitud: PropTypes.number.isRequired
+					}).isRequired
+				})
+			).isRequired
+		}).isRequired,
+		tramos: PropTypes.arrayOf(
+			PropTypes.shape({
+				nombreOrigen: PropTypes.string.isRequired,
+				nombreDestino: PropTypes.string.isRequired,
+				tiempoSalida: PropTypes.string.isRequired,
+				tiempoLlegada: PropTypes.string.isRequired,
+				seDejaraElPaquete: PropTypes.bool.isRequired,
+				destino: PropTypes.shape({
+					latitud: PropTypes.number.isRequired,
+					longitud: PropTypes.number.isRequired
+				}).isRequired
+			})
+		).isRequired
+	}),
+	simulatedTime: PropTypes.string.isRequired,
+	truckPositions: PropTypes.objectOf(
+		PropTypes.shape({
+			lat: PropTypes.number.isRequired,
+			lng: PropTypes.number.isRequired
+		})
+	).isRequired,
+	onClose: PropTypes.func
+};
 
 export default TruckMapCard;
