@@ -63,14 +63,14 @@ const Planificador = () => {
 	};
 
 	//probando logica de api
-	const fetchTrucksPlanificador = async () => {
-		if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
-			console.error("Faltan datos para enviar al API.");
-			return;
-		}
-		
-		try {
-			//const response = await getSimulacion()
+	// const fetchTrucksPlanificador = async () => {
+	// 	if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
+	// 		console.error("Faltan datos para enviar al API.");
+	// 		return;
+	// 	}
+
+	// 	try {
+	// 		//const response = await getSimulacion()
 
 	const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 

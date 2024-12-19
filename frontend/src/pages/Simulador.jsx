@@ -85,7 +85,7 @@ const Simulador = () => {
 			// setAllTimeReal(elapsedRealTime);
 			// setAllTimeSimulated(elapsedSimulatedTime);
 			// setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
-			
+
 			//allTrucksResumeRef.current = trucks.length; //volver a rrpobar
 			//allPedidosRef.current = totalPedidos;	//no sale
 			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); //si
@@ -96,7 +96,7 @@ const Simulador = () => {
 					"pedidos:", allPedidosRef, "tiempo real:", allTimeRealRef, 
 					"tiempo simulado:", allTimeSimulatedRef, "fecha:", fechaResumeRef,
 					"ultima data:", ultimaDataRef); */
-			
+
 			setResumen({
 				camionesModal: allTrucksResumeRef.current,
 				pedidosModal: allPedidosRef.current,
@@ -113,11 +113,11 @@ const Simulador = () => {
 			return;
 		}
 
-		if(simulatedModeRef.current === "Colapso" ){
-			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); 
+		if (simulatedModeRef.current === "Colapso") {
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss");
 			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
 			allTimeRealRef.current = elapsedRealTimeSec; //no sale
-			
+
 			setResumen({
 				camionesModal: allTrucksResumeRef.current,
 				pedidosModal: allPedidosRef.current,
@@ -149,7 +149,7 @@ const Simulador = () => {
 			const response = await getSimulacion() // Replace with your API endpoint
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
-			if (!response.data.colapso) { 
+			if (!response.data.colapso) {
 				ultimaDataColapsoRef.current = response.data;
 			}
 
@@ -455,7 +455,7 @@ const Simulador = () => {
 	const closeModal = () => {
 		setIsModalVisible(false);
 		// Redirigir o limpiar estados si es necesario
-	  };
+	};
 
 	const disabledDate = (current) => {
 		const startDate = dayjs("2024-06-01")
@@ -532,7 +532,7 @@ const Simulador = () => {
 				disabledDate={disabledDate}
 				onDropdownChange={(value) => {
 					console.log("Opción seleccionada desde el Dropdown:", value);
-					simulatedModeRef.current=value;
+					simulatedModeRef.current = value;
 					console.log("Simulated Mode:", simulatedModeRef);
 				}}
 			/>
@@ -554,12 +554,11 @@ const Simulador = () => {
 					almacenesCapacidad={almacenesCapacidad}
 					isFetching={isFetching}
 				/>
-					<ResumenSimu
-					{/* Modal de Resumen */}
-						open={isModalVisible}
-						onClose={closeModal}
-						resumen={resumen}
-					/>
+				<ResumenSimu
+					open={isModalVisible}
+					onClose={closeModal}
+					resumen={resumen}
+				/>
 			</div >
 
 		</div>
