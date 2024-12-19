@@ -59,7 +59,8 @@ const MapComponent = ({
   elapsedTime,
   almacenesCapacidad,
   elapsedRealTime,
-  isFetching }) => {
+  isFetching
+}) => {
 
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
   const [selectedTruckObj, setSelectedTruckObj] = useState(null); // Estado para el objeto del camión seleccionado
@@ -326,9 +327,6 @@ const MapComponent = ({
           simulatedTime={simulatedTime}
           isVisible={mostrarBloqueos}
         />
-
-
-
 
         {/* Renderizar marcadores de oficinas principales */}
         {oficinasPrincipales.map((oficina) => (

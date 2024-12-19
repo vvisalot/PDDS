@@ -207,37 +207,6 @@ const Planificador = () => {
 		setIdCliente('');
 	}
 
-	const handleAddSale = async (values) => {
-		try {
-			const ventaData = {
-				fechaHora: dayjs(values.fechaHora).format('YYYY-MM-DDTHH:mm:ss'),
-				destino: values.destino.toString(), // Asegurarnos que sea string
-				cantidad: values.cantidad,
-				idCliente: values.idCliente.toString() // Asegurarnos que sea string
-			};
-
-			await registrarVentaUnica(ventaData);
-			message.success("Venta registrada exitosamente");
-
-			setIsModalVisible(false);
-			resetFormularioVenta();
-
-			await fetchVentas();
-		} catch (error) {
-			console.error("Error al registrar venta:", error);
-			message.error("No se pudo registrar la venta");
-		}
-	};
-
-	//logica para la subida de ventas
-	const handleValidData = (data) => {
-		console.log("Datos válidos recibidos desde UploadButton:", data);
-	};
-
-	const handleInvalidData = (data) => {
-		console.log("Datos inválidos recibidos desde UploadButton:", data);
-	};
-
 
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
@@ -278,13 +247,13 @@ const Planificador = () => {
 							onSuccess={fetchVentas}
 						/>
 
-						<SubirVentas
+						{/* <SubirVentas
 							type="primary"
 							requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
 							onValidData={handleValidData}
 							onInvalidData={handleInvalidData}
 							style={{ marginLeft: "10px" }}
-						/>
+						/> */}
 					</div>
 					<Title level={4}>Ventas Registradas</Title>
 					<Table
