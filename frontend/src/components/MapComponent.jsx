@@ -70,10 +70,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   };
 
 
-  // Función para manejar el click en un almacén
+  // En MapComponent, modificar la función handleSelectAlmacen:
   const handleSelectAlmacen = (e, almacenId) => {
-    console.log('Click en almacén:', almacenId); // Para debugging
-    e.originalEvent.stopPropagation(); // Importante: usar originalEvent en eventos de Leaflet
+    e.originalEvent.stopPropagation();
     setSelectedTruck(null);
     setSelectedTruckObj(null);
 
@@ -83,35 +82,70 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     }
 
     const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
-    const camionesAsociados = trucks.filter(truck =>
-      truck.camion.paquetes.some(paquete =>
-        paquete.destino.latitud === almacenSeleccionado.lat &&
-        paquete.destino.longitud === almacenSeleccionado.lng
-      )
-    );
+    const esPrincipal = oficinasPrincipales.some(op => op.id === almacenId);
 
-    const almacenConCamiones = {
-      ...almacenSeleccionado,
-      camiones: camionesAsociados.map(truck => {
-        const tramoDestino = truck.tramos.find(tramo =>
-          tramo.destino.latitud === almacenSeleccionado.lat &&
-          tramo.destino.longitud === almacenSeleccionado.lng
-        );
-        return {
+    let almacenInfo;
+
+    if (esPrincipal) {
+      // Para oficinas principales, solo nos interesan los camiones que salen
+      const camionesSalida = trucks.filter(truck =>
+        truck.tramos[0].origen.latitud === almacenSeleccionado.lat &&
+        truck.tramos[0].origen.longitud === almacenSeleccionado.lng
+      );
+
+      almacenInfo = {
+        ...almacenSeleccionado,
+        esPrincipal: true,
+        camiones: camionesSalida.map(truck => {
+          const destinoFinal = truck.tramos[truck.tramos.length - 1].destino;
+          const oficinaDest = oficinas.find(o =>
+            o.lat === destinoFinal.latitud &&
+            o.lng === destinoFinal.longitud
+          );
+
+          return {
+            codigo: truck.camion.codigo,
+            capacidad: truck.camion.capacidad,
+            cargaActual: truck.camion.cargaActual,
+            tiempoSalida: truck.tramos[0].tiempoSalida,
+            destino: {
+              ciudad: oficinaDest?.ciudad || 'Desconocido',
+              departamento: oficinaDest?.departamento || 'Desconocido'
+            },
+            paquetes: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0)
+          };
+        })
+      };
+    } else {
+      // Para almacenes normales, mantener la lógica existente de llegadas
+      const camionesAsociados = trucks.filter(truck =>
+        truck.camion.paquetes.some(paquete =>
+          paquete.destino.latitud === almacenSeleccionado.lat &&
+          paquete.destino.longitud === almacenSeleccionado.lng
+        )
+      );
+
+      almacenInfo = {
+        ...almacenSeleccionado,
+        esPrincipal: false,
+        camiones: camionesAsociados.map(truck => ({
           codigo: truck.camion.codigo,
           capacidad: truck.camion.capacidad,
           cargaActual: truck.camion.cargaActual,
           cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0),
-          tiempoLlegada: tramoDestino ? tramoDestino.tiempoLlegada : null,
-        };
-      }),
-    };
+          tiempoLlegada: truck.tramos.find(tramo =>
+            tramo.destino.latitud === almacenSeleccionado.lat &&
+            tramo.destino.longitud === almacenSeleccionado.lng
+          )?.tiempoLlegada
+        }))
+      };
+    }
 
     setAlmacenesHistorial(prevHistorial => ({
       ...prevHistorial,
-      [almacenId]: almacenConCamiones,
+      [almacenId]: almacenInfo,
     }));
-    setSelectedAlmacen(almacenConCamiones);
+    setSelectedAlmacen(almacenInfo);
   };
 
   // Simulación de tramos recorridos: actualizar los tramos completados
@@ -276,40 +310,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             position={[oficina.lat, oficina.lng]}
             icon={oficinaPrincipalIcon}
             eventHandlers={{
-              click: (e) => {
-                const almacenSeleccionado = {
-                  ...oficina,
-                  cargaActual: almacenesCapacidad[`${oficina.lat}-${oficina.lng}`] || 0,
-                  esPrincipal: true
-                };
-
-                const camionesAsociados = trucks.filter(truck =>
-                  truck.camion.paquetes.some(paquete =>
-                    paquete.destino.latitud === oficina.lat &&
-                    paquete.destino.longitud === oficina.lng
-                  )
-                );
-
-                const almacenConCamiones = {
-                  ...almacenSeleccionado,
-                  camiones: camionesAsociados.map(truck => {
-                    const tramoDestino = truck.tramos.find(tramo =>
-                      tramo.destino.latitud === oficina.lat &&
-                      tramo.destino.longitud === oficina.lng
-                    );
-                    return {
-                      codigo: truck.camion.codigo,
-                      capacidad: truck.camion.capacidad,
-                      cargaActual: truck.camion.cargaActual,
-                      cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0),
-                      tiempoLlegada: tramoDestino ? tramoDestino.tiempoLlegada : null,
-                    };
-                  }),
-                };
-
-                handleSelectAlmacen(e, oficina.id);
-                setSelectedAlmacen(almacenConCamiones);
-              }
+              click: (e) => handleSelectAlmacen(e, oficina.id)
             }}
           />
         ))}
