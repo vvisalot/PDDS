@@ -367,8 +367,7 @@ const Simulador = () => {
 	}
 
 	const [currentPage, setCurrentPage] = useState(1);
-	const cardsPerPage = 5;
-
+	const cardsPerPage = 3;
 	const handlePageChange = (page) => {
 		setCurrentPage(page);
 	};
@@ -426,6 +425,11 @@ const Simulador = () => {
 	// Filtra los camiones según el código
 	const filteredTrucks = trucks.filter(truck => !completedTrucks.includes(truck.camion.codigo) &&
 		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
+
+	const paginatedTrucks = filteredTrucks.slice(
+		(currentPage - 1) * cardsPerPage,
+		currentPage * cardsPerPage
+	);
 
 	return (
 		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -485,9 +489,7 @@ const Simulador = () => {
 								/>
 
 								{
-									filteredTrucks
-										.filter(truck => !completedTrucks.includes(truck.camion.codigo))
-										.map(truck => (
+									paginatedTrucks.map(truck => (
 											<TruckCard
 												key={truck.camion.codigo}
 												camionData={truck}
@@ -510,7 +512,7 @@ const Simulador = () => {
 								}}>
 									<Pagination
 										current={currentPage}
-										total={trucks.filter(truck => !completedTrucks.includes(truck.camion.codigo)).length}
+										total={filteredTrucks.length}
 										pageSize={cardsPerPage}
 										onChange={handlePageChange}
 										showSizeChanger={false}

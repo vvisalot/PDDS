@@ -97,7 +97,7 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                                         </Space>
                                         {enRuta && (
                                             <Text type="secondary" style={{ fontSize: '12px' }}>
-                                                Salió: {new Date(camion.tiempoSalida).toLocaleTimeString()}
+                                                Salió: {new Date(camion.tiempoSalida).toISOString().replace('T', ' ').slice(0, 19)}
                                             </Text>
                                         )}
                                     </Space>
