@@ -72,7 +72,7 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 1 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+		if (days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
 			//Funcion para guardar la data
 			// setAllTrucksResume(completedTrucks.length);
 			// setAllPedidos(totalPedidos);
