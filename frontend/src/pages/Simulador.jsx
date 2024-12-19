@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 import utc from "dayjs/plugin/utc"; // Importa el plugin UTC
 import HeaderSimulacion from "../components/HeaderSimulacion.jsx"
+import ResumenSimu from "../components/ResumenSimu";
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
 dayjs.extend(utc); // Extiende dayjs con el plugin UTC
@@ -33,6 +34,27 @@ const Simulador = () => {
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
+	const simulatedModeRef = useRef("Semanal"); // Estado para opción del dropdown
+	// Actualiza el tiempo simulado
+
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [resumen, setResumen] = useState({
+		camionesModal: 0,
+		pedidosModal: 0,
+		tiempoRealModal: 0,
+		tiempoSimuladoModal: 0,
+		fechaInicialModal: '',
+		fechaFinalModal: '',
+		ultimaDataModal: {},
+		tipoSimulacion: '',
+	});
+	const allTrucksResumeRef = useRef(0);
+	const allPedidosRef = useRef(0);
+	const fechaResumeRef = useRef(null);
+	const allTimeSimulatedRef = useRef(0);
+	const allTimeRealRef = useRef(0);
+	const ultimaDataRef = useRef({});
+	const ultimaDataColapsoRef = useRef({});
 
 	const [bloqueos, setBloqueos] = useState([]);
 
@@ -56,9 +78,56 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+			//Funcion para guardar la data
+			// setAllTrucksResume(completedTrucks.length);
+			// setAllPedidos(totalPedidos);
+			// setAllTimeReal(elapsedRealTime);
+			// setAllTimeSimulated(elapsedSimulatedTime);
+			// setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
+			
+			//allTrucksResumeRef.current = trucks.length; //volver a rrpobar
+			//allPedidosRef.current = totalPedidos;	//no sale
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); //si
+			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
+			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+			//si sale la ultima data
+			/* console.log("Resumen de la simulación: camiones:", allTrucksResumeRef, 
+					"pedidos:", allPedidosRef, "tiempo real:", allTimeRealRef, 
+					"tiempo simulado:", allTimeSimulatedRef, "fecha:", fechaResumeRef,
+					"ultima data:", ultimaDataRef); */
+			
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
+			// Mostrar el modal de resumen
+			setIsModalVisible(true);
 			handleStop("tiempo máximo alcanzado");
 			return;
+		}
+
+		if(simulatedModeRef.current === "Colapso" ){
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); 
+			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
+			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+			
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataColapsoRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
 		}
 
 		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
@@ -80,10 +149,25 @@ const Simulador = () => {
 			const response = await getSimulacion() // Replace with your API endpoint
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
-			if (response.data.rutas.some((truck) => truck.colapso)) {
+			if (!response.data.colapso) { 
+				ultimaDataColapsoRef.current = response.data;
+			}
+
+			//setUltimaData(response.data); //PROBANDO RESUMEN
+			ultimaDataRef.current = response.data;
+
+			if (simulatedModeRef.current === "Colapso" && response.data.colapso) { //Para colapsar
+				// Mostrar el modal de resumen colapso
+				setIsModalVisible(true);
 				handleStop("colapsada");
 				return;
 			}
+
+			if (simulatedModeRef.current === "Semanal" && response.data.colapso) { //Por si acaso en semanal colapsa
+				handleStop("colapsada");
+				return;
+			}
+
 
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 
@@ -157,7 +241,7 @@ const Simulador = () => {
 			while (dayjs(simulatedTime.current).isBefore(startTime)) {
 				//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
 				if (isCancelledRef.current) break;
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				await new Promise((resolve) => setTimeout(resolve, 10));
 			}
 
 			if (totalDuration === 0) continue;
@@ -179,7 +263,7 @@ const Simulador = () => {
 				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
 					//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
 					if (isCancelledRef.current) break;
-					await new Promise((resolve) => setTimeout(resolve, 1000));
+					await new Promise((resolve) => setTimeout(resolve, 10));
 				}
 
 				if (isValidLatLng(lat, lng)) {
@@ -306,6 +390,15 @@ const Simulador = () => {
 
 		isCancelledRef.current = false;
 
+		//resetear valores de resumen
+		// setAllTrucksResume(0);
+		// setAllPedidos(0);
+		// setAllTimeReal(0);
+		// setAllTimeSimulated(0);
+		// setFechaResume('');
+		// setUltimaData({});
+
+
 		try {
 			await resetSimulacion();
 			console.log("Reset completado");
@@ -338,13 +431,15 @@ const Simulador = () => {
 		setTrucks([]);
 		setTruckPositions({});
 		setBloqueos([]);
-		setCompletedTrucks(new Set());
+		setCompletedTrucks([]);
 		setAlmacenesCapacidad({});
 		setCargaAlmacenes({});
 		setSelectedTruckCode(null);
+		setElapsedRealTime("");
 		setElapsedTime("");
 		setSimulatedTime("");
 		setCurrentPage(1);
+		simulatedModeRef.current = "Semanal";
 
 		console.log(`Simulación ${reason}.`);
 
@@ -356,6 +451,11 @@ const Simulador = () => {
 			message.info("Simulación detenida: Se alcanzó el tiempo máximo de 7 días");
 		}
 	};
+
+	const closeModal = () => {
+		setIsModalVisible(false);
+		// Redirigir o limpiar estados si es necesario
+	  };
 
 	const disabledDate = (current) => {
 		const startDate = dayjs("2024-06-01")
@@ -404,6 +504,8 @@ const Simulador = () => {
 				}
 			}
 		}
+		allTrucksResumeRef.current = camionesEnMapa;
+		allPedidosRef.current = totalPedidos;
 		return { totalPedidos, pedidosEntregados, camionesEnMapa };
 	};
 
@@ -428,7 +530,11 @@ const Simulador = () => {
 				handleStop={handleStop}
 				dtpValue={dtpValue}
 				disabledDate={disabledDate}
-				onDropdownChange={(value) => console.log("Opción seleccionada:", value)}
+				onDropdownChange={(value) => {
+					console.log("Opción seleccionada desde el Dropdown:", value);
+					simulatedModeRef.current=value;
+					console.log("Simulated Mode:", simulatedModeRef);
+				}}
 			/>
 			{/* Mapa */}
 			<div style={{ flex: "1 1 auto", padding: '5px' }}>
@@ -448,6 +554,12 @@ const Simulador = () => {
 					almacenesCapacidad={almacenesCapacidad}
 					isFetching={isFetching}
 				/>
+					<ResumenSimu
+					{/* Modal de Resumen */}
+						open={isModalVisible}
+						onClose={closeModal}
+						resumen={resumen}
+					/>
 			</div >
 
 		</div>

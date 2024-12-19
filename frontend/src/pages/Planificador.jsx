@@ -35,7 +35,7 @@ const Planificador = () => {
 
 		const now = Date.now();
 		const elapsedRealTime = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
-		const elapsedSimulatedTime = elapsedRealTime * velocidad * (1 / 10); // Horas simuladas (relación ajustada)
+		const elapsedSimulatedTime = elapsedRealTime * velocidad * (1); // Horas simuladas (relación ajustada)
 		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
@@ -62,6 +62,15 @@ const Planificador = () => {
 		}
 	};
 
+	//probando logica de api
+	const fetchTrucksPlanificador = async () => {
+		if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
+			console.error("Faltan datos para enviar al API.");
+			return;
+		}
+		
+		try {
+			//const response = await getSimulacion()
 
 	const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 

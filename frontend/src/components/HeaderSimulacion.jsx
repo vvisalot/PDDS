@@ -29,12 +29,16 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
     if (onDropdownChange) onDropdownChange(e.key);
   };
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="Semanal">Semanal</Menu.Item>
-      <Menu.Item key="Colapso">Colapso</Menu.Item>
-    </Menu>
-  );
+  const items = [
+    {
+      key: 'Semanal',
+      label: 'Semanal',
+    },
+    {
+      key: 'Colapso',
+      label: 'Colapso',
+    },
+  ];  
 
   return (
     <div style={{
@@ -65,7 +69,10 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
 
         {/* Dropdown */}
-        <Dropdown overlay={menu} trigger={['click']}>
+        <Dropdown 
+          menu={{ items, onClick: handleMenuClick }} 
+          trigger={['click']}
+        >
           <Button size="small" style={{
             height: "32px",
             display: "flex",
@@ -77,6 +84,7 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
             <DownOutlined />
           </Button>
         </Dropdown>
+
 
         <ConfigProvider locale={locale}>
           <DatePicker
