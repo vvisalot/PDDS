@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import odipar.grupo2b.backend.algorithm.AsignadorVentas;
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
 import odipar.grupo2b.backend.algorithm.SimulatedAnnealing;
-import odipar.grupo2b.backend.dto.Bloqueo;
+import odipar.grupo2b.backend.dto.BloqueoResponse;
 import odipar.grupo2b.backend.dto.Mantenimiento;
 import odipar.grupo2b.backend.dto.Resultado;
 import odipar.grupo2b.backend.dto.Solucion;
@@ -24,7 +24,7 @@ public class AlgoritmoService {
     private final int DIAS_MANTENIMIENTO = 3;
 
     public Resultado simular(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
-                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos){
+                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos){
         var mantenimientos = new ArrayList<Mantenimiento>();
         for (Camion c : camiones) {
             //Revisar si esta en mantenimiento, si ya paso los días de mantenimiento vuelve a estar disponible
@@ -49,12 +49,14 @@ public class AlgoritmoService {
         // <editor-fold desc="ENDPOINT SIMULACION">
         //Este loop corre cada vez que se tiene que
         var solucion = new ArrayList<Solucion>();
+        var colapso = false;
         for (var entry : mapaCamionesPorCentral.entrySet()) {
             for (var camion : entry.getValue()) {
                 if (camion.getPaquetes().isEmpty()) {
                     continue;
                 }
                 var solucionCamion = SimulatedAnnealing.calcular(camion.getPaquetes(), camion, reloj, almacenesPrincipales);
+                colapso |= solucionCamion.colapso();
                 solucion.add(solucionCamion);
             }
         }
@@ -65,17 +67,21 @@ public class AlgoritmoService {
                 if (c.getRegresoAlmacen().isBefore(reloj.getTiempoSiguienteBatch())){
                     c.setEnRuta(false);
                     c.setCargaActual(0);
+                    c.setPaquetes(new ArrayList<>());
                 }
             }
         }
-        var bloqueos = mapaBloqueos.get(reloj.getTiempo());
+        int hour = reloj.getTiempo().getHour();
+        int closestMultiple = (hour / 6) * 6;
+        var key = reloj.getTiempo().withHour(closestMultiple).withMinute(0).withSecond(0).withNano(0);
+        var bloqueos = mapaBloqueos.getOrDefault(key,new ArrayList<BloqueoResponse>());
         reloj.pasarCicloDeEntregas();
-        return new Resultado(solucion, mantenimientos, bloqueos);
+        return new Resultado(solucion, mantenimientos, bloqueos, colapso);
     }
 
 
     public Resultado simular(List<Camion> camiones, List<Venta> ventas,
-                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, LocalDateTime fechaHora, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos){
+                                  List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, LocalDateTime fechaHora, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos){
         var mantenimientos = new ArrayList<Mantenimiento>();
         for (Camion c : camiones) {
             //Revisar si esta en mantenimiento, si ya paso los días de mantenimiento vuelve a estar disponible
@@ -100,12 +106,14 @@ public class AlgoritmoService {
         // <editor-fold desc="ENDPOINT SIMULACION">
         //Este loop corre cada vez que se tiene que
         var solucion = new ArrayList<Solucion>();
+        var colapso = false;
         for (var entry : mapaCamionesPorCentral.entrySet()) {
             for (var camion : entry.getValue()) {
                 if (camion.getPaquetes().isEmpty()) {
                     continue;
                 }
                 var solucionCamion = SimulatedAnnealing.calcular(camion.getPaquetes(), camion, fechaHora, almacenesPrincipales);
+                colapso |= solucionCamion.colapso();
                 solucion.add(solucionCamion);
             }
         }
@@ -123,7 +131,7 @@ public class AlgoritmoService {
         int hour = fechaHora.getHour();
         int closestMultiple = (hour / 6) * 6;
         var key = fechaHora.withHour(closestMultiple).withMinute(0).withSecond(0).withNano(0);
-        var bloqueos = mapaBloqueos.get(key);
-        return new Resultado(solucion, mantenimientos, bloqueos);
+        var bloqueos = mapaBloqueos.getOrDefault(key,new ArrayList<BloqueoResponse>());
+        return new Resultado(solucion, mantenimientos, bloqueos, colapso);
     }
 }

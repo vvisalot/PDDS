@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
+import odipar.grupo2b.backend.dto.BloqueoResponse;
 import odipar.grupo2b.backend.dto.Paquete;
 import odipar.grupo2b.backend.dto.Resultado;
 import odipar.grupo2b.backend.dto.Solucion;
@@ -80,7 +81,7 @@ public class PlanificadorController {
 
         GrafoTramos grafoTramos = GrafoTramos.getInstance();
         String filePathTramos = "tramos.txt";  // Cambia esta ruta por la correcta
-        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<odipar.grupo2b.backend.dto.Bloqueo>>();
+        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<BloqueoResponse>>();
         var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos, mapaBloqueosPorTiempo);
         var listaTramos = datosTramos.first();
         var mapaTramos = datosTramos.second();

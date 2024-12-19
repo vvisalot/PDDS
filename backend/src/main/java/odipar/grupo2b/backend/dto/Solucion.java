@@ -4,6 +4,6 @@ import java.util.List;
 
 public record Solucion(boolean colapso,
                         Camion camion,
-                       List<Tramo> tramos,
+                       List<TramoResponse> tramos,
                        Double tiempoTotal) {
 }
