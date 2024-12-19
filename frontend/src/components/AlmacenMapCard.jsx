@@ -4,6 +4,12 @@ import { FaTruck, FaWarehouse } from 'react-icons/fa';
 
 const { Title, Text } = Typography;
 
+const oficinasPrincipales = [
+    { id: '130101', departamento: 'LA LIBERTAD', ciudad: 'TRUJILLO', lat: -8.11176389, lng: -79.02868652, region: 'COSTA', ubigeo: 54 },
+    { id: '150101', departamento: 'LIMA', ciudad: 'LIMA', lat: -12.04591952, lng: -77.03049615, region: 'COSTA', ubigeo: 100 },
+    { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
+];
+
 const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
     if (!selectedAlmacen) return null;
 
@@ -18,6 +24,10 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
     };
 
     const getCapacidadColor = () => {
+        // Si es oficina principal, siempre verde
+        if (oficinasPrincipales.some(op => op.id === selectedAlmacen.id)) {
+            return 'green';
+        }
         const usageRatio = selectedAlmacen.cargaActual / selectedAlmacen.ubigeo;
         if (usageRatio > 0.75) return 'red';
         if (usageRatio > 0.5) return 'orange';
@@ -28,6 +38,22 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
         return new Date(simulated) > new Date(arrival);
     };
 
+    const isOficinaPrincipal = oficinasPrincipales.some(op => op.id === selectedAlmacen.id);
+
+    const renderCapacidadTag = () => {
+        if (isOficinaPrincipal) {
+            return (
+                <Tag color="green">
+                    Ilimitado
+                </Tag>
+            );
+        }
+        return (
+            <Tag color={getCapacidadColor()}>
+                {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} pedidos
+            </Tag>
+        );
+    };
     return (
         <>
             {/* Card de Información del Almacén */}
@@ -43,19 +69,26 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                 }}
             >
                 <div style={{
-                    position: 'sticky', top: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    paddingBottom: '12px', marginBottom: '12px',
+                    position: 'sticky',
+                    top: 0,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    paddingBottom: '12px',
+                    marginBottom: '12px',
                     borderBottom: '1px solid #f0f0f0'
                 }}>
                     <Space direction="vertical" style={{ width: "100%" }}>
                         <Space style={{ justifyContent: 'space-between', width: "100%" }}>
                             <Space>
-                                <FaWarehouse size={20} color={getCapacidadColor()} />
-                                <Title level={5} style={{ margin: 0 }}>Almacén {selectedAlmacen.id}</Title>
+                                <FaWarehouse
+                                    size={20}
+                                    color={isOficinaPrincipal ? "darkgreen" : getCapacidadColor()}
+                                />
+                                <Title level={5} style={{ margin: 0 }}>
+                                    {isOficinaPrincipal ? "Oficina Principal" : "Almacén"} {selectedAlmacen.id}
+                                </Title>
                             </Space>
-                            <Tag color={getCapacidadColor()}>
-                                {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} kg
-                            </Tag>
+                            {renderCapacidadTag()}
+
                         </Space>
                     </Space>
                 </div>
@@ -90,7 +123,7 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                     <Title level={5} style={{ margin: 0 }}>Flujo de Camiones</Title>
                 </div>
 
-                {selectedAlmacen.camiones.length > 0 ? (
+                {selectedAlmacen.camiones?.length > 0 ? (
                     selectedAlmacen.camiones.map((camion) => {
                         const entregado = compareTimes(simulatedTime, camion.tiempoLlegada);
                         return (

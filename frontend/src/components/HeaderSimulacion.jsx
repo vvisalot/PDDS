@@ -72,7 +72,8 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
             alignItems: "center",
             fontSize: "14px",
           }}>
-            {dropdownValue} <DownOutlined />
+            {dropdownValue}
+            <DownOutlined />
           </Button>
         </Dropdown>
 

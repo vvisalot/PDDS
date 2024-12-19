@@ -95,9 +95,6 @@ const Simulador = () => {
 			);
 			console.log("Rutas con tramos bloqueados:", rutasConBloqueos);
 
-
-
-
 			// Eliminar camiones de la lista de completados
 			const updatedCompletedTrucks = completedTrucksRef.current.filter(
 				codigo => !truckCodesInResponse.includes(codigo)

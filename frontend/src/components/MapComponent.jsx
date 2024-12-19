@@ -275,8 +275,45 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             key={oficina.id}
             position={[oficina.lat, oficina.lng]}
             icon={oficinaPrincipalIcon}
+            eventHandlers={{
+              click: (e) => {
+                const almacenSeleccionado = {
+                  ...oficina,
+                  cargaActual: almacenesCapacidad[`${oficina.lat}-${oficina.lng}`] || 0,
+                  esPrincipal: true
+                };
+
+                const camionesAsociados = trucks.filter(truck =>
+                  truck.camion.paquetes.some(paquete =>
+                    paquete.destino.latitud === oficina.lat &&
+                    paquete.destino.longitud === oficina.lng
+                  )
+                );
+
+                const almacenConCamiones = {
+                  ...almacenSeleccionado,
+                  camiones: camionesAsociados.map(truck => {
+                    const tramoDestino = truck.tramos.find(tramo =>
+                      tramo.destino.latitud === oficina.lat &&
+                      tramo.destino.longitud === oficina.lng
+                    );
+                    return {
+                      codigo: truck.camion.codigo,
+                      capacidad: truck.camion.capacidad,
+                      cargaActual: truck.camion.cargaActual,
+                      cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0),
+                      tiempoLlegada: tramoDestino ? tramoDestino.tiempoLlegada : null,
+                    };
+                  }),
+                };
+
+                handleSelectAlmacen(e, oficina.id);
+                setSelectedAlmacen(almacenConCamiones);
+              }
+            }}
           />
         ))}
+
 
         {/* Renderizar marcadores de oficinas normales */}
         {oficinas.filter((oficina) => !oficina.esPrincipal).map((oficina) => {

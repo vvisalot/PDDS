@@ -232,45 +232,4 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 	);
 };
 
-TruckMapCard.propTypes = {
-	selectedTruck: PropTypes.shape({
-		camion: PropTypes.shape({
-			codigo: PropTypes.string.isRequired,
-			capacidad: PropTypes.number.isRequired,
-			cargaActual: PropTypes.number.isRequired,
-			paquetes: PropTypes.arrayOf(
-				PropTypes.shape({
-					cantidadTotal: PropTypes.number.isRequired,
-					fechaHoraPedido: PropTypes.string.isRequired,
-					destino: PropTypes.shape({
-						latitud: PropTypes.number.isRequired,
-						longitud: PropTypes.number.isRequired
-					}).isRequired
-				})
-			).isRequired
-		}).isRequired,
-		tramos: PropTypes.arrayOf(
-			PropTypes.shape({
-				nombreOrigen: PropTypes.string.isRequired,
-				nombreDestino: PropTypes.string.isRequired,
-				tiempoSalida: PropTypes.string.isRequired,
-				tiempoLlegada: PropTypes.string.isRequired,
-				seDejaraElPaquete: PropTypes.bool.isRequired,
-				destino: PropTypes.shape({
-					latitud: PropTypes.number.isRequired,
-					longitud: PropTypes.number.isRequired
-				}).isRequired
-			})
-		).isRequired
-	}),
-	simulatedTime: PropTypes.string.isRequired,
-	truckPositions: PropTypes.objectOf(
-		PropTypes.shape({
-			lat: PropTypes.number.isRequired,
-			lng: PropTypes.number.isRequired
-		})
-	).isRequired,
-	onClose: PropTypes.func
-};
-
 export default TruckMapCard;
