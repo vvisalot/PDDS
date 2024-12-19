@@ -1,13 +1,13 @@
-import { Button, ConfigProvider, DatePicker, Pagination, Tabs, Typography, Modal, Form, InputNumber, message } from "antd";
-import { FaPlus, FaChevronLeft, FaChevronRight, FaTruck } from 'react-icons/fa';
+import { Button, ConfigProvider, DatePicker, Form, InputNumber, Modal, Pagination, Tabs, Typography, message } from "antd";
+import { FaChevronLeft, FaChevronRight, FaPlus, FaTruck } from 'react-icons/fa';
 
 import locale from 'antd/locale/es_ES';
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MapaPlanifComp from "/src/components/MapaPlanifComp";
+import SubirVentas from "../components/SubirVentas";
 import TablaFlota from "../components/TablaFlota";
 import TablaPedidos from "../components/TablaPedidos";
-import SubirVentas from "../components/SubirVentas";
 import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
@@ -35,7 +35,7 @@ const Planificador = () => {
 
 		const now = Date.now();
 		const elapsedRealTime = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
-		const elapsedSimulatedTime = elapsedRealTime * velocidad * (1 / 10); // Horas simuladas (relación ajustada)
+		const elapsedSimulatedTime = elapsedRealTime * velocidad * (1); // Horas simuladas (relación ajustada)
 		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
@@ -104,7 +104,7 @@ const Planificador = () => {
 		  
 			  // Realizar la llamada al API
 			const response = await axios.post(
-				"http://localhost:5000/api/ventas",
+				"https://1inf54-981-2b.inf.pucp.edu.pe/api/ventas",
 				{ diaPlani, destinPlani, cantidadPlani, idCliente },
 				{ headers } // Opcional
 			);
@@ -228,6 +228,7 @@ const Planificador = () => {
 		}
 	};
 
+	/*
 	const handleStart = async () => {
 		if (!dtpValue) {
 			message.error("Debe seleccionar una fecha y hora antes de iniciar");
@@ -272,6 +273,7 @@ const Planificador = () => {
 		}
 	};
 
+	*/
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const cardsPerPage = 5;

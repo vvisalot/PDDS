@@ -45,8 +45,10 @@ const Simulador = () => {
 		pedidosModal: 0,
 		tiempoRealModal: 0,
 		tiempoSimuladoModal: 0,
+		fechaInicialModal: '',
 		fechaFinalModal: '',
 		ultimaDataModal: {},
+		tipoSimulacion: '',
 	});
 	const allTrucksResumeRef = useRef(0);
 	const allPedidosRef = useRef(0);
@@ -54,6 +56,7 @@ const Simulador = () => {
 	const allTimeSimulatedRef = useRef(0);
 	const allTimeRealRef = useRef(0);
 	const ultimaDataRef = useRef({});
+	const ultimaDataColapsoRef = useRef({});
 
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -74,7 +77,7 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (simulatedModeRef.current === "Semanal" && days >= 1 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
 			//Funcion para guardar la data
 			// setAllTrucksResume(completedTrucks.length);
 			// setAllPedidos(totalPedidos);
@@ -84,7 +87,7 @@ const Simulador = () => {
 			
 			//allTrucksResumeRef.current = trucks.length; //volver a rrpobar
 			//allPedidosRef.current = totalPedidos;	//no sale
-			fechaResumeRef.current = dayjs(simulatedTimeRef.current).format("YYYY-MM-DD HH:mm:ss"); //si
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); //si
 			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
 			allTimeRealRef.current = elapsedRealTimeSec; //no sale
 			//si sale la ultima data
@@ -98,15 +101,32 @@ const Simulador = () => {
 				pedidosModal: allPedidosRef.current,
 				tiempoRealModal: allTimeRealRef.current.toFixed(2),
 				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
-				fechaFinalModal: fechaResumeRef.current,
-				ultimaDataModal: ultimaDataRef.current,
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataRef,
+				tipoSimulacion: simulatedModeRef.current,
 			});
 			// Mostrar el modal de resumen
 			setIsModalVisible(true);
-			
-			//console.log("Resumen de la simulación:", completedTrucks.length, totalPedidos, elapsedRealTime, elapsedSimulatedTime, dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 			handleStop("tiempo máximo alcanzado");
 			return;
+		}
+
+		if(simulatedModeRef.current === "Colapso" ){
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); 
+			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
+			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+			
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataColapsoRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
 		}
 
 		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
@@ -128,23 +148,26 @@ const Simulador = () => {
 			const response = await getSimulacion() // Replace with your API endpoint
 
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
+
+			if (!response.data.colapso) { 
+				ultimaDataColapsoRef.current = response.data;
+			}
+
 			//setUltimaData(response.data); //PROBANDO RESUMEN
 			ultimaDataRef.current = response.data;
 
-			if (simulatedModeRef.current === "Colapso" && response.data.rutas.some((truck) => truck.colapso)) { //Para colapsar
+			if (simulatedModeRef.current === "Colapso" && response.data.colapso) { //Para colapsar
+				// Mostrar el modal de resumen colapso
+				setIsModalVisible(true);
 				handleStop("colapsada");
 				return;
 			}
 
-			if (simulatedModeRef.current === "Semanal" && response.data.rutas.some((truck) => truck.colapso)) { //Por si acaso en semanal colapsa
+			if (simulatedModeRef.current === "Semanal" && response.data.colapso) { //Por si acaso en semanal colapsa
 				handleStop("colapsada");
 				return;
 			}
 
-			if (response.data.rutas.some((truck) => truck.colapso)) {
-				handleStop("colapsada");
-				return;
-			}
 
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 			console.log("Camiones recibidos:", truckCodesInResponse);

@@ -1,5 +1,6 @@
 //prueba para ver si se guardan datos en el ultimo minuto antes
 //de que termine la simulacion
+//Esta simulacion No sirve
 import React, { useEffect } from "react";
 
 const ResumenSimulacion2 = ({ resumenDatos, simulacionFinalizada }) => {
