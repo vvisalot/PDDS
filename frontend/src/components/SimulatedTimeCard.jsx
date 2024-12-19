@@ -39,10 +39,5 @@ const SimulatedTimeCard = ({ simulatedTime, elapsedTime, elapsedRealTime }) => {
   );
 };
 
-SimulatedTimeCard.propTypes = {
-  simulatedTime: PropTypes.string.isRequired,
-  elapsedTime: PropTypes.string.isRequired,
-  elapsedRealTime: PropTypes.number,
-};
 
 export default SimulatedTimeCard;
