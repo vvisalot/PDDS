@@ -89,12 +89,27 @@ const Planificador = () => {
 
 	//probando logica de api
 	const fetchTrucksPlanificador = async () => {
+		if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
+			console.error("Faltan datos para enviar al API.");
+			return;
+		}
+		
 		try {
 			//const response = await getSimulacion()
 
-			const response = await axios.post("http://localhost:5000/api/ventas",{diaPlani,destinPlani,cantidadPlani,idCliente});
+			// Configuración de los headers si es necesario
+			const headers = {
+				"Content-Type": "application/json",
+			};
+		  
+			  // Realizar la llamada al API
+			const response = await axios.post(
+				"http://localhost:5000/api/ventas",
+				{ diaPlani, destinPlani, cantidadPlani, idCliente },
+				{ headers } // Opcional
+			);
 
-			console.log(response.data);
+			console.log("Respuesta del servidor:", response.data);
 
 			// if (response.data.some((truck) => truck.colapso)) {
 			// 	handleStop("colapsada");
@@ -121,7 +136,14 @@ const Planificador = () => {
 			// });
 
 		} catch (error) {
-			console.error("Error fetching truck data para planificador:", error);
+			if (error.response) {
+			  // Error de servidor con un código de estado HTTP
+			  console.error("Error en la respuesta:", error.response.data);
+			} else if (error.request) {
+			  console.error("Sin respuesta del servidor:", error.request); //no respuesta del servidor
+			} else {
+			  console.error("Error al configurar la solicitud:", error.message); //otro tipo de error
+			}
 		}
 	};
 
@@ -329,6 +351,7 @@ const Planificador = () => {
 		setIdCliente('');
 	}
 
+	const [ventaIndividual, setVentaIndividual] = useState(null);
 	const handleAddSale = async (ventaIndividual) => {
 		try {
 			
@@ -374,7 +397,7 @@ const Planificador = () => {
                         <strong>Planificador de rutas.</strong>
                     </div>
 					
-					<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+					<div style={{ display: 'flex', marginBottom: '10px' }}>
 						{/*<Button type="primary" icon={<FaPlus />} onClick={handleAddSale}>Agregar Venta</Button>*/}
 						
 						{/* Botón primario para abrir el modal */}

@@ -64,7 +64,7 @@ const HeaderSimulacion = ({ onDateChange, isFetching, handleStart, handleStop, d
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
 
         {/* Dropdown */}
-        <Dropdown overlay={menu} trigger={['click']}>
+        <Dropdown menu={menu} trigger={['click']}>
           <Button size="small" style={{
             height: "32px",
             display: "flex",

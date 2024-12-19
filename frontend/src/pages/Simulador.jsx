@@ -36,6 +36,12 @@ const Simulador = () => {
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
 	// Actualiza el tiempo simulado
 
+	const [allTrucksResume, setAllTrucksResume] = useState();
+	const [allPedidos, setAllPedidos] = useState();
+	const [fechaResume, setFechaResume] = useState();
+	const [allTimeSimulated, setAllTimeSimulated] = useState();
+	const [allTimeReal, setAllTimeReal] = useState();
+
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
 
@@ -56,6 +62,13 @@ const Simulador = () => {
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
 		if (days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+			//Funcion para guardar la data
+			setAllTrucksResume(completedTrucks.length);
+			setAllPedidos(totalPedidos);
+			setAllTimeReal(elapsedRealTime);
+			setAllTimeSimulated(elapsedSimulatedTime);
+			setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
+			console.log("Resumen de la simulación:", completedTrucks.length, totalPedidos, elapsedRealTime, elapsedSimulatedTime, dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 			handleStop("tiempo máximo alcanzado");
 			return;
 		}
@@ -79,6 +92,8 @@ const Simulador = () => {
 			const response = await getSimulacion() // Replace with your API endpoint
 
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
+			setUltimaData(response.data); //PROBANDO RESUMEN
+
 
 			// Enfocarse en tramos bloqueados o bloqueos
 			const rutasConBloqueos = response.data.rutas.filter((ruta) =>
