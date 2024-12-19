@@ -1,32 +1,27 @@
-import { CloseOutlined } from '@ant-design/icons';
-import { Button, Card, Collapse, Space, Tag, Typography } from 'antd';
+import { Card, Empty, Space, Tag, Typography } from 'antd';
 import PropTypes from 'prop-types';
-import { FaWarehouse, FaTruck } from 'react-icons/fa';
+import { FaTruck, FaWarehouse } from 'react-icons/fa';
 
 const { Title, Text } = Typography;
 
-const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
+const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
     if (!selectedAlmacen) return null;
 
-    const cardStyle = {
+    const baseCardStyle = {
         position: "absolute",
-        top: "220px",
         right: "20px",
         zIndex: 1000,
         backgroundColor: "rgba(255, 255, 255, 0.9)",
         borderRadius: "5px",
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         width: 350,
-        margin: '20px auto',
-        //help me with the padding top pls:
-        paddingTop: '16px',
     };
 
     const getCapacidadColor = () => {
         const usageRatio = selectedAlmacen.cargaActual / selectedAlmacen.ubigeo;
-        if (usageRatio > 0.75) return 'red';  // Alto uso
-        if (usageRatio > 0.5) return 'orange';  // Uso medio
-        return 'green';  // Bajo uso
+        if (usageRatio > 0.75) return 'red';
+        if (usageRatio > 0.5) return 'orange';
+        return 'green';
     };
 
     const compareTimes = (simulated, arrival) => {
@@ -34,33 +29,69 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
     };
 
     return (
-        <Card
-            title={
-                <Space direction="vertical" style={{ marginBottom: '12px', width: "100%" }}>
-                    <Space style={{ justifyContent: 'space-between', width: "100%" }}>
-                        <Space>
-                            <FaWarehouse size={20} color={getCapacidadColor()} />
-                            <Title level={5} style={{ margin: 0 }}>Almacén {selectedAlmacen.id}</Title>
-                        </Space>
-                        <Tag color={getCapacidadColor()}>
-                            {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} kg
-                        </Tag>
-                    </Space>
-                    <Space direction="vertical" size={0} style={{ width: "100%" }}>
-                        <Text strong>Provincia: {selectedAlmacen.ciudad}</Text>
-                        <Text strong>Departamento: {selectedAlmacen.departamento}</Text>
+        <>
+            {/* Card de Información del Almacén */}
+            <Card
+                style={{
+                    ...baseCardStyle,
+                    top: "20px",
+                }}
+                bodyStyle={{
+                    padding: '16px',
+                    maxHeight: '200px',
+                    overflowY: 'auto'
+                }}
+            >
+                <div style={{
+                    position: 'sticky', top: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    paddingBottom: '12px', marginBottom: '12px',
+                    borderBottom: '1px solid #f0f0f0'
+                }}>
+                    <Space direction="vertical" style={{ width: "100%" }}>
                         <Space style={{ justifyContent: 'space-between', width: "100%" }}>
-                            <Text strong>Región: {selectedAlmacen.region}</Text>
-                            <Text strong>Ubigeo: {selectedAlmacen.id}</Text>
+                            <Space>
+                                <FaWarehouse size={20} color={getCapacidadColor()} />
+                                <Title level={5} style={{ margin: 0 }}>Almacén {selectedAlmacen.id}</Title>
+                            </Space>
+                            <Tag color={getCapacidadColor()}>
+                                {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} kg
+                            </Tag>
                         </Space>
+                    </Space>
+                </div>
+
+                <Space direction="vertical" size={0} style={{ width: "100%" }}>
+                    <Text strong>Provincia: {selectedAlmacen.ciudad}</Text>
+                    <Text strong>Departamento: {selectedAlmacen.departamento}</Text>
+                    <Space style={{ justifyContent: 'space-between', width: "100%" }}>
+                        <Text strong>Región: {selectedAlmacen.region}</Text>
+                        <Text strong>Ubigeo: {selectedAlmacen.id}</Text>
                     </Space>
                 </Space>
-            }
-            style={cardStyle}
-        >
-            <Collapse defaultActiveKey={selectedAlmacen.camiones.length > 0 ? ['1'] : []}>
-                <Collapse.Panel header={<Title level={5}>Flujo de Camiones</Title>} key="1">
-                    {selectedAlmacen.camiones.map((camion) => {
+            </Card>
+
+            {/* Card de Flujo de Camiones */}
+            <Card
+                style={{
+                    ...baseCardStyle,
+                    top: "190px",
+                }}
+                bodyStyle={{
+                    padding: '16px',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                }}
+            >
+                <div style={{
+                    position: 'sticky', top: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    paddingBottom: '12px', marginBottom: '12px',
+                    borderBottom: '1px solid #f0f0f0'
+                }}>
+                    <Title level={5} style={{ margin: 0 }}>Flujo de Camiones</Title>
+                </div>
+
+                {selectedAlmacen.camiones.length > 0 ? (
+                    selectedAlmacen.camiones.map((camion) => {
                         const entregado = compareTimes(simulatedTime, camion.tiempoLlegada);
                         return (
                             <Space
@@ -69,7 +100,7 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "center",
-                                    width: "100%", // Para aprovechar todo el ancho
+                                    width: "100%",
                                     marginBottom: 8,
                                 }}
                             >
@@ -85,31 +116,21 @@ const AlmacenMapCard = ({ selectedAlmacen, onClose, simulatedTime }) => {
                                 </Space>
                             </Space>
                         );
-                    })}
-                </Collapse.Panel>
-            </Collapse>
-        </Card>
+                    })
+                ) : (
+                    <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description="No han pasado camiones por esta oficina"
+                    />
+                )}
+            </Card>
+        </>
     );
 };
 
 AlmacenMapCard.propTypes = {
-    selectedAlmacen: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        ciudad: PropTypes.string.isRequired,
-        departamento: PropTypes.string.isRequired,
-        lat: PropTypes.number.isRequired,
-        lng: PropTypes.number.isRequired,
-        region: PropTypes.string.isRequired,
-        ubigeo: PropTypes.number.isRequired,
-        cargaActual: PropTypes.number.isRequired,
-        camiones: PropTypes.arrayOf(PropTypes.shape({
-            codigo: PropTypes.string.isRequired,
-            cantidadPedido: PropTypes.number.isRequired,
-            tiempoLlegada: PropTypes.string.isRequired, // Añadido como requerido
-        })).isRequired
-    }),
-    onClose: PropTypes.func.isRequired,
-    simulatedTime: PropTypes.string.isRequired
+    selectedAlmacen: PropTypes.object,
+    simulatedTime: PropTypes.string,
 };
 
 export default AlmacenMapCard;

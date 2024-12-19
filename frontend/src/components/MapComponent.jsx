@@ -3,12 +3,10 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer, } from 'react-leaflet
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import Papa from "papaparse";
-import PropTypes from 'prop-types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FaTruck, FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import AlmacenMapCard from '../components/AlmacenMapCard';
-import CardToggle from '../components/CardToggle';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
 
@@ -31,7 +29,6 @@ const iconCapacidad = { //icono según porcentaje de capacidad
   rojo: crearIcono("red"),
 };
 
-const oficinaIcon = L.icon({ iconUrl: warehouseIconUrl, iconSize: [15, 15], }); //icono oficinas
 const camionIcon = L.icon({ iconUrl: truckIconUrl, iconSize: [15, 15], }); //icono camiones
 const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [20, 20], }); //icono camiones seleccionados
 
@@ -55,28 +52,50 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
   const [almacenesHistorial, setAlmacenesHistorial] = useState({});
 
-  const handleTruckClick = (truckCode) => {
-    console.log('Camión seleccionado:', truckCode);
-    const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
-    setSelectedTruck(truckCode); // Guarda el código del camión seleccionado
-    setSelectedTruckObj(truck); // Guarda el objeto del camión seleccionado
+
+  // Función para manejar el click en un camión
+  const handleTruckClick = (e, truckCode) => {
+    console.log('Click en camión:', truckCode); // Para debugging
+    e.originalEvent.stopPropagation(); // Importante: usar originalEvent en eventos de Leaflet
+    setSelectedAlmacen(null);
+
+    if (selectedTruck === truckCode) {
+      setSelectedTruck(null);
+      setSelectedTruckObj(null);
+    } else {
+      const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
+      setSelectedTruck(truckCode);
+      setSelectedTruckObj(truck);
+    }
   };
 
-  const handleSelectAlmacen = (almacenId) => {
+
+  // Función para manejar el click en un almacén
+  const handleSelectAlmacen = (e, almacenId) => {
+    console.log('Click en almacén:', almacenId); // Para debugging
+    e.originalEvent.stopPropagation(); // Importante: usar originalEvent en eventos de Leaflet
+    setSelectedTruck(null);
+    setSelectedTruckObj(null);
+
+    if (selectedAlmacen?.id === almacenId) {
+      setSelectedAlmacen(null);
+      return;
+    }
+
     const almacenSeleccionado = oficinas.find(oficina => oficina.id === almacenId);
     const camionesAsociados = trucks.filter(truck =>
-        truck.camion.paquetes.some(paquete =>
-            paquete.destino.latitud === almacenSeleccionado.lat &&
-            paquete.destino.longitud === almacenSeleccionado.lng
-        )
+      truck.camion.paquetes.some(paquete =>
+        paquete.destino.latitud === almacenSeleccionado.lat &&
+        paquete.destino.longitud === almacenSeleccionado.lng
+      )
     );
 
     const almacenConCamiones = {
       ...almacenSeleccionado,
       camiones: camionesAsociados.map(truck => {
         const tramoDestino = truck.tramos.find(tramo =>
-            tramo.destino.latitud === almacenSeleccionado.lat &&
-            tramo.destino.longitud === almacenSeleccionado.lng
+          tramo.destino.latitud === almacenSeleccionado.lat &&
+          tramo.destino.longitud === almacenSeleccionado.lng
         );
         return {
           codigo: truck.camion.codigo,
@@ -87,6 +106,7 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         };
       }),
     };
+
     setAlmacenesHistorial(prevHistorial => ({
       ...prevHistorial,
       [almacenId]: almacenConCamiones,
@@ -94,17 +114,8 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     setSelectedAlmacen(almacenConCamiones);
   };
 
-  // Verificar si un tramo ha sido recorrido por un camión
-  const isTramoRecorrido = (truckCode, tramo) => {
-    if (!completedRoutes[truckCode]) return false;
-    const startTime = new Date(tramo.tiempoSalida).getTime();
-    const endTime = new Date(tramo.tiempoLlegada).getTime();
-    const simulatedDate = new Date(simulatedTime).getTime();
-    return simulatedDate >= startTime && simulatedDate <= endTime;
-  };
-
+  // Simulación de tramos recorridos: actualizar los tramos completados
   useEffect(() => {
-    // Simulación de tramos recorridos: actualizar los tramos completados
     const interval = setInterval(() => {
       const updatedCompletedRoutes = { ...completedRoutes };
 
@@ -115,22 +126,16 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
             const endTime = new Date(tramo.tiempoLlegada);
 
             if (currentTime > endTime) {
-              if (!updatedCompletedRoutes[truck.camion.codigo]) {
+              if (!updatedCompletedRoutes[truck.camion.codigo])
                 updatedCompletedRoutes[truck.camion.codigo] = [];
-              }
 
-              if (
-                !updatedCompletedRoutes[truck.camion.codigo].some(
-                  (completedTramo) =>
-                    completedTramo.origen.latitud === tramo.origen.latitud &&
-                    completedTramo.origen.longitud === tramo.origen.longitud &&
-                    completedTramo.destino.latitud === tramo.destino.latitud &&
-                    completedTramo.destino.longitud === tramo.destino.longitud
-                )
-              ) {
+              if (!updatedCompletedRoutes[truck.camion.codigo].some((completedTramo) =>
+                completedTramo.origen.latitud === tramo.origen.latitud &&
+                completedTramo.origen.longitud === tramo.origen.longitud &&
+                completedTramo.destino.latitud === tramo.destino.latitud &&
+                completedTramo.destino.longitud === tramo.destino.longitud
+              ))
                 updatedCompletedRoutes[truck.camion.codigo].push(tramo);
-
-              }
             }
           }
         }
@@ -141,40 +146,29 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     return () => clearInterval(interval);
   }, [trucks, completedRoutes, completedTrucks]);
 
-  // Limpiar selección al terminar de cargar los camiones
-  useEffect(() => {
-    if (!isFetching) {
-      setSelectedTruck(null);
-      setSelectedTruckObj(null);
-    }
-  }, [isFetching]);
-
   // Cargar oficinas desde el archivo CSV
   useEffect(() => {
     const cargarCSV = async () => {
       const response = await fetch('/oficinas.csv'); // Ruta del archivo CSV
       const csvText = await response.text();
-
-      // Lista de ubigeos de oficinas principales
       const ubigeosPrincipales = [130101, 150101, 40101];
 
-      // Parsear el CSV con PapaParse
       Papa.parse(csvText, {
-        header: true, // Primera fila como nombres de columna
+        header: true,
         skipEmptyLines: true,
         complete: (result) => {
           const datos = result.data.map((fila) => ({
             id: fila.id,
             departamento: fila.departamento,
             ciudad: fila.ciudad,
-            lat: Number.parseFloat(fila.lat), // Convertir a número
-            lng: Number.parseFloat(fila.lng), // Convertir a número
+            lat: Number.parseFloat(fila.lat),
+            lng: Number.parseFloat(fila.lng),
             region: fila.region,
-            ubigeo: Number.parseInt(fila.ubigeo.trim()), // Convertir a número, en realidad esta es la capacidad maxima
+            ubigeo: Number.parseInt(fila.ubigeo.trim()),
             cargaActual: 0,
-            esPrincipal: ubigeosPrincipales.includes(Number.parseInt(fila.id.trim())), // Validar si es oficina principal
+            esPrincipal: ubigeosPrincipales.includes(Number.parseInt(fila.id.trim())),
           }));
-          setOficinas(datos); // Actualizar el estado
+          setOficinas(datos);
         },
       });
     };
@@ -191,43 +185,63 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
     );
   }, [almacenesCapacidad]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Verificar si el clic fue en un marcador o en alguno de los cards
+      const isMarkerClick = event.target.classList.contains('leaflet-marker-icon');
+      const isCardClick = event.target.closest('.truck-card') || event.target.closest('.almacen-card');
+
+      if (!isMarkerClick && !isCardClick) {
+        setSelectedTruck(null);
+        setSelectedTruckObj(null);
+        setSelectedAlmacen(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
+
+      {/* Renderizar card de camión seleccionado */}
       {selectedTruck && (
-        <TruckMapCard
-          selectedTruck={selectedTruckObj}
-          onClose={() => setSelectedTruck(null)}
-          simulatedTime={simulatedTime}
-          truckPositions={truckPositions}
-        />
-      )}
-
-      {selectedAlmacen && (
-          <AlmacenMapCard
-              selectedAlmacen={selectedAlmacen}
-              onClose={() => setSelectedAlmacen(null)}
-              simulatedTime={simulatedTime}
+        <div className="truck-card">
+          <TruckMapCard
+            selectedTruck={selectedTruckObj}
+            onClose={() => {
+              setSelectedTruckObj(null)
+              setSelectedTruck(null)
+            }}
+            simulatedTime={simulatedTime}
+            truckPositions={truckPositions}
           />
+        </div>
       )}
 
-      {/* Renderizar LeyendaSimu enviando estadísticas como props */}
-      <LeyendaSimu
-        totalCamionesSimulacion={trucksCompletos}
-        camionesEnMapa={camionesEnMapa}
-        totalPedidos={totalPedidos}
-        pedidosEntregados={pedidosEntregados}
-      />
+      {/* Renderizar card de almacen seleccionado */}
+      {selectedAlmacen && (
+        <div className="almacen-card">
+          <AlmacenMapCard
+            selectedAlmacen={selectedAlmacen}
+            onClose={() => setSelectedAlmacen(null)}
+            simulatedTime={simulatedTime}
+          />
+        </div>
+      )}
 
 
       <MapContainer
-        center={[-13.5, -76]}
-        zoom={5}
+        center={[-13.5, -76]} zoom={5}
         style={{
           height: '100%',
           width: '100%'
         }}
         minZoom={6}
-        maxZoom={7}
+        maxZoom={9}
         scrollWheelZoom={true}
         maxBounds={[
           [-20, -90],
@@ -235,103 +249,9 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
         ]}
         maxBoundsViscosity={1.0}
         zoomControl={false}
+        attributionControl={false}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
-
-        {/* Renderizar marcadores de oficinas principales */}
-        {oficinasPrincipales.map((oficina) => (
-          <Marker
-            key={oficina.id}
-            position={[oficina.lat, oficina.lng]}
-            icon={oficinaPrincipalIcon}
-          >
-            <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                <p style={{ margin: '0', color: '#777' }}>Oficina Principal</p>
-                <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-
-        {/* Renderizar marcadores de oficinas normales */}
-        {oficinas
-          .filter((oficina) => !oficina.esPrincipal) // no oficinas principales
-          .map((oficina) => {
-            const cargaActual = oficina.cargaActual;
-            const capacidadMaxima = oficina.ubigeo;
-            const porcentaje = ((cargaActual / capacidadMaxima) * 100);
-            const icono = porcentaje <= 30
-              ? iconCapacidad.verde
-              : porcentaje <= 60
-                ? iconCapacidad.amarillo
-                : iconCapacidad.rojo;
-            return (
-              <Marker
-                key={oficina.id}
-                position={[oficina.lat, oficina.lng]}
-                icon={icono}
-                eventHandlers={{
-                  click: () => handleSelectAlmacen(oficina.id),
-                  popupclose: () => setSelectedAlmacen(null),
-                  popupopen: () => setSelectedAlmacen(oficina.id),
-                }}
-              >
-                <Popup>
-                  <div style={{ textAlign: 'center' }}>
-                    <h3 style={{ margin: '0', color: '#333' }}>{oficina.ciudad}</h3>
-                    <p style={{ margin: '0', color: '#777' }}>Departamento: {oficina.departamento}</p>
-                    <p style={{ margin: '0', color: '#777' }}>Región: {oficina.region}</p>
-                    <p style={{ margin: '0', color: '#777' }}>
-                      <strong>Capacidad Máxima:</strong> {oficina.ubigeo} kg
-                    </p>
-                    <p style={{ margin: '0', color: '#777' }}>
-                      <strong>Carga Actual:</strong> {oficina.cargaActual} kg
-                    </p>
-                    <p style={{ margin: '0', color: '#777' }}>
-                      <strong>Ocupación:</strong> {porcentaje.toFixed(2)}%
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
-
-        {/* Renderizar las rutas de los camiones */}
-        {trucks.map((truck) => {
-          if (completedTrucks.includes(truck.camion.codigo)) return null;
-
-          return (
-            <React.Fragment key={truck.camion.codigo}>
-              {truck.tramos.map((tramo, index) => {
-                const isRecorrido = isTramoRecorrido(truck.camion.codigo, tramo);
-                const isSelected = selectedTruck === truck.camion.codigo;
-                if (!isRecorrido && !isSelected) return null;
-                return (
-                  <Polyline
-                    key={`${truck.camion.codigo}-${index}-${isRecorrido ? 'recorrido' : isSelected ? 'seleccionado' : 'normal'}`}
-                    positions={[
-                      [tramo.origen.latitud, tramo.origen.longitud],
-                      [tramo.destino.latitud, tramo.destino.longitud],
-                    ]}
-                    color={
-                      isRecorrido ? 'blue' // Tramo recorrido
-                        : isSelected ? 'red' : 'blue'
-                    }
-                    weight={isSelected && !isRecorrido ? 2 : 1.5} // Más grueso si está seleccionado y no recorrido
-                    dashArray={isRecorrido ? '5, 5' : isSelected ? '10, 5' : null} // Línea discontinua para recorridos y seleccionados
-                  />
-                );
-              })}
-            </React.Fragment>
-          );
-        })}
-
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
 
         <SimulatedTimeCard
           simulatedTime={simulatedTime}
@@ -349,39 +269,73 @@ const MapComponent = ({ trucks, truckPositions, completedTrucks, simulatedTime, 
           }}
         />
 
+        {/* Renderizar marcadores de oficinas principales */}
+        {oficinasPrincipales.map((oficina) => (
+          <Marker
+            key={oficina.id}
+            position={[oficina.lat, oficina.lng]}
+            icon={oficinaPrincipalIcon}
+          />
+        ))}
+
+        {/* Renderizar marcadores de oficinas normales */}
+        {oficinas.filter((oficina) => !oficina.esPrincipal).map((oficina) => {
+          const cargaActual = oficina.cargaActual;
+          const capacidadMaxima = oficina.ubigeo;
+          const porcentaje = ((cargaActual / capacidadMaxima) * 100);
+          const icono = porcentaje <= 30
+            ? iconCapacidad.verde : porcentaje <= 60
+              ? iconCapacidad.amarillo : iconCapacidad.rojo;
+          return (
+            <Marker
+              key={oficina.id}
+              position={[oficina.lat, oficina.lng]}
+              icon={icono}
+              eventHandlers={{
+                click: (e) => handleSelectAlmacen(e, oficina.id),
+              }}
+            />
+          );
+        })}
+
+        {/* Renderizar solo las rutas del camión seleccionado */}
+        {selectedTruck && selectedTruckObj && selectedTruckObj.tramos && (
+          (!completedTrucks ||
+            (completedTrucks instanceof Set ? !completedTrucks.has(selectedTruck) : !completedTrucks.includes(selectedTruck))) && (
+            selectedTruckObj.tramos.map((tramo, index) => (
+              <Polyline
+                key={`${selectedTruck}-${index}`}
+                positions={[
+                  [tramo.origen.latitud, tramo.origen.longitud],
+                  [tramo.destino.latitud, tramo.destino.longitud],
+                ]}
+                color="red"
+                weight={3}
+                dashArray="10, 5"
+              />
+            ))
+          )
+        )}
+
         {/* Renderizar los marcadores de posición actual */}
         {truckPositions &&
           Object.entries(truckPositions).map(([truckCode, position]) => {
-            const truckData = trucks.find((truck) => truck.camion.codigo === truckCode); // Buscar datos del camión
-            const cargaActual = truckData?.camion.cargaActual || 0; // Obtener la carga actual, 0 si no existe
-            const capacidadRestante = truckData?.camion.capacidad - cargaActual || 0; // Calcular capacidad restante
+            // Verificar si el camión no está en completedTrucks (ya sea Set o Array)
+            const isCompleted = completedTrucks &&
+              (completedTrucks instanceof Set ?
+                completedTrucks.has(truckCode) :
+                completedTrucks.includes(truckCode));
 
             return (
-              !completedTrucks.includes(truckCode) && (
+              !isCompleted && (
                 <Marker
                   key={truckCode}
                   position={[position.lat, position.lng]}
-                  icon={selectedTruck === truckCode ? camionSeleccionadoIcon : camionIcon} // Cambiar ícono según el camión seleccionado
+                  icon={selectedTruck === truckCode ? camionSeleccionadoIcon : camionIcon}
                   eventHandlers={{
-                    click: () => handleTruckClick(truckCode), // Manejar clic en el marcador
-                    popupopen: () => setSelectedTruck(truckCode), // Actualizar estado al abrir el popup
-                    popupclose: () => setSelectedTruck(null), // Limpiar selección al cerrar el popup
+                    click: (e) => handleTruckClick(e, truckCode)
                   }}
-                >
-                  <Popup>
-                    <div style={{ textAlign: 'center' }}>
-                      <h3 style={{ margin: '0', color: '#333' }}>Camión: {truckCode}</h3>
-                      <p style={{ margin: '0', color: '#777' }}>Latitud: {position.lat.toFixed(6)}</p>
-                      <p style={{ margin: '0', color: '#777' }}>Longitud: {position.lng.toFixed(6)}</p>
-                      <p style={{ margin: '0', color: '#777' }}>
-                        <strong>Carga Actual:</strong> {cargaActual} kg
-                      </p>
-                      <p style={{ margin: '0', color: '#777' }}>
-                        <strong>Capacidad Restante:</strong> {capacidadRestante} kg
-                      </p>
-                    </div>
-                  </Popup>
-                </Marker>
+                />
               )
             );
           })}

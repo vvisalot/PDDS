@@ -81,6 +81,11 @@ const Simulador = () => {
 
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
+			if (response.data.rutas.some((truck) => truck.colapso)) {
+				handleStop("colapsada");
+				return;
+			}
+
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 			console.log("Camiones recibidos:", truckCodesInResponse);
 
@@ -91,17 +96,14 @@ const Simulador = () => {
 			console.log("Rutas con tramos bloqueados:", rutasConBloqueos);
 
 
-			if (response.data.rutas.some((truck) => truck.colapso)) {
-				handleStop("colapsada");
-				return;
-			}
 
-            // Eliminar camiones de la lista de completados
+
+			// Eliminar camiones de la lista de completados
 			const updatedCompletedTrucks = completedTrucksRef.current.filter(
 				codigo => !truckCodesInResponse.includes(codigo)
 			);
-			completedTrucksRef.current = updatedCompletedTrucks; 
-			setCompletedTrucks([...completedTrucksRef.current]); 
+			completedTrucksRef.current = updatedCompletedTrucks;
+			setCompletedTrucks([...completedTrucksRef.current]);
 
 
 			for (const truck of response.data.rutas) simulateTruckRoute(truck)
@@ -125,7 +127,7 @@ const Simulador = () => {
 
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
-    	if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
+		if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
 
 		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
@@ -182,7 +184,7 @@ const Simulador = () => {
 				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
 				console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
 				console.log("hora carga", tramo.tiempoLlegada);
-				truckData.camion.paquetes.forEach((paquete) => {
+				for (const paquete of truckData.camion.paquetes) {
 					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
 						setCargaAlmacenes((prev) => {
 							const updatedCarga = { ...prev };
@@ -207,18 +209,18 @@ const Simulador = () => {
 							});
 						});
 					}
-				});
+				}
 			}
 		}
 
 		if (!isCancelledRef.current) {
 			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
 
-        	// Actualizar la referencia de completedTrucks
-        	completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
+			// Actualizar la referencia de completedTrucks
+			completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
 
-        	// Actualizar el estado para forzar la re-renderización
-        	setCompletedTrucks([...completedTrucksRef.current]);			
+			// Actualizar el estado para forzar la re-renderización
+			setCompletedTrucks([...completedTrucksRef.current]);
 
 
 			setTruckPositions((prevPositions) => {

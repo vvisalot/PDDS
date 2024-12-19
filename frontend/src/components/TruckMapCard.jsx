@@ -1,4 +1,5 @@
 import { Card, List, Space, Tag, Timeline, Typography } from 'antd';
+import Item from 'antd/es/list/Item';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { FaBox, FaTruck } from 'react-icons/fa';
@@ -118,7 +119,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 				{selectedTruck.tramos.map((tramo, index) => {
 					const status = getTramoStatus(tramo);
 					return (
-						<Timeline.Item
+						<Item
 							key={index}
 							color={status === 'wait' ? 'gray' : status === 'process' ? 'blue' : 'green'}
 						>
@@ -138,7 +139,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 									)}
 								</Space>
 							</Space>
-						</Timeline.Item>
+						</Item>
 					);
 				})}
 			</Timeline>
@@ -147,8 +148,8 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 
 	const cardContainerStyle = {
 		position: "absolute",
-		top: "10px",
-		right: "10px",
+		top: "20px",
+		right: "20px",
 		zIndex: 1000,
 		width: 350,
 		display: 'flex',
