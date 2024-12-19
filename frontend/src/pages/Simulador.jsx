@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 import utc from "dayjs/plugin/utc"; // Importa el plugin UTC
 import HeaderSimulacion from "../components/HeaderSimulacion.jsx"
+import ResumenSimu from "../components/ResumenSimu";
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
 dayjs.extend(utc); // Extiende dayjs con el plugin UTC
@@ -36,6 +37,15 @@ const Simulador = () => {
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
 	// Actualiza el tiempo simulado
 
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [resumen, setResumen] = useState({
+		camionesModal: 0,
+		pedidosModal: 0,
+		tiempoRealModal: 0,
+		tiempoSimuladoModal: 0,
+		fechaFinalModal: '',
+		ultimaDataModal: {},
+	});
 	const allTrucksResumeRef = useRef(0);
 	const allPedidosRef = useRef(0);
 	const fechaResumeRef = useRef(null);
@@ -69,8 +79,9 @@ const Simulador = () => {
 			// setAllTimeReal(elapsedRealTime);
 			// setAllTimeSimulated(elapsedSimulatedTime);
 			// setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
-			allTrucksResumeRef.current = trucks.length; //volver a rrpobar
-			allPedidosRef.current = totalPedidos;	//no sale
+			
+			//allTrucksResumeRef.current = trucks.length; //volver a rrpobar
+			//allPedidosRef.current = totalPedidos;	//no sale
 			fechaResumeRef.current = dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"); //si
 			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
 			allTimeRealRef.current = elapsedRealTimeSec; //no sale
@@ -79,6 +90,18 @@ const Simulador = () => {
 					"pedidos:", allPedidosRef, "tiempo real:", allTimeRealRef, 
 					"tiempo simulado:", allTimeSimulatedRef, "fecha:", fechaResumeRef,
 					"ultima data:", ultimaDataRef);
+			
+			//los
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaFinalModal: fechaResumeRef.current,
+				ultimaDataModal: ultimaDataRef.current,
+			});
+			// Mostrar el modal de resumen
+			setIsModalVisible(true);
 			
 			//console.log("Resumen de la simulación:", completedTrucks.length, totalPedidos, elapsedRealTime, elapsedSimulatedTime, dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 			handleStop("tiempo máximo alcanzado");
@@ -365,6 +388,11 @@ const Simulador = () => {
 		}
 	};
 
+	const closeModal = () => {
+		setIsModalVisible(false);
+		// Redirigir o limpiar estados si es necesario
+	  };
+
 	const disabledDate = (current) => {
 		const startDate = dayjs("2024-06-01")
 		const endDate = dayjs("2026-11-30")
@@ -413,6 +441,8 @@ const Simulador = () => {
 				}
 			}
 		}
+		allTrucksResumeRef.current = camionesEnMapa;
+		allPedidosRef.current = totalPedidos;
 		return { totalPedidos, pedidosEntregados, camionesEnMapa };
 	};
 
@@ -568,6 +598,17 @@ const Simulador = () => {
 						pedidosEntregados={pedidosEntregados}
 						almacenesCapacidad={almacenesCapacidad}
 						isFetching={isFetching}
+					/>
+
+					<Button type="primary" onClick={() => setIsModalVisible(true)}>
+						Ver Resumen de la Simulación
+					</Button>
+
+					{/* Modal de Resumen */}
+					<ResumenSimu
+						open={isModalVisible}
+						onClose={closeModal}
+						resumen={resumen}
 					/>
 				</div >
 
