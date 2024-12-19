@@ -36,11 +36,12 @@ const Simulador = () => {
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
 	// Actualiza el tiempo simulado
 
-	const [allTrucksResume, setAllTrucksResume] = useState();
-	const [allPedidos, setAllPedidos] = useState();
-	const [fechaResume, setFechaResume] = useState();
-	const [allTimeSimulated, setAllTimeSimulated] = useState();
-	const [allTimeReal, setAllTimeReal] = useState();
+	const allTrucksResumeRef = useRef(0);
+	const allPedidosRef = useRef(0);
+	const fechaResumeRef = useRef(null);
+	const allTimeSimulatedRef = useRef(0);
+	const allTimeRealRef = useRef(0);
+	const ultimaDataRef = useRef({});
 
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
@@ -61,14 +62,25 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+		if (days >= 1 && hours >= 0 && minutes >= 0 && seconds >= 0) {
 			//Funcion para guardar la data
-			setAllTrucksResume(completedTrucks.length);
-			setAllPedidos(totalPedidos);
-			setAllTimeReal(elapsedRealTime);
-			setAllTimeSimulated(elapsedSimulatedTime);
-			setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
-			console.log("Resumen de la simulación:", completedTrucks.length, totalPedidos, elapsedRealTime, elapsedSimulatedTime, dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
+			// setAllTrucksResume(completedTrucks.length);
+			// setAllPedidos(totalPedidos);
+			// setAllTimeReal(elapsedRealTime);
+			// setAllTimeSimulated(elapsedSimulatedTime);
+			// setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
+			allTrucksResumeRef.current = trucks.length; //volver a rrpobar
+			allPedidosRef.current = totalPedidos;	//no sale
+			fechaResumeRef.current = dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"); //si
+			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
+			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+			//si sale la ultima data
+			console.log("Resumen de la simulación: camiones:", allTrucksResumeRef, 
+					"pedidos:", allPedidosRef, "tiempo real:", allTimeRealRef, 
+					"tiempo simulado:", allTimeSimulatedRef, "fecha:", fechaResumeRef,
+					"ultima data:", ultimaDataRef);
+			
+			//console.log("Resumen de la simulación:", completedTrucks.length, totalPedidos, elapsedRealTime, elapsedSimulatedTime, dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 			handleStop("tiempo máximo alcanzado");
 			return;
 		}
@@ -92,8 +104,8 @@ const Simulador = () => {
 			const response = await getSimulacion() // Replace with your API endpoint
 
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
-			setUltimaData(response.data); //PROBANDO RESUMEN
-
+			//setUltimaData(response.data); //PROBANDO RESUMEN
+			ultimaDataRef.current = response.data;
 
 			// Enfocarse en tramos bloqueados o bloqueos
 			const rutasConBloqueos = response.data.rutas.filter((ruta) =>
@@ -292,6 +304,15 @@ const Simulador = () => {
 		setTruckPositions({});
 
 		isCancelledRef.current = false;
+
+		//resetear valores de resumen
+		// setAllTrucksResume(0);
+		// setAllPedidos(0);
+		// setAllTimeReal(0);
+		// setAllTimeSimulated(0);
+		// setFechaResume('');
+		// setUltimaData({});
+
 
 		try {
 			await resetSimulacion();
