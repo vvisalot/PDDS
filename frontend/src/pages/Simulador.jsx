@@ -81,6 +81,11 @@ const Simulador = () => {
 
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
+			if (response.data.rutas.some((truck) => truck.colapso)) {
+				handleStop("colapsada");
+				return;
+			}
+
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 			console.log("Camiones recibidos:", truckCodesInResponse);
 
@@ -89,12 +94,6 @@ const Simulador = () => {
 				ruta.tramos.some((tramo) => tramo.bloqueado)
 			);
 			console.log("Rutas con tramos bloqueados:", rutasConBloqueos);
-
-
-			if (response.data.rutas.some((truck) => truck.colapso)) {
-				handleStop("colapsada");
-				return;
-			}
 
             // Eliminar camiones de la lista de completados
 			const updatedCompletedTrucks = completedTrucksRef.current.filter(
