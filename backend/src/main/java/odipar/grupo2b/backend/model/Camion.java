@@ -49,13 +49,14 @@ public class Camion {
     public static List<Camion> inicializarCamiones(Oficina lima, Oficina trujillo, Oficina arequipa, Map<Camion,List<LocalDateTime>> mapaMantenimientos) {
         List<Camion> camiones = new ArrayList<>();
 
-        //Tipo A
+        // Flota total: 88 
+        //Tipo A: 6 camiones
         for (int i = 0; i < 4; i++)
             camiones.add(new Camion(String.format("A%03d", i + 1), 'A', lima));
         camiones.add(new Camion("A005", 'A', trujillo));
         camiones.add(new Camion("A006", 'A', arequipa));
 
-        //Tipo B
+        //Tipo B: 32 camiones
         for (int i = 0; i < 7; i++)
             camiones.add(new Camion(String.format("B%03d", i + 1), 'B', lima));
         for (int i = 7; i < 10; i++)
@@ -63,7 +64,7 @@ public class Camion {
         for (int i = 10; i < 15; i++)
             camiones.add(new Camion(String.format("B%03d", i + 1), 'B', arequipa));
 
-        //Tipo C
+        //Tipo C: 50 camiones
         for (int i = 0; i < 10; i++)
             camiones.add(new Camion(String.format("C%03d", i + 1), 'C', lima));
         for (int i = 10; i < 16; i++)
