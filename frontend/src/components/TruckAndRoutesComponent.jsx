@@ -26,7 +26,7 @@ const TruckAndRoutesComponent = ({
     completedTrucks,
     handleTruckClick
 }) => {
-    console.log("TruckPositions:", truckPositions); // Debug
+    // console.log("TruckPositions:", truckPositions); // Debug
     // console.log("Selected truck:", selectedTruck); // Debug
     // console.log("Completed trucks:", completedTrucks); // Debug
 
