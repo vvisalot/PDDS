@@ -12,34 +12,8 @@ import TruckMapCard from '../components/TruckMapCard';
 import BloqueosMap from './BloqueosMap';
 import CardToggle from './CardToggle';
 import TruckAndRoutesComponent from './TruckAndRoutesComponent';
+import WarehousesComponent, { oficinasPrincipales } from './WarehouseComponent';
 
-const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
-const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
-
-const crearIcono = (color) => {
-  const iconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color={color} />);
-  const iconUrl = `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
-  return L.icon({ iconUrl, iconSize: [20, 20] });
-};
-
-const iconCapacidad = { //icono según porcentaje de capacidad
-  verde: crearIcono("green"),
-  amarillo: crearIcono("yellow"),
-  rojo: crearIcono("red"),
-};
-
-
-// Ícono personalizado para oficinas principales (verde oscuro)
-const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
-const oficinaPrincipalIconUrl = `data:image/svg+xml;base64,${btoa(oficinaPrincipalIconMarkup)}`;
-const oficinaPrincipalIcon = L.icon({ iconUrl: oficinaPrincipalIconUrl, iconSize: [30, 30], });
-
-// Definir las oficinas principales como variables independientes
-const oficinasPrincipales = [
-  { id: '130101', departamento: 'LA LIBERTAD', ciudad: 'TRUJILLO', lat: -8.11176389, lng: -79.02868652, region: 'COSTA', ubigeo: 54 },
-  { id: '150101', departamento: 'LIMA', ciudad: 'LIMA', lat: -12.04591952, lng: -77.03049615, region: 'COSTA', ubigeo: 100 },
-  { id: '040101', departamento: 'AREQUIPA', ciudad: 'AREQUIPA', lat: -16.39881421, lng: -71.537019649, region: 'COSTA', ubigeo: 177 },
-];
 
 const MapComponent = ({
   trucks,
@@ -320,39 +294,6 @@ const MapComponent = ({
           isVisible={mostrarBloqueos}
         />
 
-        {/* Renderizar marcadores de oficinas principales */}
-        {oficinasPrincipales.map((oficina) => (
-          <Marker
-            key={oficina.id}
-            position={[oficina.lat, oficina.lng]}
-            icon={oficinaPrincipalIcon}
-            eventHandlers={{
-              click: (e) => handleSelectAlmacen(e, oficina.id)
-            }}
-          />
-        ))}
-
-
-        {/* Renderizar marcadores de oficinas normales */}
-        {oficinas.filter((oficina) => !oficina.esPrincipal).map((oficina) => {
-          const cargaActual = oficina.cargaActual;
-          const capacidadMaxima = oficina.ubigeo;
-          const porcentaje = ((cargaActual / capacidadMaxima) * 100);
-          const icono = porcentaje <= 30
-            ? iconCapacidad.verde : porcentaje <= 60
-              ? iconCapacidad.amarillo : iconCapacidad.rojo;
-          return (
-            <Marker
-              key={oficina.id}
-              position={[oficina.lat, oficina.lng]}
-              icon={icono}
-              eventHandlers={{
-                click: (e) => handleSelectAlmacen(e, oficina.id),
-              }}
-            />
-          );
-        })}
-
         <TruckAndRoutesComponent
           selectedTruck={selectedTruck}
           selectedTruckObj={selectedTruckObj}
@@ -360,6 +301,12 @@ const MapComponent = ({
           completedTrucks={completedTrucks}
           handleTruckClick={handleTruckClick}
         />
+        <WarehousesComponent
+          oficinas={oficinas}
+          handleSelectAlmacen={handleSelectAlmacen}
+        />
+
+
       </MapContainer>
     </div>
   );

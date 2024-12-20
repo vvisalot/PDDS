@@ -59,10 +59,7 @@ const Simulador = () => {
 	const [bloqueos, setBloqueos] = useState([]);
 
 	const updateSimulatedTime = () => {
-		if (!startTimeRef.current || !dtpValue) {
-			console.log("Missing start time or dtpValue");
-			return;
-		}
+		if (!startTimeRef.current || !dtpValue) return;
 
 		const now = Date.now();
 		const elapsedRealTimeSec = (now - startTimeRef.current) / 1000;
@@ -71,17 +68,61 @@ const Simulador = () => {
 		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10);
 		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour');
 
-		console.log("Time update:", {
-			real: elapsedRealTimeSec,
-			simulated: elapsedSimulatedTime,
-			newTime: newSimulatedTime.format("YYYY-MM-DD HH:mm:ss")
-		});
-
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
 
+
+		// Calcular el tiempo transcurrido desde el inicio de la simulación
+		const simulatedElapsed = dayjs.duration(elapsedSimulatedTime, "hours");
+		const days = Math.floor(simulatedElapsed.asDays());
+		const hours = Math.floor(simulatedElapsed.asHours());
+		const minutes = simulatedElapsed.minutes();
+		const seconds = simulatedElapsed.seconds();
+		setElapsedTime(`${days} días, ${hours % 24}  horas`);
+
+
+		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); //si
+			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
+			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
+			// Mostrar el modal de resumen
+			setIsModalVisible(true);
+			handleStop("tiempo máximo alcanzado");
+			return;
+		}
+
+		if (simulatedModeRef.current === "Colapso") {
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss");
+			allTimeSimulatedRef.current = elapsedSimulatedTime;
+			allTimeRealRef.current = elapsedRealTimeSec;
+
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataColapsoRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
+		}
+
 		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime);
 	};
+
+
 	// Maneja el inicio y pausa del reloj simulador
 	useEffect(() => {
 		if (isFetching) {
@@ -98,15 +139,12 @@ const Simulador = () => {
 			const response = await getSimulacion() // Replace with your API endpoint
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
-			if (!response.data.colapso) {
-				ultimaDataColapsoRef.current = response.data;
-			}
+			if (!response.data.colapso) ultimaDataColapsoRef.current = response.data;
 
 			//setUltimaData(response.data); //PROBANDO RESUMEN
 			ultimaDataRef.current = response.data;
 
 			if (simulatedModeRef.current === "Colapso" && response.data.colapso) { //Para colapsar
-				// Mostrar el modal de resumen colapso
 				setIsModalVisible(true);
 				handleStop("colapsada");
 				return;
@@ -117,11 +155,8 @@ const Simulador = () => {
 				return;
 			}
 
-
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 
-
-			// Manejar los bloqueos de forma acumulativa
 			if (response.data.bloqueos) {
 				setBloqueos(prevBloqueos => {
 					// Crear un Map de los bloqueos existentes usando una clave única
@@ -133,14 +168,12 @@ const Simulador = () => {
 					);
 
 					// Agregar o actualizar con los nuevos bloqueos
-					response.data.bloqueos.forEach(nuevoBloqueo => {
+					for (const nuevoBloqueo of response.data.bloqueos) {
 						const key = `${nuevoBloqueo.nombreOrigen}-${nuevoBloqueo.nombreDestino}`;
 						if (!bloqueosMap.has(key)) {
 							bloqueosMap.set(key, nuevoBloqueo);
 						}
-					});
-
-					// Convertir el Map de vuelta a array
+					}
 					return Array.from(bloqueosMap.values());
 				});
 			}
@@ -177,7 +210,7 @@ const Simulador = () => {
 		if (isCancelledRef.current) return;
 		if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
 
-		console.log("Starting route simulation for truck:", truckData.camion.codigo);
+		// console.log("Starting route simulation for truck:", truckData.camion.codigo);
 
 		for (const tramo of truckData.tramos) {
 			if (isCancelledRef.current) break;
@@ -186,24 +219,25 @@ const Simulador = () => {
 			const endTime = dayjs(tramo.tiempoLlegada);
 			const totalDuration = endTime.diff(startTime, 'second');
 
-			console.log(`Truck ${truckData.camion.codigo} - times:`, {
-				simulatedTime: simulatedTimeRef.current,
-				start: tramo.tiempoSalida,
-				end: tramo.tiempoLlegada,
-				duration: totalDuration
-			});
+			// console.log(`Truck ${truckData.camion.codigo} - times:`, {
+			// 	simulatedTime: simulatedTimeRef.current,
+			// 	start: tramo.tiempoSalida,
+			// 	end: tramo.tiempoLlegada,
+			// 	duration: totalDuration
+			// });
 
 			// Esperar hasta que el tiempo simulado alcance el tiempo de inicio
 			while (dayjs(simulatedTimeRef.current).isBefore(startTime)) {
 				if (isCancelledRef.current) break;
-				await new Promise((resolve) => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, 10));
 			}
 
 			if (totalDuration <= 0) continue;
 
 			// Calcular pasos de interpolación
-			const steps = Math.max(1, Math.floor(totalDuration / 100)); // Menos steps para mejor rendimiento
+			const steps = Math.max(1, Math.floor(totalDuration / 1000)); // Menos steps para mejor rendimiento
 			const stepDuration = totalDuration / steps;
+			const realStepDuration = (stepDuration * 10) / 3600 * 1000;
 
 			// Interpolar posiciones
 			for (let step = 0; step <= steps; step++) {
@@ -213,21 +247,76 @@ const Simulador = () => {
 				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
 				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
+				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
+					//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
+					if (isCancelledRef.current) break;
+					await new Promise((resolve) => setTimeout(resolve, 10));
+				}
+
 				if (isValidLatLng(lat, lng)) {
-					setTruckPositions(prevPositions => {
-						const newPositions = {
-							...prevPositions,
-							[truckData.camion.codigo]: { lat, lng }
-						};
-						console.log(`Position update ${truckData.camion.codigo}:`, newPositions);
-						return newPositions;
-					});
+					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
+					setTruckPositions((prevPositions) => ({
+						...prevPositions,
+						[truckData.camion.codigo]: { lat, lng },
+					}));
+				} else {
+					console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
 				}
 
 				// Esperar antes del siguiente paso
-				await new Promise((resolve) => setTimeout(resolve, 100));
+				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
+			}
+
+			if (tramo.seDejaraElPaquete) {
+				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
+				// console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
+				// console.log("hora carga", tramo.tiempoLlegada);
+				for (const paquete of truckData.camion.paquetes) {
+					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
+						setCargaAlmacenes((prev) => {
+							const updatedCarga = { ...prev };
+							const cantidadPaquete = paquete.cantidadEntregada;
+							if (!updatedCarga[almacenId]) {
+								updatedCarga[almacenId] = [];
+							}
+							updatedCarga[almacenId].push({
+								carga: cantidadPaquete,
+								horaDeCarga: tramo.tiempoLlegada,
+							});
+							return updatedCarga;
+						});
+						setTrucks((prevTrucks) => {
+							return prevTrucks.map((truck) => {
+								if (truck.camion.codigo === truckData.camion.codigo) {
+									const updatedCamion = { ...truck.camion };
+									updatedCamion.cargaActual -= paquete.cantidadEntregada;
+									return { ...truck, camion: updatedCamion };
+								}
+								return truck;
+							});
+						});
+					}
+				}
 			}
 		}
+
+		if (!isCancelledRef.current) {
+			// console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+
+			// Actualizar la referencia de completedTrucks
+			completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
+
+			// Actualizar el estado para forzar la re-renderización
+			setCompletedTrucks([...completedTrucksRef.current]);
+
+
+			setTruckPositions((prevPositions) => {
+				const newPositions = { ...prevPositions };
+				delete newPositions[truckData.camion.codigo];
+				return newPositions;
+			});
+		}
+
 	};
 
 	// Procesar carga de almacenes según el tiempo simulado
@@ -257,10 +346,7 @@ const Simulador = () => {
 	useEffect(() => {
 		const updatedCapacidades = {};
 		for (const almacenId in cargaAlmacenes) {
-			updatedCapacidades[almacenId] = cargaAlmacenes[almacenId].reduce(
-				(total, item) => total + item.carga,
-				0
-			);
+			updatedCapacidades[almacenId] = cargaAlmacenes[almacenId].reduce((total, item) => total + item.carga, 0);
 		}
 		setAlmacenesCapacidad(updatedCapacidades);
 	}, [cargaAlmacenes]);
@@ -290,15 +376,6 @@ const Simulador = () => {
 		setTruckPositions({});
 
 		isCancelledRef.current = false;
-
-		//resetear valores de resumen
-		// setAllTrucksResume(0);
-		// setAllPedidos(0);
-		// setAllTimeReal(0);
-		// setAllTimeSimulated(0);
-		// setFechaResume('');
-		// setUltimaData({});
-
 
 		try {
 			await resetSimulacion();
@@ -339,7 +416,6 @@ const Simulador = () => {
 		setElapsedRealTime("");
 		setElapsedTime("");
 		setSimulatedTime("");
-		setCurrentPage(1);
 		simulatedModeRef.current = "Semanal";
 
 		console.log(`Simulación ${reason}.`);
@@ -364,11 +440,7 @@ const Simulador = () => {
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
 
-	const [currentPage, setCurrentPage] = useState(1);
-	const cardsPerPage = 3;
-	const handlePageChange = (page) => {
-		setCurrentPage(page);
-	};
+
 
 	const calcularEstadisticas = () => {
 		let totalPedidos = 0;
@@ -389,19 +461,14 @@ const Simulador = () => {
 
 				// Verificar paquetes entregados en función del destino y tiempo
 				for (const paquete of truck.camion.paquetes) {
-					const tramoCorrespondiente = truck.tramos.find(
-						(tramo) =>
-							tramo.destino.latitud === paquete.destino.latitud &&
-							tramo.destino.longitud === paquete.destino.longitud
+					const tramoCorrespondiente = truck.tramos.find((tramo) =>
+						tramo.destino.latitud === paquete.destino.latitud &&
+						tramo.destino.longitud === paquete.destino.longitud
 					);
 
-					if (
-						tramoCorrespondiente &&
-						dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
-						!completedTrucks.includes(truck.camion.codigo) // Evitar doble conteo para camiones terminados
-					) {
+					if (tramoCorrespondiente && dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
+						!completedTrucks.includes(truck.camion.codigo))
 						pedidosEntregados++;
-					}
 				}
 			}
 		}

@@ -51,7 +51,6 @@ const TruckAndRoutesComponent = ({
             {/* Renderizar los marcadores de camiones */}
             {truckPositions && Object.entries(truckPositions).map(([truckCode, position]) => {
                 if (completedTrucks?.includes(truckCode)) return null;
-
                 // Verificar que la posición sea válida
                 if (!position || typeof position.lat !== 'number' || typeof position.lng !== 'number') {
                     console.warn(`Invalid position for truck ${truckCode}:`, position);
@@ -69,6 +68,7 @@ const TruckAndRoutesComponent = ({
                                 handleTruckClick(e, truckCode);
                             }
                         }}
+                        zIndexOffset={2000}
                     />
                 );
             })}

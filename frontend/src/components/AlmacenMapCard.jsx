@@ -208,6 +208,7 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                 style={{
                     ...baseCardStyle,
                     top: "190px",
+
                 }}
                 className={{
                     padding: '16px',
@@ -221,7 +222,8 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     paddingBottom: '12px',
                     marginBottom: '12px',
-                    borderBottom: '1px solid #f0f0f0'
+                    borderBottom: '1px solid #f0f0f0',
+
                 }}>
                     {renderCamionesCard()}
                 </div>
