@@ -42,8 +42,8 @@ const TruckAndRoutesComponent = ({
                             [tramo.destino.latitud, tramo.destino.longitud]
                         ]}
                         color="red"
-                        weight={3}
-                        dashArray="10, 5"
+                        weight={2}
+                        dashArray="6, 6"
                     />
                 ))
             )}
