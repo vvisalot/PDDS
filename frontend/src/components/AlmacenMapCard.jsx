@@ -21,6 +21,8 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
         borderRadius: "5px",
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         width: 350,
+        maxHeight: "calc(50% - 30px)",
+        overflowY: 'auto'
     };
 
     const getCapacidadColor = () => {
@@ -43,192 +45,187 @@ const AlmacenMapCard = ({ selectedAlmacen, simulatedTime }) => {
     const renderCapacidadTag = () => {
         if (isOficinaPrincipal) {
             return (
-                <Tag color="green">
-                    Ilimitado
-                </Tag>
+              <Tag color="green">
+                  Ilimitado
+              </Tag>
             );
         }
         return (
-            <Tag color={getCapacidadColor()}>
-                {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} pedidos
-            </Tag>
+          <Tag color={getCapacidadColor()}>
+              {selectedAlmacen.cargaActual}/{selectedAlmacen.ubigeo} pedidos
+          </Tag>
         );
     };
 
     const renderCamionesCard = () => {
         if (isOficinaPrincipal) {
             return (
-                <>
-                    <Title level={5} style={{ margin: 0 }}>Camiones Despachados</Title>
-                    {selectedAlmacen.camiones?.length > 0 ? (
-                        selectedAlmacen.camiones.map((camion) => {
-                            const enRuta = compareTimes(simulatedTime, camion.tiempoSalida);
+              <>
+                  <Title level={5} style={{ margin: 0 }}>Camiones Despachados</Title>
+                  {selectedAlmacen.camiones?.length > 0 ? (
+                    selectedAlmacen.camiones.map((camion) => {
+                        const enRuta = compareTimes(simulatedTime, camion.tiempoSalida);
 
-                            return (
-                                <Space
-                                    key={camion.codigo}
-                                    direction="vertical"
-                                    style={{
-                                        width: "100%",
-                                        marginBottom: 16,
-                                        padding: 8,
-                                        border: '1px solid #f0f0f0',
-                                        borderRadius: 4
-                                    }}
-                                >
-                                    <Space style={{ width: "100%", justifyContent: "space-between" }}>
-                                        <Space>
-                                            <FaTruck size={16} />
-                                            <Text strong>Camión {camion.codigo}</Text>
-                                        </Space>
-                                        <Tag color={enRuta ? "green" : "orange"}>
-                                            {enRuta ? "En ruta" : "Por salir"}
-                                        </Tag>
-                                    </Space>
+                        return (
+                          <Space
+                            key={camion.codigo}
+                            direction="vertical"
+                            style={{
+                                width: "100%",
+                                marginBottom: 16,
+                                padding: 8,
+                                border: '1px solid #f0f0f0',
+                                borderRadius: 4
+                            }}
+                          >
+                              <Space style={{ width: "100%", justifyContent: "space-between" }}>
+                                  <Space>
+                                      <FaTruck size={16} />
+                                      <Text strong>Camión {camion.codigo}</Text>
+                                  </Space>
+                                  <Tag color={enRuta ? "green" : "orange"}>
+                                      {enRuta ? "En ruta" : "Por salir"}
+                                  </Tag>
+                              </Space>
 
-                                    <Space direction="vertical" size={0} style={{ width: "100%" }}>
-                                        <Space style={{ width: "100%", justifyContent: "space-between" }}>
-                                            <Text type="secondary">
-                                                Ordenes por entregar: {camion.paquetes}
-                                            </Text>
-                                            <Tag color="blue">
-                                                Capacidad: {camion.cargaActual}
-                                            </Tag>
-                                        </Space>
-                                        {enRuta && (
-                                            <Text type="secondary" style={{ fontSize: '12px' }}>
-                                                Salió: {new Date(camion.tiempoSalida).toISOString().replace('T', ' ').slice(0, 19)}
-                                            </Text>
-                                        )}
-                                    </Space>
-                                </Space>
-                            );
-                        })
-                    ) : (
-                        <Empty
-                            image={Empty.PRESENTED_IMAGE_SIMPLE}
-                            description="No hay camiones despachados desde esta oficina"
-                        />
-                    )}
-                </>
+                              <Space direction="vertical" size={0} style={{ width: "100%" }}>
+                                  <Space style={{ width: "100%", justifyContent: "space-between" }}>
+                                      <Text type="secondary">
+                                          Ordenes por entregar: {camion.paquetes}
+                                      </Text>
+                                      <Tag color="blue">
+                                          Capacidad: {camion.cargaActual}
+                                      </Tag>
+                                  </Space>
+                                  {enRuta && (
+                                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                                        Salió: {new Date(camion.tiempoSalida).toISOString().replace('T', ' ').slice(0, 19)}
+                                    </Text>
+                                  )}
+                              </Space>
+                          </Space>
+                        );
+                    })
+                  ) : (
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description="No hay camiones despachados desde esta oficina"
+                    />
+                  )}
+              </>
             );
         }
 
         // Renderizado para almacenes normales
         return (
-            <>
-                <Title level={5} style={{ margin: 0 }}>Flujo de Camiones</Title>
-                {selectedAlmacen.camiones?.length > 0 ? (
-                    selectedAlmacen.camiones.map((camion) => {
-                        const entregado = compareTimes(simulatedTime, camion.tiempoLlegada);
-                        return (
-                            <Space
-                                key={camion.codigo}
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                    marginBottom: 8,
-                                }}
-                            >
-                                <Space>
-                                    <FaTruck size={16} />
-                                    <Text>Camión {camion.codigo}</Text>
-                                </Space>
-                                <Space>
-                                    <Tag color={entregado ? "green" : "red"}>
-                                        {entregado ? "Entregado" : "Pendiente"}
-                                    </Tag>
-                                    <Tag color="blue">{camion.cantidadPedido} unidades</Tag>
-                                </Space>
-                            </Space>
-                        );
-                    })
-                ) : (
-                    <Empty
-                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        description="No han pasado camiones por esta oficina"
-                    />
-                )}
-            </>
+          <>
+              <Title level={5} style={{ margin: 0 }}>Flujo de Camiones</Title>
+              {selectedAlmacen.camiones?.length > 0 ? (
+                selectedAlmacen.camiones.map((camion) => {
+                    const entregado = compareTimes(simulatedTime, camion.tiempoLlegada);
+                    return (
+                      <Space
+                        key={camion.codigo}
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            width: "100%",
+                            marginBottom: 8,
+                        }}
+                      >
+                          <Space>
+                              <FaTruck size={16} />
+                              <Text>Camión {camion.codigo}</Text>
+                          </Space>
+                          <Space>
+                              <Tag color={entregado ? "green" : "red"}>
+                                  {entregado ? "Entregado" : "Pendiente"}
+                              </Tag>
+                              <Tag color="blue">{camion.cantidadPedido} unidades</Tag>
+                          </Space>
+                      </Space>
+                    );
+                })
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="No han pasado camiones por esta oficina"
+                />
+              )}
+          </>
         );
     };
 
     return (
-        <>
-            {/* Card de Información del Almacén */}
-            <Card
-                style={{
-                    ...baseCardStyle,
-                    top: "20px",
-                }}
-                className={{
-                    padding: '16px',
-                    maxHeight: '200px',
-                    overflowY: 'auto'
-                }}
-            >
-                <div style={{
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    paddingBottom: '12px',
-                    marginBottom: '12px',
-                    borderBottom: '1px solid #f0f0f0'
-                }}>
-                    <Space direction="vertical" style={{ width: "100%" }}>
-                        <Space style={{ justifyContent: 'space-between', width: "100%" }}>
-                            <Space>
-                                <FaWarehouse
-                                    size={20}
-                                    color={isOficinaPrincipal ? "darkgreen" : getCapacidadColor()}
-                                />
-                                <Title level={5} style={{ margin: 0 }}>
-                                    {isOficinaPrincipal ? "Oficina Principal" : "Almacén"} {selectedAlmacen.id}
-                                </Title>
-                            </Space>
-                            {renderCapacidadTag()}
-                        </Space>
-                    </Space>
-                </div>
+      <>
+          {/* Card de Información del Almacén */}
+          <Card
+            style={{
+                ...baseCardStyle,
+                top: "20px",
+            }}
+            bodyStyle={{
+                padding: '16px',
+            }}
+          >
+              <div style={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  paddingBottom: '12px',
+                  marginBottom: '12px',
+                  borderBottom: '1px solid #f0f0f0'
+              }}>
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                      <Space style={{ justifyContent: 'space-between', width: "100%" }}>
+                          <Space>
+                              <FaWarehouse
+                                size={20}
+                                color={isOficinaPrincipal ? "darkgreen" : getCapacidadColor()}
+                              />
+                              <Title level={5} style={{ margin: 0 }}>
+                                  {isOficinaPrincipal ? "Oficina Principal" : "Almacén"} {selectedAlmacen.id}
+                              </Title>
+                          </Space>
+                          {renderCapacidadTag()}
+                      </Space>
+                  </Space>
+              </div>
 
-                <Space direction="vertical" size={0} style={{ width: "100%" }}>
-                    <Text strong>Provincia: {selectedAlmacen.ciudad}</Text>
-                    <Text strong>Departamento: {selectedAlmacen.departamento}</Text>
-                    <Space style={{ justifyContent: 'space-between', width: "100%" }}>
-                        <Text strong>Región: {selectedAlmacen.region}</Text>
-                        <Text strong>Ubigeo: {selectedAlmacen.id}</Text>
-                    </Space>
-                </Space>
-            </Card>
+              <Space direction="vertical" size={0} style={{ width: "100%" }}>
+                  <Text strong>Provincia: {selectedAlmacen.ciudad}</Text>
+                  <Text strong>Departamento: {selectedAlmacen.departamento}</Text>
+                  <Space style={{ justifyContent: 'space-between', width: "100%" }}>
+                      <Text strong>Región: {selectedAlmacen.region}</Text>
+                      <Text strong>Ubigeo: {selectedAlmacen.id}</Text>
+                  </Space>
+              </Space>
+          </Card>
 
-            {/* Card de Flujo de Camiones */}
-            <Card
-                style={{
-                    ...baseCardStyle,
-                    top: "190px",
+          {/* Card de Flujo de Camiones */}
+          <Card
+            style={{
+                ...baseCardStyle,
+                top: "calc(50% + 10px)",
+            }}
+            bodyStyle={{
+                padding: '16px',
+            }}
+          >
+              <div style={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  paddingBottom: '12px',
+                  marginBottom: '12px',
+                  borderBottom: '1px solid #f0f0f0',
 
-                }}
-                className={{
-                    padding: '16px',
-                    maxHeight: '400px',
-                    overflowY: 'auto'
-                }}
-            >
-                <div style={{
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    paddingBottom: '12px',
-                    marginBottom: '12px',
-                    borderBottom: '1px solid #f0f0f0',
-
-                }}>
-                    {renderCamionesCard()}
-                </div>
-            </Card>
-        </>
+              }}>
+                  {renderCamionesCard()}
+              </div>
+          </Card>
+      </>
     );
 };
 

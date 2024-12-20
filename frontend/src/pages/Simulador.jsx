@@ -452,10 +452,8 @@ const Simulador = () => {
 			const tramosActivos = truck.tramos.filter(
 				(tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
 			);
-
+			if(!completedTrucks.includes(truck.camion.codigo)) camionesEnMapa++;
 			if (tramosActivos.length > 0) {
-				camionesEnMapa++; // Contar camión si tiene al menos un tramo activo
-
 				// Contar pedidos totales y entregados solo para camiones en el mapa
 				totalPedidos += truck.camion.paquetes.length;
 

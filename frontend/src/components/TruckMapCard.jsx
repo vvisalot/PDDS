@@ -152,82 +152,81 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 		right: "20px",
 		zIndex: 1000,
 		width: 350,
+		maxHeight: "calc(100% - 40px)",
+		height: 'calc(100% - 40px)',
 		display: 'flex',
 		flexDirection: 'column',
-		gap: '8px'
+		gap: '8px',
+		overflow: 'hidden',
 	};
 
 	const baseCardStyle = {
 		width: '100%',
 		boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+		flexShrink: 0
 	};
 
 	return (
 		<div style={cardContainerStyle}>
-			{/* Card Principal - Info del Camión */}
-			<Card style={baseCardStyle}>
-				<Space direction="vertical" style={{ width: '100%' }}>
-					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
-						<Space>
-							<FaTruck size={20} color={getCapacityIconColor()} />
-							<Text strong>Camión {selectedTruck.camion.codigo}</Text>
+			<div style={{ display: "flex", flexDirection: "column", gap: "8px", height: "100%" }}>
+				{/* Card Principal - Info del Camión */}
+				<Card style={baseCardStyle}>
+					<Space direction="vertical" style={{ width: "100%" }}>
+						<Space style={{ width: "100%", justifyContent: "space-between" }}>
+							<Space>
+								<FaTruck size={20} color={getCapacityIconColor()} />
+								<Text strong>Camión {selectedTruck.camion.codigo}</Text>
+							</Space>
+							<Tag color={getCapacityColor()}>
+								<FaBox size={12} style={{ marginRight: 4 }} />
+								{selectedTruck.camion.cargaActual}/{selectedTruck.camion.capacidad}
+							</Tag>
 						</Space>
-						<Tag color={getCapacityColor()}>
-							<FaBox size={12} style={{ marginRight: 4 }} />
-							{selectedTruck.camion.cargaActual}/{selectedTruck.camion.capacidad}
-						</Tag>
+						{currentPosition && (
+							<Text type="secondary">
+								Posición actual: ({currentPosition.lat.toFixed(3)}, {currentPosition.lng.toFixed(3)})
+							</Text>
+						)}
 					</Space>
-					{currentPosition && (
-						<Text type="secondary">
-							Posición actual: ({currentPosition.lat.toFixed(3)}, {currentPosition.lng.toFixed(3)})
-						</Text>
-					)}
-				</Space>
-			</Card>
+				</Card>
 
-			{/* Card de Pedidos */}
-			<Card
-				style={{
-					...baseCardStyle,
-					maxHeight: 200,
-					overflow: 'hidden'
-				}}
-				title={
-					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
-						<Text strong>Lista de pedidos</Text>
-						<Tag>Total: {selectedTruck.camion.paquetes.length}</Tag>
-					</Space>
-				}
-				bodyStyle={{
-					maxHeight: 200,
-					overflowY: 'auto',
-					padding: '0 24px'
-				}}
-			>
-				{renderPedidosList()}
-			</Card>
+				{/* Card de Pedidos */}
+				<Card
+					style={{ ...baseCardStyle, flexGrow: 0 }}
+					title={
+						<Space style={{ width: "100%", justifyContent: "space-between" }}>
+							<Text strong>Lista de pedidos</Text>
+							<Tag>Total: {selectedTruck.camion.paquetes.length}</Tag>
+						</Space>
+					}
+					bodyStyle={{
+						maxHeight: 120,
+						overflowY: "auto",
+						padding: "0 24px",
+					}}
+				>
+					{renderPedidosList()}
+				</Card>
 
-			{/* Card de Ruta */}
-			<Card
-				style={{
-					...baseCardStyle,
-					maxHeight: 200,
-					overflow: 'hidden'
-				}}
-				title={
-					<Space style={{ width: '100%', justifyContent: 'space-between' }}>
-						<Text strong>Ruta tomada</Text>
-						<Tag>Tramos: {selectedTruck.tramos.length}</Tag>
-					</Space>
-				}
-				bodyStyle={{
-					maxHeight: 200,
-					overflowY: 'auto',
-					padding: '24px'
-				}}
-			>
-				{renderRouteHistory()}
-			</Card>
+				{/* Card de Ruta */}
+				<Card
+					style={{ ...baseCardStyle, display: "flex", flexDirection: "column", overflowY: "auto" }}
+					title={
+						<Space style={{ width: "100%", justifyContent: "space-between" }}>
+							<Text strong>Ruta tomada</Text>
+							<Tag>Tramos: {selectedTruck.tramos.length}</Tag>
+						</Space>
+					}
+					bodyStyle={{
+						maxHeight: 150,
+						overflowY: "auto",
+						padding: "24px",
+						height: "100%",
+					}}
+				>
+					{renderRouteHistory()}
+				</Card>
+			</div>
 		</div>
 	);
 };

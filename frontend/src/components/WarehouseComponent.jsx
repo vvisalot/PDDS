@@ -16,7 +16,6 @@ const createWarehouseIcon = (color, size = 32) => {
             justifyContent: 'center',
         }}>
             <div style={{
-                background: 'white',
                 borderRadius: '50%',
                 width: '80%',
                 height: '80%',
@@ -24,6 +23,7 @@ const createWarehouseIcon = (color, size = 32) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 boxShadow: '0 0 2px rgba(0,0,0,0.2)', // Sutil sombra en lugar de borde
+                background: 'transparent',
             }}>
                 <FaWarehouse size={iconSize} color={color} />
             </div>

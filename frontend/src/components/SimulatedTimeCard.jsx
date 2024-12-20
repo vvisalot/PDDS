@@ -15,7 +15,7 @@ const SimulatedTimeCard = ({ simulatedTime, elapsedTime, elapsedRealTime }) => {
     <Card
       style={{
         position: 'absolute',
-        top: "10px ",
+        top: "50px ",
         left: "10px",
         zIndex: 1000,
         borderRadius: "5px",

@@ -13,6 +13,7 @@ import BloqueosMap from './BloqueosMap';
 import CardToggle from './CardToggle';
 import TruckAndRoutesComponent from './TruckAndRoutesComponent';
 import WarehousesComponent, { oficinasPrincipales } from './WarehouseComponent';
+import SearchBar from "./SearchBar.jsx";
 
 
 const MapComponent = ({
@@ -37,6 +38,7 @@ const MapComponent = ({
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
   const [almacenesHistorial, setAlmacenesHistorial] = useState({});
   const [mostrarBloqueos, setMostrarBloqueos] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Función para manejar el click en un camión
   const handleTruckClick = (e, truckCode) => {
@@ -135,7 +137,7 @@ const MapComponent = ({
   // Simulación de tramos recorridos: actualizar los tramos completados
   useEffect(() => {
     const interval = setInterval(() => {
-      const updatedCompletedRoutes = { ...completedRoutes };
+      const updatedCompletedRoutes = {...completedRoutes};
 
       for (const truck of trucks) {
         if (!completedTrucks.includes(truck.camion.codigo)) {
@@ -198,7 +200,7 @@ const MapComponent = ({
     setOficinas(prevOficinas =>
       prevOficinas.map(oficina => {
         const capacidadAlmacen = almacenesCapacidad[`${oficina.lat}-${oficina.lng}`] || 0;
-        return { ...oficina, cargaActual: capacidadAlmacen };
+        return {...oficina, cargaActual: capacidadAlmacen};
       })
     );
   }, [almacenesCapacidad]);
@@ -222,9 +224,47 @@ const MapComponent = ({
     };
   }, []);
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchFocus = () => {
+    setSearchTerm('');
+    setSelectedTruck(null);
+    setSelectedTruckObj(null);
+    setSelectedAlmacen(null);
+  };
+
+  useEffect(() => {
+    if (searchTerm) {
+      // Search for truck
+      const foundTruck = trucks.find(truck => truck.camion.codigo.toLowerCase() === searchTerm.toLowerCase());
+      if (foundTruck && !completedTrucks.includes(foundTruck.camion.codigo)) { //podemos quitar la validacion luego de "&&" para buscar camiones que ya terminaron
+        setSelectedTruck(foundTruck.camion.codigo);
+        setSelectedTruckObj(foundTruck);
+        setSelectedAlmacen(null);
+        return;
+      }
+
+      // Search for almacen
+      const foundAlmacen = oficinas.find(oficina =>
+        oficina.id === searchTerm || oficina.ciudad.toLowerCase() === searchTerm.toLowerCase()
+      );
+      if (foundAlmacen) {
+        handleSelectAlmacen({ originalEvent: { stopPropagation: () => {} } }, foundAlmacen.id);
+        return;
+      }
+
+      // If no match found
+      setSelectedTruck(null);
+      setSelectedTruckObj(null);
+      setSelectedAlmacen(null);
+    }
+  }, [searchTerm, trucks, oficinas]);
+
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-
+      <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} onSearchFocus={handleSearchFocus}/>
       <div>
         <LeyendaSimu
           totalCamionesSimulacion={trucksCompletos}
