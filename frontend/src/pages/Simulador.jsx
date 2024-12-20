@@ -58,81 +58,30 @@ const Simulador = () => {
 
 	const [bloqueos, setBloqueos] = useState([]);
 
-
 	const updateSimulatedTime = () => {
-		if (!startTimeRef.current || !dtpValue) return;
-
-		const now = Date.now();
-		const elapsedRealTimeSec = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
-		setElapsedRealTime(elapsedRealTimeSec);
-		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10); // Horas simuladas (relación ajustada)
-		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
-		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
-		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
-
-		// Calcular el tiempo transcurrido desde el inicio de la simulación
-		const simulatedElapsed = dayjs.duration(elapsedSimulatedTime, "hours");
-		const days = Math.floor(simulatedElapsed.asDays());
-		const hours = Math.floor(simulatedElapsed.asHours());
-		const minutes = simulatedElapsed.minutes();
-		const seconds = simulatedElapsed.seconds();
-		setElapsedTime(`${days} días, ${hours % 24}  horas`);
-
-		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
-			//Funcion para guardar la data
-			// setAllTrucksResume(completedTrucks.length);
-			// setAllPedidos(totalPedidos);
-			// setAllTimeReal(elapsedRealTime);
-			// setAllTimeSimulated(elapsedSimulatedTime);
-			// setFechaResume(dayjs(simulatedTime).format("YYYY-MM-DD HH:mm:ss"));
-
-			//allTrucksResumeRef.current = trucks.length; //volver a rrpobar
-			//allPedidosRef.current = totalPedidos;	//no sale
-			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); //si
-			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
-			allTimeRealRef.current = elapsedRealTimeSec; //no sale
-			//si sale la ultima data
-			/* console.log("Resumen de la simulación: camiones:", allTrucksResumeRef, 
-					"pedidos:", allPedidosRef, "tiempo real:", allTimeRealRef, 
-					"tiempo simulado:", allTimeSimulatedRef, "fecha:", fechaResumeRef,
-					"ultima data:", ultimaDataRef); */
-
-			setResumen({
-				camionesModal: allTrucksResumeRef.current,
-				pedidosModal: allPedidosRef.current,
-				tiempoRealModal: allTimeRealRef.current.toFixed(2),
-				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
-				fechaInicialModal: fechaResumeRef.current,
-				fechaFinalModal: simulatedTimeRef.current,
-				ultimaDataModal: ultimaDataRef,
-				tipoSimulacion: simulatedModeRef.current,
-			});
-			// Mostrar el modal de resumen
-			setIsModalVisible(true);
-			handleStop("tiempo máximo alcanzado");
+		if (!startTimeRef.current || !dtpValue) {
+			console.log("Missing start time or dtpValue");
 			return;
 		}
 
-		if (simulatedModeRef.current === "Colapso") {
-			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss");
-			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
-			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+		const now = Date.now();
+		const elapsedRealTimeSec = (now - startTimeRef.current) / 1000;
+		setElapsedRealTime(elapsedRealTimeSec);
 
-			setResumen({
-				camionesModal: allTrucksResumeRef.current,
-				pedidosModal: allPedidosRef.current,
-				tiempoRealModal: allTimeRealRef.current.toFixed(2),
-				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
-				fechaInicialModal: fechaResumeRef.current,
-				fechaFinalModal: simulatedTimeRef.current,
-				ultimaDataModal: ultimaDataColapsoRef,
-				tipoSimulacion: simulatedModeRef.current,
-			});
-		}
+		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10);
+		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour');
 
-		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
+		console.log("Time update:", {
+			real: elapsedRealTimeSec,
+			simulated: elapsedSimulatedTime,
+			newTime: newSimulatedTime.format("YYYY-MM-DD HH:mm:ss")
+		});
+
+		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
+		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
+
+		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime);
 	};
-
 	// Maneja el inicio y pausa del reloj simulador
 	useEffect(() => {
 		if (isFetching) {
@@ -223,11 +172,12 @@ const Simulador = () => {
 
 	const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
 
+
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
 		if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
 
-		// console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
+		console.log("Starting route simulation for truck:", truckData.camion.codigo);
 
 		for (const tramo of truckData.tramos) {
 			if (isCancelledRef.current) break;
@@ -236,23 +186,26 @@ const Simulador = () => {
 			const endTime = dayjs(tramo.tiempoLlegada);
 			const totalDuration = endTime.diff(startTime, 'second');
 
-			//console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
+			console.log(`Truck ${truckData.camion.codigo} - times:`, {
+				simulatedTime: simulatedTimeRef.current,
+				start: tramo.tiempoSalida,
+				end: tramo.tiempoLlegada,
+				duration: totalDuration
+			});
 
-			while (dayjs(simulatedTime.current).isBefore(startTime)) {
-				//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
+			// Esperar hasta que el tiempo simulado alcance el tiempo de inicio
+			while (dayjs(simulatedTimeRef.current).isBefore(startTime)) {
 				if (isCancelledRef.current) break;
-				await new Promise((resolve) => setTimeout(resolve, 10));
+				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 
-			if (totalDuration === 0) continue;
+			if (totalDuration <= 0) continue;
 
-			const steps = Math.max(1, Math.floor(totalDuration / 1000));
+			// Calcular pasos de interpolación
+			const steps = Math.max(1, Math.floor(totalDuration / 100)); // Menos steps para mejor rendimiento
 			const stepDuration = totalDuration / steps;
-			const realStepDuration = (stepDuration * 10) / 3600 * 1000;
 
-			//console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
-
-
+			// Interpolar posiciones
 			for (let step = 0; step <= steps; step++) {
 				if (isCancelledRef.current) break;
 
@@ -260,72 +213,20 @@ const Simulador = () => {
 				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
 				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
 
-				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
-					//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
-					if (isCancelledRef.current) break;
-					await new Promise((resolve) => setTimeout(resolve, 10));
-				}
-
 				if (isValidLatLng(lat, lng)) {
-					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
-					setTruckPositions((prevPositions) => ({
-						...prevPositions,
-						[truckData.camion.codigo]: { lat, lng },
-					}));
-				} else {
-					console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
+					setTruckPositions(prevPositions => {
+						const newPositions = {
+							...prevPositions,
+							[truckData.camion.codigo]: { lat, lng }
+						};
+						console.log(`Position update ${truckData.camion.codigo}:`, newPositions);
+						return newPositions;
+					});
 				}
 
-				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
+				// Esperar antes del siguiente paso
+				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
-			if (tramo.seDejaraElPaquete) {
-				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
-				// console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
-				// console.log("hora carga", tramo.tiempoLlegada);
-				for (const paquete of truckData.camion.paquetes) {
-					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
-						setCargaAlmacenes((prev) => {
-							const updatedCarga = { ...prev };
-							const cantidadPaquete = paquete.cantidadEntregada;
-							if (!updatedCarga[almacenId]) {
-								updatedCarga[almacenId] = [];
-							}
-							updatedCarga[almacenId].push({
-								carga: cantidadPaquete,
-								horaDeCarga: tramo.tiempoLlegada,
-							});
-							return updatedCarga;
-						});
-						setTrucks((prevTrucks) => {
-							return prevTrucks.map((truck) => {
-								if (truck.camion.codigo === truckData.camion.codigo) {
-									const updatedCamion = { ...truck.camion };
-									updatedCamion.cargaActual -= paquete.cantidadEntregada;
-									return { ...truck, camion: updatedCamion };
-								}
-								return truck;
-							});
-						});
-					}
-				}
-			}
-		}
-
-		if (!isCancelledRef.current) {
-			// console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
-
-			// Actualizar la referencia de completedTrucks
-			completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
-
-			// Actualizar el estado para forzar la re-renderización
-			setCompletedTrucks([...completedTrucksRef.current]);
-
-
-			setTruckPositions((prevPositions) => {
-				const newPositions = { ...prevPositions };
-				delete newPositions[truckData.camion.codigo];
-				return newPositions;
-			});
 		}
 	};
 
@@ -552,7 +453,6 @@ const Simulador = () => {
 					totalPedidos={totalPedidos}
 					pedidosEntregados={pedidosEntregados}
 					almacenesCapacidad={almacenesCapacidad}
-					isFetching={isFetching}
 				/>
 				<ResumenSimu
 					open={isModalVisible}

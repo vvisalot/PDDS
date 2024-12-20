@@ -1,28 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, Marker, Polyline, Popup, TileLayer, } from 'react-leaflet';
+import { MapContainer, Marker, TileLayer, } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import Papa from "papaparse";
 import { renderToStaticMarkup } from 'react-dom/server';
-import { FaTruck, FaWarehouse } from 'react-icons/fa';
+import { FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import AlmacenMapCard from '../components/AlmacenMapCard';
 import LeyendaSimu from "../components/LeyendaSim";
 import TruckMapCard from '../components/TruckMapCard';
 import BloqueosMap from './BloqueosMap';
 import CardToggle from './CardToggle';
+import TruckAndRoutesComponent from './TruckAndRoutesComponent';
 
 const warehouseIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="grey" />);
 const warehouseIconUrl = `data:image/svg+xml;base64,${btoa(warehouseIconMarkup)}`;
-const truckIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkblue" />);
-const truckIconUrl = `data:image/svg+xml;base64,${btoa(truckIconMarkup)}`;
-const truckSelectedIconMarkup = renderToStaticMarkup(<FaTruck size={32} color="darkred" />);
-const truckSelectedIconUrl = `data:image/svg+xml;base64,${btoa(truckSelectedIconMarkup)}`;
 
 const crearIcono = (color) => {
   const iconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color={color} />);
   const iconUrl = `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
-  return L.icon({ iconUrl, iconSize: [15, 15] });
+  return L.icon({ iconUrl, iconSize: [20, 20] });
 };
 
 const iconCapacidad = { //icono según porcentaje de capacidad
@@ -31,13 +28,11 @@ const iconCapacidad = { //icono según porcentaje de capacidad
   rojo: crearIcono("red"),
 };
 
-const camionIcon = L.icon({ iconUrl: truckIconUrl, iconSize: [15, 15], }); //icono camiones
-const camionSeleccionadoIcon = L.icon({ iconUrl: truckSelectedIconUrl, iconSize: [20, 20], }); //icono camiones seleccionados
 
 // Ícono personalizado para oficinas principales (verde oscuro)
 const oficinaPrincipalIconMarkup = renderToStaticMarkup(<FaWarehouse size={32} color="darkgreen" />);
 const oficinaPrincipalIconUrl = `data:image/svg+xml;base64,${btoa(oficinaPrincipalIconMarkup)}`;
-const oficinaPrincipalIcon = L.icon({ iconUrl: oficinaPrincipalIconUrl, iconSize: [21, 21], });
+const oficinaPrincipalIcon = L.icon({ iconUrl: oficinaPrincipalIconUrl, iconSize: [30, 30], });
 
 // Definir las oficinas principales como variables independientes
 const oficinasPrincipales = [
@@ -59,7 +54,6 @@ const MapComponent = ({
   elapsedTime,
   almacenesCapacidad,
   elapsedRealTime,
-  isFetching
 }) => {
 
   const [selectedTruck, setSelectedTruck] = useState(null); // Estado para el camión seleccionado
@@ -68,7 +62,6 @@ const MapComponent = ({
   const [oficinas, setOficinas] = useState([]); // Lista de oficinas cargadas
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
   const [almacenesHistorial, setAlmacenesHistorial] = useState({});
-
   const [mostrarBloqueos, setMostrarBloqueos] = useState(false)
 
   // Función para manejar el click en un camión
@@ -86,7 +79,6 @@ const MapComponent = ({
       setSelectedTruckObj(truck);
     }
   };
-
 
   // En MapComponent, modificar la función handleSelectAlmacen:
   const handleSelectAlmacen = (e, almacenId) => {
@@ -361,45 +353,13 @@ const MapComponent = ({
           );
         })}
 
-        {/* Renderizar solo las rutas del camión seleccionado */}
-        {selectedTruck && selectedTruckObj && selectedTruckObj.tramos && (
-          (!completedTrucks ||
-            (completedTrucks instanceof Set ? !completedTrucks.has(selectedTruck) : !completedTrucks.includes(selectedTruck))) && (
-            selectedTruckObj.tramos.map((tramo, index) => (
-              <Polyline
-                key={`${selectedTruck}-${index}`}
-                positions={[
-                  [tramo.origen.latitud, tramo.origen.longitud],
-                  [tramo.destino.latitud, tramo.destino.longitud],
-                ]}
-                color="red"
-                weight={3}
-                dashArray="10, 5"
-              />
-            ))
-          )
-        )}
-
-        {/* Renderizar los marcadores de posición actual */}
-        {truckPositions &&
-          Object.entries(truckPositions).map(([truckCode, position]) => {
-            const isCompleted = completedTrucks &&
-              (completedTrucks instanceof Set ?
-                completedTrucks.has(truckCode) : completedTrucks.includes(truckCode));
-
-            return (
-              !isCompleted && (
-                <Marker
-                  key={truckCode}
-                  position={[position.lat, position.lng]}
-                  icon={selectedTruck === truckCode ? camionSeleccionadoIcon : camionIcon}
-                  eventHandlers={{
-                    click: (e) => handleTruckClick(e, truckCode)
-                  }}
-                />
-              )
-            );
-          })}
+        <TruckAndRoutesComponent
+          selectedTruck={selectedTruck}
+          selectedTruckObj={selectedTruckObj}
+          truckPositions={truckPositions}
+          completedTrucks={completedTrucks}
+          handleTruckClick={handleTruckClick}
+        />
       </MapContainer>
     </div>
   );

@@ -189,7 +189,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 			<Card
 				style={{
 					...baseCardStyle,
-					maxHeight: 300,
+					maxHeight: 200,
 					overflow: 'hidden'
 				}}
 				title={
@@ -199,7 +199,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 					</Space>
 				}
 				bodyStyle={{
-					maxHeight: 240,
+					maxHeight: 200,
 					overflowY: 'auto',
 					padding: '0 24px'
 				}}
@@ -211,7 +211,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 			<Card
 				style={{
 					...baseCardStyle,
-					maxHeight: 400,
+					maxHeight: 200,
 					overflow: 'hidden'
 				}}
 				title={
@@ -221,7 +221,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 					</Space>
 				}
 				bodyStyle={{
-					maxHeight: 340,
+					maxHeight: 200,
 					overflowY: 'auto',
 					padding: '24px'
 				}}
