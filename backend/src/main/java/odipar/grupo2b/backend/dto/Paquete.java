@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record Paquete(UUID codigo,
         LocalDateTime fechaHoraPedido,
-        Oficina destino,
+        OficinaResponse destino,
         int cantidadEntregada,
         int cantidadTotal,
         String idCliente) {

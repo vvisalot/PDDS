@@ -42,4 +42,8 @@ public class RelojSimulado {
         }
         this.tiempoSiguienteBatch = this.tiempo.plusHours(INTERVALO);
     }
+
+    public int getIntervalo(){
+        return INTERVALO;
+    }
 }

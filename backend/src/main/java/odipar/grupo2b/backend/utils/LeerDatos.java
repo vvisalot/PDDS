@@ -1,6 +1,7 @@
 package odipar.grupo2b.backend.utils;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
+import odipar.grupo2b.backend.dto.BloqueoResponse;
 import odipar.grupo2b.backend.model.Bloqueo;
 import odipar.grupo2b.backend.model.Oficina;
 import odipar.grupo2b.backend.model.Tramo;
@@ -93,7 +94,7 @@ public class LeerDatos {
         return new Pair<>(tramos, mapaTramos);
     }
 
-    public static Pair<List<Tramo>, Map<String, Set<Tramo>>> leerTramosDesdeArchivo(String fileName, Map<String, Oficina> mapaOficinas, Map<Tramo,List<Bloqueo>> mapaBloqueos, Map<LocalDateTime,List<odipar.grupo2b.backend.dto.Bloqueo>> mapaBloqueosPorTiempo) {
+    public static Pair<List<Tramo>, Map<String, Set<Tramo>>> leerTramosDesdeArchivo(String fileName, Map<String, Oficina> mapaOficinas, Map<Tramo,List<Bloqueo>> mapaBloqueos, Map<LocalDateTime,List<BloqueoResponse>> mapaBloqueosPorTiempo) {
         List<Tramo> tramos = new ArrayList<>();
         Map<String, Set<Tramo>> mapaTramos = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(LeerDatos.class.getClassLoader().getResourceAsStream("static/" + fileName), StandardCharsets.UTF_8))) {
@@ -119,10 +120,10 @@ public class LeerDatos {
                         var destino = tramo.getDestino();
                         bloqueos.forEach(b -> {
                             var key = getClosest6HourBoundaryBefore(b.getFechaHoraInicio());
-                            var bloqueoDto = new odipar.grupo2b.backend.dto.Bloqueo(                                    
-                                new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+                            var bloqueoDto = new BloqueoResponse(                                    
+                                new odipar.grupo2b.backend.dto.OficinaResponse(origen.getLatitud(),origen.getLongitud()),
                                 origen.getProvincia() + ", " + origen.getDepartamento(),
-                                new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                                new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                                 destino.getProvincia() + ", " + destino.getDepartamento(),
                                 b.getFechaHoraInicio(),
                                 b.getFechaHoraFin()
@@ -130,7 +131,7 @@ public class LeerDatos {
                             if (mapaBloqueosPorTiempo.containsKey(key)) {
                                 mapaBloqueosPorTiempo.get(key).add(bloqueoDto);
                             } else {
-                                var bloqueosPorTiempo = new ArrayList<odipar.grupo2b.backend.dto.Bloqueo>();
+                                var bloqueosPorTiempo = new ArrayList<BloqueoResponse>();
                                 bloqueosPorTiempo.add(bloqueoDto);
                                 mapaBloqueosPorTiempo.put(key, bloqueosPorTiempo);
                             }

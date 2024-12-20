@@ -1,6 +1,7 @@
 package odipar.grupo2b.backend.algorithm;
 
 import odipar.grupo2b.backend.dto.Solucion;
+import odipar.grupo2b.backend.dto.TramoResponse;
 import odipar.grupo2b.backend.model.*;
 import odipar.grupo2b.backend.utils.RelojSimulado;
 
@@ -75,7 +76,7 @@ public class SimulatedAnnealing {
             paquetesAEntregar.add(new odipar.grupo2b.backend.dto.Paquete(
                     paquete.getVenta().getCodigo(),
                     paquete.getVenta().getFechaHora(),
-                    new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                     paquete.getCantidad(),
                     paquete.getVenta().getCantidad(),
                     paquete.getVenta().getIdCliente()
@@ -83,17 +84,17 @@ public class SimulatedAnnealing {
         }
         var cargaActual = paquetesAEntregar.stream().mapToInt(odipar.grupo2b.backend.dto.Paquete::cantidadEntregada).sum();
         var camionSolucion = new odipar.grupo2b.backend.dto.Camion(camion.getCodigo(),camion.getTipo(),camion.getCapacidad(),cargaActual,paquetesAEntregar);
-        var tramosSolucion = new ArrayList<odipar.grupo2b.backend.dto.Tramo>();
+        var tramosSolucion = new ArrayList<TramoResponse>();
         LocalDateTime tiempoActual = reloj.getTiempo();
         for (int i=0;  i< best.getRutaRecorrida().size(); i++) {
             var tramo = best.getRutaRecorrida().get(i);
             var origen = tramo.getOrigen();
             var destino = tramo.getDestino();
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
-            tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
-                    new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+            tramosSolucion.add(new TramoResponse(
+                    new odipar.grupo2b.backend.dto.OficinaResponse(origen.getLatitud(),origen.getLongitud()),
                     origen.getProvincia() + ", " + origen.getDepartamento(),
-                    new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                     destino.getProvincia() + ", " + destino.getDepartamento(),
                     tramo.getDistancia(),
                     velocidad,
@@ -113,10 +114,10 @@ public class SimulatedAnnealing {
             var origen = tramo.getOrigen();
             var destino = tramo.getDestino();
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
-            tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
-                new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+            tramosSolucion.add(new TramoResponse(
+                new odipar.grupo2b.backend.dto.OficinaResponse(origen.getLatitud(),origen.getLongitud()),
                 origen.getProvincia() + ", " + origen.getDepartamento(),
-                new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                 destino.getProvincia() + ", " + destino.getDepartamento(),
                 tramo.getDistancia(),
                 velocidad,
@@ -201,24 +202,24 @@ public class SimulatedAnnealing {
             paquetesAEntregar.add(new odipar.grupo2b.backend.dto.Paquete(
                     paquete.getVenta().getCodigo(),
                     paquete.getVenta().getFechaHora(),
-                    new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                     paquete.getCantidad(),
                     paquete.getVenta().getCantidad(),
                     paquete.getVenta().getIdCliente()
             ));
         }
         var camionSolucion = new odipar.grupo2b.backend.dto.Camion(camion.getCodigo(),camion.getTipo(),camion.getCapacidad(),camion.getCargaActual(),paquetesAEntregar);
-        var tramosSolucion = new ArrayList<odipar.grupo2b.backend.dto.Tramo>();
+        var tramosSolucion = new ArrayList<TramoResponse>();
         LocalDateTime tiempoActual = fechaHora;
         for (int i=0;  i< best.getRutaRecorrida().size(); i++) {
             var tramo = best.getRutaRecorrida().get(i);
             var origen = tramo.getOrigen();
             var destino = tramo.getDestino();
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
-            tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
-                    new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+            tramosSolucion.add(new TramoResponse(
+                    new odipar.grupo2b.backend.dto.OficinaResponse(origen.getLatitud(),origen.getLongitud()),
                     origen.getProvincia() + ", " + origen.getDepartamento(),
-                    new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                     destino.getProvincia() + ", " + destino.getDepartamento(),
                     tramo.getDistancia(),
                     velocidad,
@@ -235,10 +236,10 @@ public class SimulatedAnnealing {
             var origen = tramo.getOrigen();
             var destino = tramo.getDestino();
             var velocidad = mapaVelocidad.obtenerVelocidad(origen.getRegion(), destino.getRegion());
-            tramosSolucion.add(new odipar.grupo2b.backend.dto.Tramo(
-                    new odipar.grupo2b.backend.dto.Oficina(origen.getLatitud(),origen.getLongitud()),
+            tramosSolucion.add(new TramoResponse(
+                    new odipar.grupo2b.backend.dto.OficinaResponse(origen.getLatitud(),origen.getLongitud()),
                     origen.getProvincia() + ", " + origen.getDepartamento(),
-                    new odipar.grupo2b.backend.dto.Oficina(destino.getLatitud(),destino.getLongitud()),
+                    new odipar.grupo2b.backend.dto.OficinaResponse(destino.getLatitud(),destino.getLongitud()),
                     destino.getProvincia() + ", " + destino.getDepartamento(),
                     tramo.getDistancia(),
                     velocidad,

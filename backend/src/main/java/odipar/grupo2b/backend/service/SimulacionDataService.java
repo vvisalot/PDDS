@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
-import odipar.grupo2b.backend.dto.Bloqueo;
+import odipar.grupo2b.backend.dto.BloqueoResponse;
 import odipar.grupo2b.backend.model.Camion;
 import odipar.grupo2b.backend.model.Oficina;
 import odipar.grupo2b.backend.model.Venta;
@@ -17,10 +17,13 @@ public class SimulacionDataService {
     private List<Venta> ventas;
     private List<Oficina> almacenesPrincipales;
     private GrafoTramos grafoTramos;
-    private Map<LocalDateTime, List<Bloqueo>> mapaBloqueos;
+    private Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos;
+
+    //Segunda caché
+    private Map<String, Oficina> mapaOficinasExtra;
     
     public SimulacionDataService(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
-            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos) {
+            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
         this.camiones = camiones;
         this.reloj = reloj;
         this.ventas = ventas;
@@ -49,16 +52,24 @@ public class SimulacionDataService {
         return grafoTramos;
     }
     
-    public Map<LocalDateTime, List<Bloqueo>> getMapaBloqueos() {
+    public Map<LocalDateTime, List<BloqueoResponse>> getMapaBloqueos() {
         return mapaBloqueos;
     }
 
-    public void setMapaBloqueos(Map<LocalDateTime, List<Bloqueo>> mapaBloqueos) {
+    public void setMapaBloqueos(Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
         this.mapaBloqueos = mapaBloqueos;
     }
 
+    public Map<String, Oficina> getMapaOficinasExtra() {
+        return mapaOficinasExtra;
+    }
+
+    public void setMapaOficinasExtra(Map<String, Oficina> mapaOficinasExtra) {
+        this.mapaOficinasExtra = mapaOficinasExtra;
+    }
+
     public void reset(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
-            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos) {
+            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
         this.camiones = camiones;
         this.reloj = reloj;
         this.ventas = ventas;
@@ -68,7 +79,7 @@ public class SimulacionDataService {
     }
 
     public void reset(List<Camion> camiones, RelojSimulado reloj,
-            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<Bloqueo>> mapaBloqueos) {
+            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
         this.camiones = camiones;
         this.reloj = reloj;
         this.almacenesPrincipales = almacenesPrincipales;

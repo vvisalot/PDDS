@@ -1,15 +1,14 @@
-import { Button, ConfigProvider, DatePicker, Input, Pagination, Space, Typography, message } from "antd";
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { Typography, message } from "antd";
 
 import locale from 'antd/locale/es_ES';
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "/src/components/MapComponent";
-import TruckCard from "../components/TruckCard";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 import utc from "dayjs/plugin/utc"; // Importa el plugin UTC
 import HeaderSimulacion from "../components/HeaderSimulacion.jsx"
+import ResumenSimu from "../components/ResumenSimu";
 import { actualizarReloj, getSimulacion, resetSimulacion } from "../service/simulacion.js";
 
 dayjs.extend(utc); // Extiende dayjs con el plugin UTC
@@ -35,18 +34,43 @@ const Simulador = () => {
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
+	const simulatedModeRef = useRef("Semanal"); // Estado para opción del dropdown
 	// Actualiza el tiempo simulado
+
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [resumen, setResumen] = useState({
+		camionesModal: 0,
+		pedidosModal: 0,
+		tiempoRealModal: 0,
+		tiempoSimuladoModal: 0,
+		fechaInicialModal: '',
+		fechaFinalModal: '',
+		ultimaDataModal: {},
+		tipoSimulacion: '',
+	});
+	const allTrucksResumeRef = useRef(0);
+	const allPedidosRef = useRef(0);
+	const fechaResumeRef = useRef(null);
+	const allTimeSimulatedRef = useRef(0);
+	const allTimeRealRef = useRef(0);
+	const ultimaDataRef = useRef({});
+	const ultimaDataColapsoRef = useRef({});
+
+	const [bloqueos, setBloqueos] = useState([]);
 
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
 
 		const now = Date.now();
-		const elapsedRealTimeSec = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
+		const elapsedRealTimeSec = (now - startTimeRef.current) / 1000;
 		setElapsedRealTime(elapsedRealTimeSec);
-		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10); // Horas simuladas (relación ajustada)
-		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
+
+		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10);
+		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour');
+
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
+
 
 		// Calcular el tiempo transcurrido desde el inicio de la simulación
 		const simulatedElapsed = dayjs.duration(elapsedSimulatedTime, "hours");
@@ -56,13 +80,48 @@ const Simulador = () => {
 		const seconds = simulatedElapsed.seconds();
 		setElapsedTime(`${days} días, ${hours % 24}  horas`);
 
-		if (days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+
+		if (simulatedModeRef.current === "Semanal" && days >= 7 && hours >= 0 && minutes >= 0 && seconds >= 0) {
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"); //si
+			allTimeSimulatedRef.current = elapsedSimulatedTime; //si
+			allTimeRealRef.current = elapsedRealTimeSec; //no sale
+
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
+			// Mostrar el modal de resumen
+			setIsModalVisible(true);
 			handleStop("tiempo máximo alcanzado");
 			return;
 		}
 
-		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
+		if (simulatedModeRef.current === "Colapso") {
+			fechaResumeRef.current = dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss");
+			allTimeSimulatedRef.current = elapsedSimulatedTime;
+			allTimeRealRef.current = elapsedRealTimeSec;
+
+			setResumen({
+				camionesModal: allTrucksResumeRef.current,
+				pedidosModal: allPedidosRef.current,
+				tiempoRealModal: allTimeRealRef.current.toFixed(2),
+				tiempoSimuladoModal: allTimeSimulatedRef.current.toFixed(2),
+				fechaInicialModal: fechaResumeRef.current,
+				fechaFinalModal: simulatedTimeRef.current,
+				ultimaDataModal: ultimaDataColapsoRef,
+				tipoSimulacion: simulatedModeRef.current,
+			});
+		}
+
+		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime);
 	};
+
 
 	// Maneja el inicio y pausa del reloj simulador
 	useEffect(() => {
@@ -78,22 +137,46 @@ const Simulador = () => {
 	const fetchTrucks = async () => {
 		try {
 			const response = await getSimulacion() // Replace with your API endpoint
-
 			console.log("Datos recibidos del backend:", response.data); // Log completo de la data recibida
 
-			if (response.data.rutas.some((truck) => truck.colapso)) {
+			if (!response.data.colapso) ultimaDataColapsoRef.current = response.data;
+
+			//setUltimaData(response.data); //PROBANDO RESUMEN
+			ultimaDataRef.current = response.data;
+
+			if (simulatedModeRef.current === "Colapso" && response.data.colapso) { //Para colapsar
+				setIsModalVisible(true);
+				handleStop("colapsada");
+				return;
+			}
+
+			if (simulatedModeRef.current === "Semanal" && response.data.colapso) { //Por si acaso en semanal colapsa
 				handleStop("colapsada");
 				return;
 			}
 
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
-			console.log("Camiones recibidos:", truckCodesInResponse);
 
-			// Enfocarse en tramos bloqueados o bloqueos
-			const rutasConBloqueos = response.data.rutas.filter((ruta) =>
-				ruta.tramos.some((tramo) => tramo.bloqueado)
-			);
-			console.log("Rutas con tramos bloqueados:", rutasConBloqueos);
+			if (response.data.bloqueos) {
+				setBloqueos(prevBloqueos => {
+					// Crear un Map de los bloqueos existentes usando una clave única
+					const bloqueosMap = new Map(
+						prevBloqueos.map(b => [
+							`${b.nombreOrigen}-${b.nombreDestino}`,
+							b
+						])
+					);
+
+					// Agregar o actualizar con los nuevos bloqueos
+					for (const nuevoBloqueo of response.data.bloqueos) {
+						const key = `${nuevoBloqueo.nombreOrigen}-${nuevoBloqueo.nombreDestino}`;
+						if (!bloqueosMap.has(key)) {
+							bloqueosMap.set(key, nuevoBloqueo);
+						}
+					}
+					return Array.from(bloqueosMap.values());
+				});
+			}
 
 			// Eliminar camiones de la lista de completados
 			const updatedCompletedTrucks = completedTrucksRef.current.filter(
@@ -122,11 +205,12 @@ const Simulador = () => {
 
 	const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
 
+
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
 		if (completedTrucksRef.current.includes(truckData.camion.codigo)) return;
 
-		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
+		// console.log("Starting route simulation for truck:", truckData.camion.codigo);
 
 		for (const tramo of truckData.tramos) {
 			if (isCancelledRef.current) break;
@@ -135,23 +219,27 @@ const Simulador = () => {
 			const endTime = dayjs(tramo.tiempoLlegada);
 			const totalDuration = endTime.diff(startTime, 'second');
 
-			//console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
+			// console.log(`Truck ${truckData.camion.codigo} - times:`, {
+			// 	simulatedTime: simulatedTimeRef.current,
+			// 	start: tramo.tiempoSalida,
+			// 	end: tramo.tiempoLlegada,
+			// 	duration: totalDuration
+			// });
 
-			while (dayjs(simulatedTime.current).isBefore(startTime)) {
-				//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
+			// Esperar hasta que el tiempo simulado alcance el tiempo de inicio
+			while (dayjs(simulatedTimeRef.current).isBefore(startTime)) {
 				if (isCancelledRef.current) break;
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				await new Promise((resolve) => setTimeout(resolve, 10));
 			}
 
-			if (totalDuration === 0) continue;
+			if (totalDuration <= 0) continue;
 
-			const steps = Math.max(1, Math.floor(totalDuration / 1000));
+			// Calcular pasos de interpolación
+			const steps = Math.max(1, Math.floor(totalDuration / 1000)); // Menos steps para mejor rendimiento
 			const stepDuration = totalDuration / steps;
 			const realStepDuration = (stepDuration * 10) / 3600 * 1000;
 
-			//console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
-
-
+			// Interpolar posiciones
 			for (let step = 0; step <= steps; step++) {
 				if (isCancelledRef.current) break;
 
@@ -162,7 +250,7 @@ const Simulador = () => {
 				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
 					//console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
 					if (isCancelledRef.current) break;
-					await new Promise((resolve) => setTimeout(resolve, 1000));
+					await new Promise((resolve) => setTimeout(resolve, 10));
 				}
 
 				if (isValidLatLng(lat, lng)) {
@@ -175,12 +263,14 @@ const Simulador = () => {
 					console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
 				}
 
+				// Esperar antes del siguiente paso
 				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
 			}
+
 			if (tramo.seDejaraElPaquete) {
 				const almacenId = `${tramo.destino.latitud}-${tramo.destino.longitud}`;
-				console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
-				console.log("hora carga", tramo.tiempoLlegada);
+				// console.log("AlmacenId", `${tramo.destino.latitud}-${tramo.destino.longitud}`);
+				// console.log("hora carga", tramo.tiempoLlegada);
 				for (const paquete of truckData.camion.paquetes) {
 					if (paquete.destino.latitud === tramo.destino.latitud && paquete.destino.longitud === tramo.destino.longitud) {
 						setCargaAlmacenes((prev) => {
@@ -211,7 +301,7 @@ const Simulador = () => {
 		}
 
 		if (!isCancelledRef.current) {
-			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
+			// console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
 
 			// Actualizar la referencia de completedTrucks
 			completedTrucksRef.current = [...completedTrucksRef.current, truckData.camion.codigo];
@@ -226,6 +316,7 @@ const Simulador = () => {
 				return newPositions;
 			});
 		}
+
 	};
 
 	// Procesar carga de almacenes según el tiempo simulado
@@ -255,10 +346,7 @@ const Simulador = () => {
 	useEffect(() => {
 		const updatedCapacidades = {};
 		for (const almacenId in cargaAlmacenes) {
-			updatedCapacidades[almacenId] = cargaAlmacenes[almacenId].reduce(
-				(total, item) => total + item.carga,
-				0
-			);
+			updatedCapacidades[almacenId] = cargaAlmacenes[almacenId].reduce((total, item) => total + item.carga, 0);
 		}
 		setAlmacenesCapacidad(updatedCapacidades);
 	}, [cargaAlmacenes]);
@@ -320,15 +408,15 @@ const Simulador = () => {
 		setIsFetching(false);
 		setTrucks([]);
 		setTruckPositions({});
-
-		setCompletedTrucks(new Set());
+		setBloqueos([]);
+		setCompletedTrucks([]);
 		setAlmacenesCapacidad({});
 		setCargaAlmacenes({});
 		setSelectedTruckCode(null);
+		setElapsedRealTime("");
 		setElapsedTime("");
 		setSimulatedTime("");
-		setCurrentPage(1);
-		setSearchTerm("");
+		simulatedModeRef.current = "Semanal";
 
 		console.log(`Simulación ${reason}.`);
 
@@ -341,17 +429,18 @@ const Simulador = () => {
 		}
 	};
 
+	const closeModal = () => {
+		setIsModalVisible(false);
+		// Redirigir o limpiar estados si es necesario
+	};
+
 	const disabledDate = (current) => {
 		const startDate = dayjs("2024-06-01")
 		const endDate = dayjs("2026-11-30")
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
 
-	const [currentPage, setCurrentPage] = useState(1);
-	const cardsPerPage = 3;
-	const handlePageChange = (page) => {
-		setCurrentPage(page);
-	};
+
 
 	const calcularEstadisticas = () => {
 		let totalPedidos = 0;
@@ -372,45 +461,23 @@ const Simulador = () => {
 
 				// Verificar paquetes entregados en función del destino y tiempo
 				for (const paquete of truck.camion.paquetes) {
-					const tramoCorrespondiente = truck.tramos.find(
-						(tramo) =>
-							tramo.destino.latitud === paquete.destino.latitud &&
-							tramo.destino.longitud === paquete.destino.longitud
+					const tramoCorrespondiente = truck.tramos.find((tramo) =>
+						tramo.destino.latitud === paquete.destino.latitud &&
+						tramo.destino.longitud === paquete.destino.longitud
 					);
 
-					if (
-						tramoCorrespondiente &&
-						dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
-						!completedTrucks.includes(truck.camion.codigo) // Evitar doble conteo para camiones terminados
-					) {
+					if (tramoCorrespondiente && dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
+						!completedTrucks.includes(truck.camion.codigo))
 						pedidosEntregados++;
-					}
 				}
 			}
 		}
+		allTrucksResumeRef.current = camionesEnMapa;
+		allPedidosRef.current = totalPedidos;
 		return { totalPedidos, pedidosEntregados, camionesEnMapa };
 	};
 
 	const { totalPedidos, pedidosEntregados, camionesEnMapa } = calcularEstadisticas();
-
-
-	// PANEL COLAPSABLE
-	const [isPanelVisible, setIsPanelVisible] = useState(false);
-	const togglePanel = () => {
-		setIsPanelVisible(!isPanelVisible);
-	}
-
-	// BARRA DE BUSQUEDA
-	const [searchTerm, setSearchTerm] = useState("");
-
-	// Filtra los camiones según el código
-	const filteredTrucks = trucks.filter(truck => !completedTrucks.includes(truck.camion.codigo) &&
-		truck.camion.codigo.toLowerCase().includes(searchTerm.toLowerCase()));
-
-	const paginatedTrucks = filteredTrucks.slice(
-		(currentPage - 1) * cardsPerPage,
-		currentPage * cardsPerPage
-	);
 
 	return (
 		<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -431,125 +498,36 @@ const Simulador = () => {
 				handleStop={handleStop}
 				dtpValue={dtpValue}
 				disabledDate={disabledDate}
-				onDropdownChange={(value) => console.log("Opción seleccionada:", value)}
+				onDropdownChange={(value) => {
+					console.log("Opción seleccionada desde el Dropdown:", value);
+					simulatedModeRef.current = value;
+					console.log("Simulated Mode:", simulatedModeRef);
+				}}
 			/>
-
-			<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
-				<div style={{
-					flex: isPanelVisible ? "0 0 30%" : "0 0 0%",
-					padding: isPanelVisible ? "10px" : "0",
-					borderRight: isPanelVisible ? "1px solid #ddd" : "none",
-					transition: "all 0.3s ease",
-					overflowY: "hidden",
-					width: isPanelVisible ? "30%" : "0",
-					height: "100%",
-					display: "flex",
-					flexDirection: "column",
-				}}>
-					{/* Controles de la simulacion */}
-					{isPanelVisible && <>
-
-						<ConfigProvider locale={locale}>
-						</ConfigProvider>
-
-						<div style={{
-							flex: 1,
-							overflowY: 'auto',
-							marginTop: '20px',
-							paddingRight: '10px',
-						}}>
-							<Space direction="vertical" style={{ width: '100%' }}>
-								<Title level={4}>Camiones en Ruta</Title>
-								{/* Búsqueda de camiones */}
-								<Input.Search
-									placeholder="Buscar camión por código"
-									onChange={e => setSearchTerm(e.target.value)}
-									style={{
-										marginBottom: '10px'
-									}}
-								/>
-
-								{
-									paginatedTrucks.map(truck => (
-											<TruckCard
-												key={truck.camion.codigo}
-												camionData={truck}
-												isSelected={selectedTruckCode === truck.camion.codigo}
-												currentTime={simulatedTime}
-											/>
-										))
-								}
-
-								{/* Paginación */}
-								<div style={{
-									marginTop: '16px',
-									display: 'flex',
-									justifyContent: 'center',
-									position: 'sticky',
-									bottom: 0,
-									backgroundColor: 'white',
-									padding: '8px 0',
-									borderTop: '1px solid #f0f0f0'
-								}}>
-									<Pagination
-										current={currentPage}
-										total={filteredTrucks.length}
-										pageSize={cardsPerPage}
-										onChange={handlePageChange}
-										showSizeChanger={false}
-										size="small"
-									/>
-								</div>
-							</Space>
-						</div>
-					</>
-					}
-				</div>
-
-				{/* Botón para colapsar/expandir */}
-				<Button
-					type="text"
-					icon={isPanelVisible ? <FaChevronLeft /> : <FaChevronRight />}
-					onClick={togglePanel}
-					style={{
-						position: 'absolute',
-						left: isPanelVisible ? "30%" : "0",
-						top: "50%",
-						transform: "translateY(-50%)",
-						zIndex: 1000,
-						transition: "left 0.3s ease",
-						background: "#fff",
-						border: "1px solid #ddd",
-						boxShadow: "2px 0 8px rgba(0,0,0,0.15)",
-						height: "60px",
-						width: "24px",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						borderRadius: "0 4px 4px 0"
-					}}
+			{/* Mapa */}
+			<div style={{ flex: "1 1 auto", padding: '5px' }}>
+				<MapComponent
+					trucks={trucks}
+					bloqueos={bloqueos}
+					truckPositions={truckPositions}
+					completedTrucks={completedTrucks}
+					simulatedTime={simulatedTime}
+					elapsedRealTime={elapsedRealTime}
+					elapsedTime={elapsedTime}
+					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
+					trucksCompletos={trucks.length}
+					camionesEnMapa={camionesEnMapa}
+					totalPedidos={totalPedidos}
+					pedidosEntregados={pedidosEntregados}
+					almacenesCapacidad={almacenesCapacidad}
 				/>
-
-				{/* Mapa */}
-				<div style={{ flex: "1 1 auto", padding: '5px' }}>
-					<MapComponent
-						trucks={trucks}
-						truckPositions={truckPositions}
-						completedTrucks={completedTrucks}
-						simulatedTime={simulatedTime}
-						elapsedRealTime={elapsedRealTime}
-						elapsedTime={elapsedTime}
-						onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
-						trucksCompletos={trucks.length}
-						camionesEnMapa={camionesEnMapa}
-						totalPedidos={totalPedidos}
-						pedidosEntregados={pedidosEntregados}
-						almacenesCapacidad={almacenesCapacidad}
-						isFetching={isFetching}
-					/>
-				</div >
-
+				<ResumenSimu
+					open={isModalVisible}
+					onClose={closeModal}
+					resumen={resumen}
+				/>
 			</div >
+
 		</div>
 	)
 };

@@ -1,6 +1,8 @@
 package odipar.grupo2b.backend.dto;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -28,6 +30,8 @@ public class Venta {
     private Integer cantidadTotal;
     @Column(nullable = false, length = 6)
     private String idCliente;
+    @Column(nullable = false)
+    private LocalDateTime fechaRegistro;
 
     public Venta() {}
 
@@ -37,6 +41,8 @@ public class Venta {
         this.cantidad = ventaRequest.cantidad();
         this.cantidadTotal = ventaRequest.cantidad();
         this.idCliente = ventaRequest.idCliente();
+        ZonedDateTime horaPeru = ZonedDateTime.now(ZoneId.of("America/Lima"));
+        this.fechaRegistro = horaPeru.toLocalDateTime();
     }
 
     public odipar.grupo2b.backend.model.Venta toModel(){
@@ -85,4 +91,12 @@ public class Venta {
     public void setIdCliente(String idCliente) {
         this.idCliente = idCliente;
     }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }    
 }

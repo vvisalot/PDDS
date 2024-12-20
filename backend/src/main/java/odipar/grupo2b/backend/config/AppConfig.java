@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
+import odipar.grupo2b.backend.dto.BloqueoResponse;
 import odipar.grupo2b.backend.model.Bloqueo;
 import odipar.grupo2b.backend.model.Camion;
 import odipar.grupo2b.backend.model.Oficina;
@@ -43,7 +44,7 @@ public class AppConfig {
 
         GrafoTramos grafoTramos = GrafoTramos.getInstance();
         String filePathTramos = "tramos.txt";  // Cambia esta ruta por la correcta
-        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<odipar.grupo2b.backend.dto.Bloqueo>>();
+        var mapaBloqueosPorTiempo = new HashMap<LocalDateTime, List<BloqueoResponse>>();
         var datosTramos = LeerDatos.leerTramosDesdeArchivo(filePathTramos, mapaOficinas, mapaBloqueos, mapaBloqueosPorTiempo);
         var listaTramos = datosTramos.first();
         var mapaTramos = datosTramos.second();
