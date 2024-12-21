@@ -45,11 +45,11 @@ public class Venta {
         this.fechaRegistro = horaPeru.toLocalDateTime();
     }
 
-    public odipar.grupo2b.backend.model.Venta toModel(){
+    public odipar.grupo2b.backend.model.Venta toModel(Oficina destino){
         var venta = new odipar.grupo2b.backend.model.Venta();
         venta.setCodigo(this.id);
         venta.setFechaHora(this.fechaHora);
-        venta.setDestino(new Oficina(this.destino));
+        venta.setDestino(destino);
         venta.setCantidad(this.cantidad);
         venta.setIdCliente(this.idCliente);
         return venta;

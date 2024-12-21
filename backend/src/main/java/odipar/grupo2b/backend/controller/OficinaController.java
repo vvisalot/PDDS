@@ -23,25 +23,25 @@ public class OficinaController {
         this.simulacionDataService = simulacionDataService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> crear(@RequestBody Oficina oficina) {
-        var mapaOficinasExtra = simulacionDataService.getMapaOficinasExtra();
-        var newOficina = requestToModel(oficina);
-        mapaOficinasExtra.put(newOficina.getCodigo(),newOficina);
-        return new ResponseEntity<String>(newOficina.getCodigo(),HttpStatus.OK);
-    }
+    // @PostMapping
+    // public ResponseEntity<String> crear(@RequestBody Oficina oficina) {
+    //     var mapaOficinasExtra = simulacionDataService.getMapaOficinasExtra();
+    //     var newOficina = requestToModel(oficina);
+    //     mapaOficinasExtra.put(newOficina.getCodigo(),newOficina);
+    //     return new ResponseEntity<String>(newOficina.getCodigo(),HttpStatus.OK);
+    // }
 
-    @PostMapping("/masivo")
-    public ResponseEntity<Integer> crearMasivo(@RequestBody List<Oficina> oficinaList) {
-        var contador = 0;
-        var mapaOficinasExtra = simulacionDataService.getMapaOficinasExtra();
-        for(Oficina oficina: oficinaList){
-            var newOficina = requestToModel(oficina);
-            mapaOficinasExtra.put(newOficina.getCodigo(),newOficina);
-            contador++;
-        }
-        return new ResponseEntity<Integer>(contador,HttpStatus.OK);
-    }
+    // @PostMapping("/masivo")
+    // public ResponseEntity<Integer> crearMasivo(@RequestBody List<Oficina> oficinaList) {
+    //     var contador = 0;
+    //     var mapaOficinasExtra = simulacionDataService.getMapaOficinasExtra();
+    //     for(Oficina oficina: oficinaList){
+    //         var newOficina = requestToModel(oficina);
+    //         mapaOficinasExtra.put(newOficina.getCodigo(),newOficina);
+    //         contador++;
+    //     }
+    //     return new ResponseEntity<Integer>(contador,HttpStatus.OK);
+    // }
 
     private odipar.grupo2b.backend.model.Oficina requestToModel(Oficina oficinaRequest) {
         return new odipar.grupo2b.backend.model.Oficina(

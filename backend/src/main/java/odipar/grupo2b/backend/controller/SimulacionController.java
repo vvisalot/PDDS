@@ -137,7 +137,7 @@ public class SimulacionController {
         List<Camion> camiones = Camion.inicializarCamiones(almacenesPrincipales.get(2), almacenesPrincipales.get(0), almacenesPrincipales.get(1), mapaMantenimientos);
 
         var reloj = RelojSimulado.getInstance();
-        simulacionDataService.reset(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo);
+        simulacionDataService.reset(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo,mapaOficinas);
         return "SimulacionDataService has been reset!";
     }
 }
