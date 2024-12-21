@@ -435,7 +435,7 @@ const Simulador = () => {
 	};
 
 	const disabledDate = (current) => {
-		const startDate = dayjs("2018-01-01")
+		const startDate = dayjs("2010-06-01")
 		const endDate = dayjs("2040-11-30")
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
