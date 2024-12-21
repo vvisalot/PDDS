@@ -9,7 +9,11 @@ import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import odipar.grupo2b.backend.algorithm.GrafoTramos;
 import odipar.grupo2b.backend.dto.BloqueoResponse;
@@ -88,6 +92,7 @@ public class SimulacionController {
 
         //Lectura de ventas
         var archivosVenta = new String[]{
+            "ventas.historico.proyectado/c.1inf54.ventas201801.txt",
             "ventas.historico.proyectado/c.1inf54.ventas202406.txt",
             "ventas.historico.proyectado/c.1inf54.ventas202407.txt",
             "ventas.historico.proyectado/c.1inf54.ventas202408.txt",
