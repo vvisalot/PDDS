@@ -7,7 +7,7 @@ public class RelojSimulado {
     private LocalDateTime tiempo;
     private LocalDateTime tiempoSiguienteBatch;
     private static final RelojSimulado instance = new RelojSimulado();;
-    private final int INTERVALO = 6;
+    private final int INTERVALO = 3;
     private RelojSimulado() {
         try {
             this.tiempo = LocalDateTime.parse("2024-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

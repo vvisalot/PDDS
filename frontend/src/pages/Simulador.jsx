@@ -390,7 +390,7 @@ const Simulador = () => {
 			setTrucks([]);
 			setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 			fetchTrucks();
-			intervalRef.current = setInterval(fetchTrucks, 90000);
+			intervalRef.current = setInterval(fetchTrucks, 30000);
 			setIsFetching(true);
 			setCargaAlmacenes({});
 		} catch (error) {
@@ -435,8 +435,8 @@ const Simulador = () => {
 	};
 
 	const disabledDate = (current) => {
-		const startDate = dayjs("2024-06-01")
-		const endDate = dayjs("2026-11-30")
+		const startDate = dayjs("2010-06-01")
+		const endDate = dayjs("2040-11-30")
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
 
