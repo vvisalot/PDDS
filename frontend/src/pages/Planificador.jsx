@@ -6,23 +6,33 @@ import MapaPlanifComp from "/src/components/MapaPlanifComp";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 import ModalVenta from "../components/ModalVenta.jsx";
-import { getPlanificador, registrarVentaArchivo, registrarVentaUnica, resetPlanificador, verVentas } from "../service/planificador.js";
+import { getPlanificador, verVentas } from "../service/planificador.js";
 
 
 const Planificador = () => {
 	const [trucks, setTrucks] = useState([]);
 	const [truckPositions, setTruckPositions] = useState({});
 	const isCancelledRef = useRef(false);
-	const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
 	const [completedTrucks, setCompletedTrucks] = useState(new Set());
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [bloqueos, setBloqueos] = useState([]);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
+	const [currentTime, setCurrentTime] = useState(dayjs().format("dddd, DD [de] MMMM [del] YYYY - hh:mm:ss"));
+	const completedTrucksRef = useRef([]);
 
 	const [ventas, setVentas] = useState([]);
+
+	// Actualizar reloj cada segundo
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setCurrentTime(dayjs().format("dddd, DD [de] MMMM [del] YYYY - hh:mm:ss"));
+		}, 1000);
+
+		return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
+	}, []);
 
 	const fetchVentas = async () => {
 		try {
@@ -34,18 +44,53 @@ const Planificador = () => {
 		}
 	};
 
-
 	const fetchTrucksPlanificador = async () => {
 		try {
+			fetchVentas(); // Actualizar lista de ventas
 			const fechaHora = dayjs().format("YYYY-MM-DDTHH:mm:ss");
 			console.log("Fecha UTC ajustada enviada a la API:", fechaHora);
 
 			const response = await getPlanificador(fechaHora)
 			console.log(response)
 
-			setTrucks([]);
-			fetchVentas(); // Actualizar lista de ventas
+			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 
+			if (response.data.bloqueos) {
+				setBloqueos(prevBloqueos => {
+					// Crear un Map de los bloqueos existentes usando una clave única
+					const bloqueosMap = new Map(
+						prevBloqueos.map(b => [
+							`${b.nombreOrigen}-${b.nombreDestino}`,
+							b
+						])
+					);
+
+					// Agregar o actualizar con los nuevos bloqueos
+					for (const nuevoBloqueo of response.data.bloqueos) {
+						const key = `${nuevoBloqueo.nombreOrigen}-${nuevoBloqueo.nombreDestino}`;
+						if (!bloqueosMap.has(key)) {
+							bloqueosMap.set(key, nuevoBloqueo);
+						}
+					}
+					return Array.from(bloqueosMap.values());
+				});
+			}
+
+			// Eliminar camiones de la lista de completados
+			const updatedCompletedTrucks = completedTrucksRef.current.filter(
+				codigo => !truckCodesInResponse.includes(codigo)
+			);
+			completedTrucksRef.current = updatedCompletedTrucks;
+			setCompletedTrucks([...completedTrucksRef.current]);
+
+			for (const truck of response.data.rutas) simulateTruckRoute(truck)
+
+			setTrucks((prevTrucks) => {
+				const trucksMap = new Map();
+				for (const truck of prevTrucks) trucksMap.set(truck.camion.codigo, truck);
+				for (const newTruck of response.data.rutas) trucksMap.set(newTruck.camion.codigo, newTruck);
+				return Array.from(trucksMap.values());
+			});
 		} catch (error) {
 			console.error("Error al obtener los datos:", error);
 			message.error("Error al obtener los datos de la operacion diaria")
@@ -68,8 +113,72 @@ const Planificador = () => {
 
 	const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
 
+	const simulateTruckRoute = async (truckData) => {
+		if (isCancelledRef.current) return;
+		if (completedTrucks.has(truckData.camion.codigo)) return;
+
+		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
+
+		for (const tramo of truckData.tramos) {
+			if (isCancelledRef.current) break;
+
+			const startTime = dayjs(tramo.tiempoSalida);
+			const endTime = dayjs(tramo.tiempoLlegada);
+			const totalDuration = endTime.diff(startTime, 'second');
+
+			console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
+
+			while (dayjs().isBefore(startTime)) {
+				console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${dayjs()}`);
+				if (isCancelledRef.current) break;
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+			}
+
+			if (totalDuration === 0) continue;
+
+			const steps = Math.max(1, Math.floor(totalDuration / 1000));
+			const stepDuration = totalDuration / steps;
+			const realStepDuration = (stepDuration * 10) / 3600 * 1000;
+
+			//console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
 
 
+			for (let step = 0; step <= steps; step++) {
+				if (isCancelledRef.current) break;
+
+				const ratio = step / steps;
+				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
+				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
+
+				while (dayjs().isBefore(startTime.add(step * stepDuration, 'second'))) {
+					console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
+					if (isCancelledRef.current) break;
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+				}
+
+				if (isValidLatLng(lat, lng)) {
+					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
+					setTruckPositions((prevPositions) => ({
+						...prevPositions,
+						[truckData.camion.codigo]: { lat, lng },
+					}));
+				} else {
+					console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
+				}
+
+				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
+			}
+		}
+
+		if (!isCancelledRef.current) {
+			setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
+			setTruckPositions((prevPositions) => {
+				const newPositions = { ...prevPositions };
+				delete newPositions[truckData.camion.codigo];
+				return newPositions;
+			});
+		}
+	};
 
 	const calcularEstadisticas = () => {
 		let totalPedidos = 0;
@@ -79,7 +188,7 @@ const Planificador = () => {
 		for (const truck of trucks) {
 			// Filtrar tramos activos según la hora simulada
 			const tramosActivos = truck.tramos.filter(
-				(tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
+				(tramo) => dayjs().isAfter(dayjs(tramo.tiempoSalida))
 			);
 
 			if (tramosActivos.length > 0) {
@@ -98,7 +207,7 @@ const Planificador = () => {
 
 					if (
 						tramoCorrespondiente &&
-						dayjs(simulatedTime).isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
+						dayjs().isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
 						!completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
 					) {
 						pedidosEntregados++;
@@ -140,8 +249,6 @@ const Planificador = () => {
 		setIdCliente('');
 	}
 
-
-
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
 			<div style={{
@@ -162,6 +269,20 @@ const Planificador = () => {
 						<strong>Planificador de rutas.</strong>
 					</div>
 
+					<div style={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+					}}>
+						<Text style={{
+							fontSize: "14px",
+							color: "#aaa",
+							marginBottom: "10px",
+						}}>
+							{currentTime.charAt(0).toUpperCase() + currentTime.slice(1)} {/* Capitalizar */}
+						</Text>
+					</div>
+
 					<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
 						{/*<Button type="primary" icon={<FaPlus />} onClick={handleAddSale}>Agregar Venta</Button>*/}
 
@@ -180,13 +301,7 @@ const Planificador = () => {
 							onSuccess={fetchVentas}
 						/>
 
-						{/* <SubirVentas
-							type="primary"
-							requiredColumns={["fechaHora", "destino", "cantidad", "idCliente"]}
-							onValidData={handleValidData}
-							onInvalidData={handleInvalidData}
-							style={{ marginLeft: "10px" }}
-						/> */}
+
 					</div>
 					<Title level={4}>Ventas Registradas</Title>
 					<Table
@@ -199,20 +314,26 @@ const Planificador = () => {
 								render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
 							},
 							{
-								title: 'Destino',
-								dataIndex: 'destino',
-								key: 'destino'
-							},
-							{
 								title: 'Cantidad',
-								dataIndex: 'cantidad',
-								key: 'cantidad'
+								dataIndex: 'cantidadTotal',
+								key: 'cantidadTotal'
 							},
 							{
 								title: 'ID Cliente',
 								dataIndex: 'idCliente',
 								key: 'idCliente'
+							},
+							{
+								title: 'Destino',
+								dataIndex: 'destino',
+								key: 'destino',
+							},
+							{
+								title: 'Restantes',
+								dataIndex: 'cantidad',
+								key: 'cantidad'
 							}
+
 						]}
 						pagination={false}
 						size="small"
@@ -263,7 +384,7 @@ const Planificador = () => {
 					camionesEnMapa={camionesEnMapa}
 					totalPedidos={totalPedidos}
 					pedidosEntregados={pedidosEntregados}
-					simulatedTime={simulatedTime}
+					simulatedTime={dayjs()}
 					almacenesCapacidad={almacenesCapacidad}
 				/>
 			</div >

@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { FaWarehouse } from 'react-icons/fa';
 import SimulatedTimeCard from '/src/components/SimulatedTimeCard';
 import AlmacenMapCard from '../components/AlmacenMapCard';
-import LeyendaSimu from "../components/LeyendaSim";
+import LeyendaPlanif from "../components/LeyendaPlanif.jsx";
 import TruckMapCard from '../components/TruckMapCard';
 import BloqueosMap from './BloqueosMap';
 import CardToggle from './CardToggle';
@@ -263,6 +263,15 @@ const MapComponent = ({
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
       <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} onSearchFocus={handleSearchFocus} />
+      <div>
+        <LeyendaPlanif
+          totalCamionesSimulacion={trucksCompletos}
+          camionesEnMapa={camionesEnMapa}
+          totalPedidos={totalPedidos}
+          pedidosEntregados={pedidosEntregados}
+        />
+      </div>
+
       <CardToggle onToggleChange={setMostrarBloqueos} />
 
       {/* Renderizar card de camión seleccionado */}
