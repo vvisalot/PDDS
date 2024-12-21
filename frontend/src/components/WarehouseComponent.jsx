@@ -46,6 +46,7 @@ const iconCapacidad = {
 };
 
 const oficinaPrincipalIcon = createWarehouseIcon("darkgreen", 32);
+const selectedWarehouseIcon = createWarehouseIcon("black", 36);
 
 export const oficinasPrincipales = [
     { id: '130101', departamento: 'LA LIBERTAD', ciudad: 'TRUJILLO', lat: -8.11176389, lng: -79.02868652, region: 'COSTA', ubigeo: 54 },
@@ -56,6 +57,7 @@ export const oficinasPrincipales = [
 const WarehousesComponent = ({
     oficinas,
     handleSelectAlmacen,
+    selectedAlmacenId,
 }) => {
     return (
         <>
@@ -64,7 +66,7 @@ const WarehousesComponent = ({
                 <Marker
                     key={oficina.id}
                     position={[oficina.lat, oficina.lng]}
-                    icon={oficinaPrincipalIcon}
+                    icon={selectedAlmacenId === oficina.id ? selectedWarehouseIcon : oficinaPrincipalIcon}
                     eventHandlers={{
                         click: (e) => handleSelectAlmacen(e, oficina.id)
                     }}
@@ -77,12 +79,16 @@ const WarehousesComponent = ({
                 const cargaActual = oficina.cargaActual;
                 const capacidadMaxima = oficina.ubigeo;
                 const porcentaje = ((cargaActual / capacidadMaxima) * 100);
-                const icono = porcentaje <= 30
-                    ? iconCapacidad.verde
-                    : porcentaje <= 60
+                let icono;
+                if (selectedAlmacenId === oficina.id) {
+                    icono = selectedWarehouseIcon;
+                } else {
+                    icono = porcentaje <= 30
+                      ? iconCapacidad.verde
+                      : porcentaje <= 60
                         ? iconCapacidad.amarillo
                         : iconCapacidad.rojo;
-
+                }
                 return (
                     <Marker
                         key={oficina.id}
