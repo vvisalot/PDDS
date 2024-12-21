@@ -308,7 +308,7 @@ const MapComponent = ({
           width: '100%'
         }}
         minZoom={6}
-        maxZoom={9}
+        maxZoom={12}
         scrollWheelZoom={true}
         maxBounds={[
           [-20, -90],

@@ -7,6 +7,7 @@ import 'dayjs/locale/es';
 import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
+import SubirVentas from "../components/SubirVentas"; // Asegúrate de tener esta ruta correctamente
 
 import ModalVenta from "../components/ModalVenta.jsx";
 import { getPlanificador, verVentas } from "../service/planificador.js";
@@ -51,7 +52,7 @@ const Planificador = () => {
 			console.log("Fecha UTC ajustada enviada a la API:", fechaHora);
 
 			const response = await getPlanificador(fechaHora)
-			console.log(response)
+			console.log(response.data)
 
 			const truckCodesInResponse = response.data.rutas.map(truck => truck.camion.codigo);
 
@@ -115,7 +116,7 @@ const Planificador = () => {
 
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
-		if (completedTrucks.has(truckData.camion.codigo)) return;
+		if (completedTrucks.includes(truckData.camion.codigo)) return;
 
 		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
@@ -208,7 +209,7 @@ const Planificador = () => {
 					if (
 						tramoCorrespondiente &&
 						dayjs().isAfter(dayjs(tramoCorrespondiente.tiempoLlegada)) &&
-						!completedTrucks.has(truck.camion.codigo) // Evitar doble conteo para camiones terminados
+						!completedTrucks.includes(truck.camion.codigo) // Evitar doble conteo para camiones terminados
 					) {
 						pedidosEntregados++;
 					}
@@ -234,6 +235,20 @@ const Planificador = () => {
 	const [destinPlani, setDestinPlani] = useState('');
 	const [cantidadPlani, setCantidadPlani] = useState('');
 	const [idCliente, setIdCliente] = useState('');
+
+	// Funciones para manejar el modal de subir archivo
+	// Agregar este estado junto con los otros estados al inicio del componente
+	const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
+	const handleUploadCancel = () => {
+		setIsUploadModalVisible(false);
+	};
+
+	const handleUploadSuccess = () => {
+		setIsUploadModalVisible(false);
+		fetchVentas(); // Actualizar la lista de ventas después de subir el archivo
+		message.success("Archivo procesado correctamente.");
+	};
+
 
 	const showModal = () => {
 		setIsModalVisible(true);
@@ -295,6 +310,33 @@ const Planificador = () => {
 							Agregar Venta
 						</Button>
 
+
+						{/* Botón para abrir el modal de subir archivo */}
+						<Button
+							type="primary"
+							onClick={() => setIsUploadModalVisible(true)}
+							style={{ marginRight: "15px" }}
+						>
+							Subir archivo
+						</Button>
+
+
+						<Button
+							type="primary"
+							onClick={fetchVentas}
+							style={{ marginRight: '15px' }}
+						>
+							Actualizar Ventas
+						</Button>
+
+						{/* Agregar el componente SubirVentas aquí */}
+						<SubirVentas
+							isVisible={isUploadModalVisible}
+							onCancel={handleUploadCancel}
+							onSuccess={handleUploadSuccess}
+						/>
+
+
 						<ModalVenta
 							isVisible={isModalVisible}
 							onCancel={handleCancel}
@@ -303,7 +345,14 @@ const Planificador = () => {
 
 
 					</div>
-					<Title level={4}>Ventas Registradas</Title>
+					<Title level={4}
+						style={{
+							paddingTop: '10px',
+							paddingBottom: '10px',
+							borderBottom: '2px solid #ddd',
+						}}
+					>Ventas Registradas</Title>
+
 					<Table
 						dataSource={ventas}
 						columns={[
@@ -335,16 +384,10 @@ const Planificador = () => {
 							}
 
 						]}
-						pagination={false}
+						pagination={true}
 						size="small"
 					/>
-					<Button
-						type="primary"
-						onClick={fetchVentas}
-						style={{ marginTop: '10px' }}
-					>
-						Actualizar Ventas
-					</Button>
+
 				</>
 				}
 			</div>

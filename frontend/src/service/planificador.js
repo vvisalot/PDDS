@@ -20,4 +20,4 @@ export const registrarVentaUnica = (ventaData) =>
 export const verVentas = () => apiClient.get("/ventas");
 
 export const registrarVentaArchivo = (archivoData) =>
-	apiClient.post("/ventas", archivoData);
+	apiClient.post("/ventas/masivo", archivoData);
