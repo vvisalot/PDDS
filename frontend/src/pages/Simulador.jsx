@@ -382,6 +382,7 @@ const Simulador = () => {
 			console.log("Reset completado");
 
 			const fechaDTP = dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
+			// const fechaDTP = "2024-12-12T00:00:00Z";
 			await actualizarReloj(fechaDTP);
 
 			console.log("Fecha UTC ajustada enviada a la API:", fechaDTP);
@@ -440,8 +441,6 @@ const Simulador = () => {
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
 
-
-
 	const calcularEstadisticas = () => {
 		let totalPedidos = 0;
 		let pedidosEntregados = 0;
@@ -452,7 +451,7 @@ const Simulador = () => {
 			const tramosActivos = truck.tramos.filter(
 				(tramo) => dayjs(simulatedTime).isAfter(dayjs(tramo.tiempoSalida))
 			);
-			if(!completedTrucks.includes(truck.camion.codigo)) camionesEnMapa++;
+			if (!completedTrucks.includes(truck.camion.codigo)) camionesEnMapa++;
 			if (tramosActivos.length > 0) {
 				// Contar pedidos totales y entregados solo para camiones en el mapa
 				totalPedidos += truck.camion.paquetes.length;

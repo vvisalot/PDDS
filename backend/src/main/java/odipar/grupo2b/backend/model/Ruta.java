@@ -1,8 +1,12 @@
 package odipar.grupo2b.backend.model;
 
-import odipar.grupo2b.backend.algorithm.GrafoTramos;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
+import odipar.grupo2b.backend.algorithm.GrafoTramos;
 
 public class Ruta {
 

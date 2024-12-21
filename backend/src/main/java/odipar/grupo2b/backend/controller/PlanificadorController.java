@@ -36,6 +36,7 @@ public class PlanificadorController {
     private final SimulacionDataService simulacionDataService;
 	private final AlgoritmoService algoritmoService;
     private final VentaService ventaService;
+    private final Integer INTERVALO = 3;
 
 	public PlanificadorController(SimulacionDataService simulacionDataService, AlgoritmoService algoritmoService, VentaService ventaService) {
 		this.simulacionDataService = simulacionDataService;
@@ -47,7 +48,7 @@ public class PlanificadorController {
     public ResponseEntity<Resultado> planificar(@RequestParam("fechaHora") 
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHora){
         var camiones = simulacionDataService.getCamiones();
-        var ventas = ventaService.listar();
+        var ventas = ventaService.listar(fechaHora.minusHours(INTERVALO), fechaHora);
         var almacenesPrincipales = simulacionDataService.getAlmacenesPrincipales();
         var grafoTramos = simulacionDataService.getGrafoTramos();
         var mapaBloqueos = simulacionDataService.getMapaBloqueos();
@@ -98,7 +99,7 @@ public class PlanificadorController {
         List<Camion> camiones = Camion.inicializarCamiones(almacenesPrincipales.get(2), almacenesPrincipales.get(0), almacenesPrincipales.get(1), mapaMantenimientos);
 
         var reloj = RelojSimulado.getInstance();
-        simulacionDataService.reset(camiones, reloj, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo);
+        simulacionDataService.reset(camiones, reloj, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo,mapaOficinas);
         return "SimulacionDataService has been reset!";
     }
 }

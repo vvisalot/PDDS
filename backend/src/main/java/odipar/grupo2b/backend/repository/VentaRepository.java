@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import odipar.grupo2b.backend.dto.Venta;
 import java.util.List;
+import java.time.LocalDateTime;
+
 
 
 public interface VentaRepository extends ListCrudRepository<Venta,UUID>  {
@@ -18,7 +20,7 @@ public interface VentaRepository extends ListCrudRepository<Venta,UUID>  {
     @Transactional
     @Query("UPDATE Venta v SET v.cantidad = :cantidad WHERE v.id = :id")
     int updateCantidadById(@Param("cantidad") Integer cantidad, @Param("id") UUID id);
-
+    List<Venta> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
     List<Venta> findAll(Sort sort);
     List<Venta> findByIdCliente(String idCliente, Sort sort);
     List<Venta> findByDestino(String destino, Sort sort);

@@ -100,6 +100,6 @@ public class AppConfig {
         List<Camion> camiones = Camion.inicializarCamiones(almacenesPrincipales.get(2), almacenesPrincipales.get(0), almacenesPrincipales.get(1), mapaMantenimientos);
 
         var reloj = RelojSimulado.getInstance();
-        return new SimulacionDataService(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo);
+        return new SimulacionDataService(camiones, reloj, ventas, almacenesPrincipales, grafoTramos, mapaBloqueosPorTiempo, mapaOficinas);
     }
 }

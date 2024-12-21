@@ -1,5 +1,6 @@
 package odipar.grupo2b.backend.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,10 +13,12 @@ import odipar.grupo2b.backend.repository.VentaRepository;
 
 @Service
 public class VentaService {
+    private final SimulacionDataService simulacionDataService;
     private final VentaRepository ventaRepository;
     private final Sort sort = Sort.by(Sort.Order.desc("fechaRegistro"));
-    public VentaService(VentaRepository ventaRepository){
+    public VentaService(VentaRepository ventaRepository, SimulacionDataService simulacionDataService){
         this.ventaRepository = ventaRepository;
+        this.simulacionDataService = simulacionDataService;
     }
 
     public UUID crear(VentaRequest ventaRequest){
@@ -35,10 +38,10 @@ public class VentaService {
         return contador;
     }
 
-    public List<odipar.grupo2b.backend.model.Venta> listar(){
-        return ventaRepository.findAll()
+    public List<odipar.grupo2b.backend.model.Venta> listar(LocalDateTime inicio, LocalDateTime fin){
+        return ventaRepository.findByFechaHoraBetween(inicio,fin)
                                 .stream()
-                                .map(Venta::toModel)
+                                .map(v -> v.toModel(simulacionDataService.getMapaOficinas().get(v.getDestino())))
                                 .toList();
     }
 

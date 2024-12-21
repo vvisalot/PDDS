@@ -18,18 +18,19 @@ public class SimulacionDataService {
     private List<Oficina> almacenesPrincipales;
     private GrafoTramos grafoTramos;
     private Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos;
-
+    private Map<String, Oficina> mapaOficinas;
     //Segunda caché
-    private Map<String, Oficina> mapaOficinasExtra;
+    // private Map<String, Oficina> mapaOficinasExtra;
     
     public SimulacionDataService(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
-            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
+            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos, Map<String, Oficina> mapaOficinas) {
         this.camiones = camiones;
         this.reloj = reloj;
         this.ventas = ventas;
         this.almacenesPrincipales = almacenesPrincipales;
         this.grafoTramos = grafoTramos;
         this.mapaBloqueos = mapaBloqueos;
+        this.mapaOficinas = mapaOficinas;
     }
 
     public List<Camion> getCamiones() {
@@ -60,30 +61,32 @@ public class SimulacionDataService {
         this.mapaBloqueos = mapaBloqueos;
     }
 
-    public Map<String, Oficina> getMapaOficinasExtra() {
-        return mapaOficinasExtra;
+    public Map<String, Oficina> getMapaOficinas() {
+        return mapaOficinas;
     }
 
-    public void setMapaOficinasExtra(Map<String, Oficina> mapaOficinasExtra) {
-        this.mapaOficinasExtra = mapaOficinasExtra;
+    public void setMapaOficinas(Map<String, Oficina> mapaOficinas) {
+        this.mapaOficinas = mapaOficinas;
     }
 
     public void reset(List<Camion> camiones, RelojSimulado reloj, List<Venta> ventas,
-            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
+            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos, Map<String, Oficina> mapaOficinas) {
         this.camiones = camiones;
         this.reloj = reloj;
         this.ventas = ventas;
         this.almacenesPrincipales = almacenesPrincipales;
         this.grafoTramos = grafoTramos;
         this.mapaBloqueos = mapaBloqueos;
+        this.mapaOficinas = mapaOficinas;
     }
 
     public void reset(List<Camion> camiones, RelojSimulado reloj,
-            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos) {
+            List<Oficina> almacenesPrincipales, GrafoTramos grafoTramos, Map<LocalDateTime, List<BloqueoResponse>> mapaBloqueos, Map<String, Oficina> mapaOficinas) {
         this.camiones = camiones;
         this.reloj = reloj;
         this.almacenesPrincipales = almacenesPrincipales;
         this.grafoTramos = grafoTramos;
         this.mapaBloqueos = mapaBloqueos;
+        this.mapaOficinas = mapaOficinas;
     }
 }

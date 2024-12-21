@@ -202,9 +202,11 @@ public class LeerDatos {
         // Formato para "MMdd,HH:mm" (mes, día y hora)
         DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("MMdd");
-        int anioActual = LocalDateTime.now().getYear(); // Usamos el año actual
+        int anioInicio = 2010;
+        int anioLimite = 2028;
         try (BufferedReader br = new BufferedReader(new InputStreamReader(LeerDatos.class.getClassLoader().getResourceAsStream("static/" + archivo), StandardCharsets.UTF_8))) {
             String linea;
+
             while ((linea = br.readLine()) != null) {
                 
             String[] datos = linea.split(";");
@@ -219,26 +221,31 @@ public class LeerDatos {
             // Parsear fecha y hora de inicio
             MonthDay mesDiaInicio = MonthDay.parse(fechaInicioStr, formatoFecha); // Parsear "MMdd"
             LocalTime horaInicio = LocalTime.parse(horaInicioStr, formatoHora); // Parsear "HH:mm"
-            LocalDate fechaInicioCompleta = mesDiaInicio.atYear(anioActual); // Añadir el año actual
-            LocalDateTime fechaHoraInicio = LocalDateTime.of(fechaInicioCompleta, horaInicio);
-
+   
             // Parsear fecha y hora de fin
             MonthDay mesDiaFin = MonthDay.parse(fechaFinStr, formatoFecha); // Parsear "MMdd"
             LocalTime horaFin = LocalTime.parse(horaFinStr, formatoHora); // Parsear "HH:mm"
-            LocalDate fechaFinCompleta = mesDiaFin.atYear(anioActual); // Añadir el año actual
-            LocalDateTime fechaHoraFin = LocalDateTime.of(fechaFinCompleta, horaFin);
-
-            // Crear el objeto Bloqueo y asignarlo al Tramo
-            Bloqueo bloqueo = new Bloqueo(fechaHoraInicio, fechaHoraFin);
+           
             // Parsear el tramo: "250301 => 220501"
             String[] tramos = datos[0].split("=>");
             String ubigeoOrigen = tramos[0].trim();
             String ubigeoDestino = tramos[1].trim();
             var tramo = new Tramo(new Oficina(ubigeoOrigen),new Oficina(ubigeoDestino));
-            if(!mapaBloqueos.containsKey(tramo)) {
-                mapaBloqueos.put(tramo,new ArrayList<>());
+
+            for(int anio = anioInicio; anio<= anioLimite; anio++){
+                LocalDate fechaInicioCompleta = mesDiaInicio.atYear(anio); // Fecha de inicio con el año actual
+                LocalDateTime fechaHoraInicio = LocalDateTime.of(fechaInicioCompleta, horaInicio);
+
+                LocalDate fechaFinCompleta = mesDiaFin.atYear(anio); // Fecha de fin con el año actual
+                LocalDateTime fechaHoraFin = LocalDateTime.of(fechaFinCompleta, horaFin);
+
+                Bloqueo bloqueo = new Bloqueo(fechaHoraInicio, fechaHoraFin);
+
+                if (!mapaBloqueos.containsKey(tramo)) {
+                    mapaBloqueos.put(tramo, new ArrayList<>());
+                }
+                mapaBloqueos.get(tramo).add(bloqueo);
             }
-            mapaBloqueos.get(tramo).add(bloqueo);
             }
         } catch (IOException e) {
             e.printStackTrace();
