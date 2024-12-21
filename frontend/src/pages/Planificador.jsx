@@ -10,7 +10,7 @@ const { Title, Text } = Typography;
 import SubirVentas from "../components/SubirVentas"; // Asegúrate de tener esta ruta correctamente
 
 import ModalVenta from "../components/ModalVenta.jsx";
-import { getPlanificador, verVentas } from "../service/planificador.js";
+import { getPlanificador, resetPlanificador, verVentas } from "../service/planificador.js";
 
 
 const Planificador = () => {
@@ -28,6 +28,7 @@ const Planificador = () => {
 
 	// Actualizar reloj cada segundo
 	useEffect(() => {
+		resetPlanificador();
 		const interval = setInterval(() => {
 			setCurrentTime(dayjs().format("dddd, DD [de] MMMM [del] YYYY - hh:mm:ss"));
 		}, 1000);
