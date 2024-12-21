@@ -79,7 +79,7 @@ const Planificador = () => {
 
 			// Eliminar camiones de la lista de completados
 			const updatedCompletedTrucks = completedTrucksRef.current.filter(
-				codigo => !truckCodesInResponse.includes(codigo)
+				codigo => !truckCodesInResponse.has(codigo)
 			);
 			completedTrucksRef.current = updatedCompletedTrucks;
 			setCompletedTrucks([...completedTrucksRef.current]);
@@ -116,7 +116,7 @@ const Planificador = () => {
 
 	const simulateTruckRoute = async (truckData) => {
 		if (isCancelledRef.current) return;
-		if (completedTrucks.includes(truckData.camion.codigo)) return;
+		if (completedTrucks.has(truckData.camion.codigo)) return;
 
 		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
 
