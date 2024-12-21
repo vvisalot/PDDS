@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { MapContainer, Marker, TileLayer, } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -37,6 +37,7 @@ const MapComponent = ({
   const [almacenesHistorial, setAlmacenesHistorial] = useState({});
   const [mostrarBloqueos, setMostrarBloqueos] = useState(false)
   const [searchTerm, setSearchTerm] = useState('');
+  const mapRef = useRef();
 
   // Función para manejar el click en un camión
   const handleTruckClick = (e, truckCode) => {
@@ -51,6 +52,10 @@ const MapComponent = ({
       const truck = trucks.find((truck) => truck.camion.codigo === truckCode);
       setSelectedTruck(truckCode);
       setSelectedTruckObj(truck);
+      const currentPosition = truckPositions[truckCode];
+      if (currentPosition) {
+        mapRef.current.setView([currentPosition.lat, currentPosition.lng], mapRef.current.getZoom());
+      }
     }
   };
 
@@ -130,6 +135,9 @@ const MapComponent = ({
       [almacenId]: almacenInfo,
     }));
     setSelectedAlmacen(almacenInfo);
+    if (almacenSeleccionado) {
+      mapRef.current.setView([almacenSeleccionado.lat, almacenSeleccionado.lng], mapRef.current.getZoom());
+    }
   };
 
   // Simulación de tramos recorridos: actualizar los tramos completados
@@ -241,6 +249,10 @@ const MapComponent = ({
         setSelectedTruck(foundTruck.camion.codigo);
         setSelectedTruckObj(foundTruck);
         setSelectedAlmacen(null);
+        const currentPosition = truckPositions[foundTruck.camion.codigo];
+        if (currentPosition) {
+          mapRef.current.setView([currentPosition.lat, currentPosition.lng], mapRef.current.getZoom());
+        }
         return;
       }
 
@@ -250,6 +262,7 @@ const MapComponent = ({
       );
       if (foundAlmacen) {
         handleSelectAlmacen({ originalEvent: { stopPropagation: () => { } } }, foundAlmacen.id);
+        mapRef.current.setView([foundAlmacen.lat, foundAlmacen.lng], mapRef.current.getZoom());
         return;
       }
 
@@ -317,6 +330,7 @@ const MapComponent = ({
         maxBoundsViscosity={1.0}
         zoomControl={false}
         attributionControl={false}
+        ref={mapRef}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
 
@@ -336,6 +350,7 @@ const MapComponent = ({
         <WarehousesComponent
           oficinas={oficinas}
           handleSelectAlmacen={handleSelectAlmacen}
+          selectedAlmacenId={selectedAlmacen?.id}
         />
 
 
