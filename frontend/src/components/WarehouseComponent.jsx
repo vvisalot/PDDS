@@ -41,7 +41,7 @@ const createWarehouseIcon = (color, size = 32) => {
 // Definir íconos
 const iconCapacidad = {
     verde: createWarehouseIcon("green", 24),
-    amarillo: createWarehouseIcon("yellow", 24),
+    amarillo: createWarehouseIcon("orange", 24),
     rojo: createWarehouseIcon("red", 24)
 };
 

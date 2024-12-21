@@ -78,7 +78,7 @@ const TruckMapCard = ({ selectedTruck, simulatedTime, truckPositions, onClose })
 						<Space align='center' style={{ width: '100%', justifyContent: 'space-between' }}>
 							<div>
 								<FaBox style={{ marginRight: '8px' }} />
-								<Text>{paquete.cantidadTotal} unidades</Text>
+								<Text>{selectedTruck.camion.cargaActual} unidades</Text>
 							</div>
 							<Tag color={status === 'entregado' ? 'success' : 'processing'}>
 								{status}

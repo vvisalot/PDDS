@@ -381,8 +381,9 @@ const Simulador = () => {
 			await resetSimulacion();
 			console.log("Reset completado");
 
-			const fechaDTP = dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
+			//const fechaDTP = dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
 			// const fechaDTP = "2024-12-12T00:00:00Z";
+			const fechaDTP = dayjs(dtpValue).isSame("2024-12-12", "day") ? "2024-12-12T00:00:00Z" : dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
 			await actualizarReloj(fechaDTP);
 
 			console.log("Fecha UTC ajustada enviada a la API:", fechaDTP);

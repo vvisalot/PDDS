@@ -116,7 +116,7 @@ const MapComponent = ({
           codigo: truck.camion.codigo,
           capacidad: truck.camion.capacidad,
           cargaActual: truck.camion.cargaActual,
-          cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadTotal, 0),
+          cantidadPedido: truck.camion.paquetes.reduce((total, paquete) => total + paquete.cantidadEntregada, 0),
           tiempoLlegada: truck.tramos.find(tramo =>
             tramo.destino.latitud === almacenSeleccionado.lat &&
             tramo.destino.longitud === almacenSeleccionado.lng
