@@ -1,6 +1,9 @@
 import apiClient from "./axios.js";
 
-export const getPlanificador = () => apiClient.get("/planificador");
+export const getPlanificador = (fechaHora) =>
+	apiClient.get("/planificador", {
+		params: { fechaHora },
+	});
 export const resetPlanificador = () => apiClient.get("/planificador/reset");
 
 export const registrarVentaUnica = (ventaData) =>

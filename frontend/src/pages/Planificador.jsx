@@ -1,9 +1,8 @@
-import { Button, DatePicker, Form, InputNumber, Modal, Table, Typography, message } from "antd";
-import { FaChevronLeft, FaChevronRight, FaPlus, FaTruck } from 'react-icons/fa';
+import { Button, Table, Typography, message } from "antd";
+import { FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
 
 import { useEffect, useRef, useState } from "react";
 import MapaPlanifComp from "/src/components/MapaPlanifComp";
-import SubirVentas from "../components/SubirVentas";
 import 'dayjs/locale/es';
 import dayjs from "dayjs";
 
@@ -16,134 +15,60 @@ import { getPlanificador, registrarVentaArchivo, registrarVentaUnica, resetPlani
 const Planificador = () => {
 	const [trucks, setTrucks] = useState([]);
 	const [truckPositions, setTruckPositions] = useState({});
-	const intervalRef = useRef(null);
 	const isCancelledRef = useRef(false);
-	const [isFetching, setIsFetching] = useState(false);
-	const [dtpValue, setDtpValue] = useState("");
 	const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
-	const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
-	const startTimeRef = useRef(null); // Tiempo real de inicio
-	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
 	const [completedTrucks, setCompletedTrucks] = useState(new Set());
-	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
+	const [bloqueos, setBloqueos] = useState([]);
+	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 
 	const [ventas, setVentas] = useState([]);
-
-	const updateSimulatedTime = () => {
-		if (!startTimeRef.current || !dtpValue) return;
-
-		const now = Date.now();
-		const elapsedRealTime = (now - startTimeRef.current) / 1000; // Tiempo real transcurrido en segundos
-		const elapsedSimulatedTime = elapsedRealTime * velocidad * (1); // Horas simuladas (relación ajustada)
-		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour'); // Sumar horas simuladas
-		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
-		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
-		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
-	};
-
-	// Maneja el inicio y pausa del reloj simulado
-	useEffect(() => {
-		if (isFetching) {
-			startTimeRef.current = Date.now(); // Registra el inicio del tiempo real
-			animationFrameRef.current = requestAnimationFrame(updateSimulatedTime);
-		} else {
-			cancelAnimationFrame(animationFrameRef.current); // Detener la animación
-		}
-		return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
-	}, [isFetching, dtpValue]);
 
 	const fetchVentas = async () => {
 		try {
 			const ventasResponse = await verVentas();
 			setVentas(ventasResponse.data);
 		} catch (error) {
-			console.error("Error al obtener los datos:", error);
+			console.error("Error al obtener los datos de ventas", error);
+			message.error("Error al obtener los datos de ventas");
 		}
 	};
 
-	//probando logica de api
-	// const fetchTrucksPlanificador = async () => {
-	// 	if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
-	// 		console.error("Faltan datos para enviar al API.");
-	// 		return;
-	// 	}
 
-	// 	try {
-	// 		//const response = await getSimulacion()
+	const fetchTrucksPlanificador = async () => {
+		try {
+			const fechaHora = dayjs().format("YYYY-MM-DDTHH:mm:ss");
+			console.log("Fecha UTC ajustada enviada a la API:", fechaHora);
+
+			const response = await getPlanificador(fechaHora)
+			console.log(response)
+
+			setTrucks([]);
+			fetchVentas(); // Actualizar lista de ventas
+
+		} catch (error) {
+			console.error("Error al obtener los datos:", error);
+			message.error("Error al obtener los datos de la operacion diaria")
+		}
+	};
+
+
+	useEffect(() => {
+		fetchTrucksPlanificador();
+
+		const intervaloLlamada = setInterval(() => {
+			fetchTrucksPlanificador();
+		}, 30000);
+
+		return () => clearInterval(intervaloLlamada);
+	}, [])
+
 
 	const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 
 	const isValidLatLng = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng);
 
-	const simulateTruckRoute = async (truckData) => {
-		if (isCancelledRef.current) return;
-		if (completedTrucks.has(truckData.camion.codigo)) return;
 
-		console.log(`Iniciando simulación para el camión ${truckData.camion.codigo}`);
-
-		for (const tramo of truckData.tramos) {
-			if (isCancelledRef.current) break;
-
-			const startTime = dayjs(tramo.tiempoSalida);
-			const endTime = dayjs(tramo.tiempoLlegada);
-			const totalDuration = endTime.diff(startTime, 'second');
-
-			console.log(`Camión ${truckData.camion.codigo} - Tramo desde ${startTime.format('HH:mm:ss')} hasta ${endTime.format('HH:mm:ss')} (Duración: ${totalDuration} segundos)`);
-
-			while (dayjs(simulatedTime.current).isBefore(startTime)) {
-				console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el tramo. Hora actual simulada: ${simulatedTime}`);
-				if (isCancelledRef.current) break;
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-			}
-
-			if (totalDuration === 0) continue;
-
-			const steps = Math.max(1, Math.floor(totalDuration / 1000));
-			const stepDuration = totalDuration / steps;
-			const realStepDuration = (stepDuration * 10) / 3600 * 1000;
-
-			//console.log(`Camión ${truckData.camion.codigo} - Total Steps: ${steps}, Step Duration: ${stepDuration} seg, Real Step Duration: ${realStepDuration} ms`);
-
-
-			for (let step = 0; step <= steps; step++) {
-				if (isCancelledRef.current) break;
-
-				const ratio = step / steps;
-				const lat = interpolate(tramo.origen.latitud, tramo.destino.latitud, ratio);
-				const lng = interpolate(tramo.origen.longitud, tramo.destino.longitud, ratio);
-
-				while (dayjs(simulatedTimeRef.current).isBefore(startTime.add(step * stepDuration, 'second'))) {
-					console.log(`Camión ${truckData.camion.codigo} esperando para iniciar el paso ${step + 1}/${steps}. Hora actual simulada: ${simulatedTime}`);
-					if (isCancelledRef.current) break;
-					await new Promise((resolve) => setTimeout(resolve, 1000));
-				}
-
-				if (isValidLatLng(lat, lng)) {
-					//console.log(`Camión ${truckData.camion.codigo} - Step ${step + 1}/${steps}: Posición actual: lat=${lat.toFixed(6)}, lng=${lng.toFixed(6)}`);
-					setTruckPositions((prevPositions) => ({
-						...prevPositions,
-						[truckData.camion.codigo]: { lat, lng },
-					}));
-				} else {
-					console.warn(`Coordenadas inválidas para el camión ${truckData.camion.codigo}: lat=${lat}, lng=${lng}`);
-				}
-
-				if (step < steps) await new Promise((resolve) => setTimeout(resolve, realStepDuration));
-			}
-		}
-
-		if (!isCancelledRef.current) {
-			console.log(`--- FIN DE LA RUTA PARA EL CAMIÓN ${truckData.camion.codigo} ---`);
-			// Actualizar estado para marcar que el camión terminó su ruta
-			setCompletedTrucks((prev) => new Set(prev).add(truckData.camion.codigo));
-			setTruckPositions((prevPositions) => {
-				const newPositions = { ...prevPositions };
-				delete newPositions[truckData.camion.codigo];
-				return newPositions;
-			});
-		}
-	};
 
 
 	const calcularEstadisticas = () => {
@@ -194,7 +119,6 @@ const Planificador = () => {
 		setIsPanelVisible(!isPanelVisible);
 	}
 
-
 	// Lógica para subida de 1 venta
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [diaPlani, setDiaPlani] = useState('');
@@ -217,6 +141,7 @@ const Planificador = () => {
 	}
 
 
+
 	return (
 		<div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
 			<div style={{
@@ -232,7 +157,6 @@ const Planificador = () => {
 				marginBottom: "10px"
 			}}>
 
-				{/* Controles de la simulacion */}
 				{isPanelVisible && <>
 					<div style={{ marginBottom: '10px', fontSize: '22px' }}>
 						<strong>Planificador de rutas.</strong>
@@ -334,12 +258,13 @@ const Planificador = () => {
 					trucks={trucks}
 					truckPositions={truckPositions}
 					completedTrucks={completedTrucks}
-					simulatedTime={simulatedTime}
-					onTruckSelect={(truckCode) => setSelectedTruckCode(truckCode)}
+					bloqueos={bloqueos}
 					trucksCompletos={trucks.length}
 					camionesEnMapa={camionesEnMapa}
 					totalPedidos={totalPedidos}
 					pedidosEntregados={pedidosEntregados}
+					simulatedTime={simulatedTime}
+					almacenesCapacidad={almacenesCapacidad}
 				/>
 			</div >
 

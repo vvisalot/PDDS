@@ -440,8 +440,6 @@ const Simulador = () => {
 		return current && (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 	}
 
-
-
 	const calcularEstadisticas = () => {
 		let totalPedidos = 0;
 		let pedidosEntregados = 0;
