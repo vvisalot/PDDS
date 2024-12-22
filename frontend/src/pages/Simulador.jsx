@@ -30,7 +30,7 @@ const Simulador = () => {
 	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
 	const [completedTrucks, setCompletedTrucks] = useState([]);
 	const completedTrucksRef = useRef([]);
-	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
+	const simulatedTimeRef = useRef("2025-07-01 00:00:00");
 	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 	const [almacenesCapacidad, setAlmacenesCapacidad] = useState({});
 	const [cargaAlmacenes, setCargaAlmacenes] = useState({});
@@ -66,7 +66,7 @@ const Simulador = () => {
 		setElapsedRealTime(elapsedRealTimeSec);
 
 		const elapsedSimulatedTime = elapsedRealTimeSec * velocidad * (1 / 10);
-		const newSimulatedTime = dayjs(dtpValue).add(elapsedSimulatedTime, 'hour');
+		const newSimulatedTime = dayjs("2025-07-01T00:00:00Z").add(elapsedSimulatedTime, 'hour');
 
 		setSimulatedTime(newSimulatedTime.format("YYYY-MM-DD HH:mm:ss"));
 		simulatedTimeRef.current = newSimulatedTime.format("YYYY-MM-DD HH:mm:ss");
@@ -74,7 +74,7 @@ const Simulador = () => {
 
 		// Calcular el tiempo transcurrido desde el inicio de la simulación
 		const simulatedElapsed = dayjs.duration(elapsedSimulatedTime, "hours");
-		const days = Math.floor(simulatedElapsed.asDays());
+		const days = Math.floor(simulatedElapsed.asDays()) + 7;
 		const hours = Math.floor(simulatedElapsed.asHours());
 		const minutes = simulatedElapsed.minutes();
 		const seconds = simulatedElapsed.seconds();
@@ -381,14 +381,15 @@ const Simulador = () => {
 			await resetSimulacion();
 			console.log("Reset completado");
 
-			const fechaDTP = dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
+			//const fechaDTP = dayjs(dtpValue).format("YYYY-MM-DDTHH:mm:ss") + "Z";
+			const fechaDTP ="2025-07-01T00:00:00Z"
 			await actualizarReloj(fechaDTP);
 
 			console.log("Fecha UTC ajustada enviada a la API:", fechaDTP);
 			console.log("Reloj configurado");
 
 			setTrucks([]);
-			setSimulatedTime(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
+			setSimulatedTime(dayjs("2025-07-01T00:00:00Z").format("YYYY-MM-DD HH:mm:ss"));
 			fetchTrucks();
 			intervalRef.current = setInterval(fetchTrucks, 30000);
 			setIsFetching(true);

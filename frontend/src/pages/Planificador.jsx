@@ -14,22 +14,9 @@ import { getPlanificador, registrarVentaArchivo, registrarVentaUnica, resetPlani
 
 
 const Planificador = () => {
-	const [trucks, setTrucks] = useState([]);
-	const [truckPositions, setTruckPositions] = useState({});
-	const intervalRef = useRef(null);
-	const isCancelledRef = useRef(false);
-	const [isFetching, setIsFetching] = useState(false);
-	const [dtpValue, setDtpValue] = useState("");
-	const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
-	const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
-	const startTimeRef = useRef(null); // Tiempo real de inicio
-	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
-	const [completedTrucks, setCompletedTrucks] = useState(new Set());
-	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
-	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
 
-	const [ventas, setVentas] = useState([]);
 
+	/*
 	const updateSimulatedTime = () => {
 		if (!startTimeRef.current || !dtpValue) return;
 
@@ -42,6 +29,7 @@ const Planificador = () => {
 		animationFrameRef.current = requestAnimationFrame(updateSimulatedTime); // Continuar actualizando
 	};
 
+
 	// Maneja el inicio y pausa del reloj simulado
 	useEffect(() => {
 		if (isFetching) {
@@ -53,24 +41,64 @@ const Planificador = () => {
 		return () => cancelAnimationFrame(animationFrameRef.current); // Limpieza al desmontar
 	}, [isFetching, dtpValue]);
 
-	const fetchVentas = async () => {
-		try {
-			const ventasResponse = await verVentas();
-			setVentas(ventasResponse.data);
-		} catch (error) {
-			console.error("Error al obtener los datos:", error);
-		}
-	};
+	*/
 
-	//probando logica de api
-	// const fetchTrucksPlanificador = async () => {
-	// 	if (!diaPlani || !destinPlani || !cantidadPlani || !idCliente) {
-	// 		console.error("Faltan datos para enviar al API.");
-	// 		return;
-	// 	}
+	const [trucks, setTrucks] = useState([]);
+    const [truckPositions, setTruckPositions] = useState({});
+    const [ventas, setVentas] = useState([]);
+    const intervalRef = useRef(null);
 
-	// 	try {
-	// 		//const response = await getSimulacion()
+	const isCancelledRef = useRef(false);
+	const [isFetching, setIsFetching] = useState(false);
+	const [dtpValue, setDtpValue] = useState("");
+	const [simulatedTime, setSimulatedTime] = useState(""); // Reloj simulado
+	const animationFrameRef = useRef(null); // Ref para manejar `requestAnimationFrame`
+	const startTimeRef = useRef(null); // Tiempo real de inicio
+	const velocidad = 1; // Relación: 1 hora simulada = 10 segundos reales (ajustar según necesidad)
+	const [completedTrucks, setCompletedTrucks] = useState(new Set());
+	const simulatedTimeRef = useRef(dayjs(dtpValue).format("YYYY-MM-DD HH:mm:ss"));
+	const [selectedTruckCode, setSelectedTruckCode] = useState(null);
+
+
+    // Función para obtener las ventas desde el backend
+    const fetchVentas = async () => {
+        try {
+            const ventasResponse = await verVentas();
+            setVentas(ventasResponse.data);
+        } catch (error) {
+            console.error("Error al obtener las ventas:", error);
+            message.error("Error al cargar las ventas");
+        }
+    };
+
+    // Función para planificar rutas con la API
+    const fetchPlanificador = async () => {
+        try {
+            const currentTime = dayjs().format("YYYY-MM-DDTHH:mm:ss"); // Hora actual en formato ISO
+            const planificadorResponse = await getPlanificador(currentTime);
+            setTrucks(planificadorResponse.data);
+        } catch (error) {
+            console.error("Error al planificar las rutas:", error);
+            message.error("Error al planificar las rutas");
+        }
+    };
+
+
+    // Inicializar las llamadas periódicas a las APIs
+    useEffect(() => {
+        fetchVentas(); // Cargar ventas al inicio
+        fetchPlanificador(); // Planificar rutas al inicio
+
+        intervalRef.current = setInterval(() => {
+            fetchVentas();
+            fetchPlanificador();
+        }, 30000); // Llamadas cada 30 segundos
+
+        return () => clearInterval(intervalRef.current);
+    }, []);
+
+
+
 
 	const interpolate = (start, end, ratio) => start + (end - start) * ratio;
 

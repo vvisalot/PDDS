@@ -9,13 +9,14 @@ const ResumenSimu = ({ open, onClose, resumen }) => {
   const rutas = ultimaDataModal?.current?.rutas || [];
   const tiempoRealMinutos = Math.floor(tiempoRealModal / 60);
   const diasSimulados = Math.floor(tiempoSimuladoModal / 24);
-  const horasSimuladas = Math.floor(tiempoSimuladoModal % 24);
+  const horasSimuladas = Math.floor(tiempoSimuladoModal % 24) ;
   const minutosSimulados = Math.floor((tiempoSimuladoModal * 60) % 60);
   const rangofinalfecha = new Date(fechaFinalModal);
   const rangoiniciofecha = new Date(fechaInicialModal);
   
+  
   // Función para descargar el contenido como archivo
-  const handleDownload = () => {
+  const handleDownload = () => { 
     const contenido = `
     Resumen de la Simulación
     ========================

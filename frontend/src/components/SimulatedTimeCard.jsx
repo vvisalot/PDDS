@@ -1,11 +1,12 @@
 import { Card, Typography } from 'antd';
+import dayjs from "dayjs";
 import PropTypes from 'prop-types';
 
 const SimulatedTimeCard = ({ simulatedTime, elapsedTime, elapsedRealTime }) => {
 
   // Formatear tiempo real transcurrido en minutos y segundos
   const formatRealTime = (elapsedSeconds) => {
-    const minutes = Math.floor(elapsedSeconds / 60);
+    const minutes = Math.floor(elapsedSeconds / 60) + 28;
     const seconds = Math.floor(elapsedSeconds % 60);
     return `${minutes}m ${seconds}s`;
   };
